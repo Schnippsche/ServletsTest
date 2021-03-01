@@ -27,7 +27,7 @@ public class PruefUtil
   private static final String MSG_ADRESSBESTAND_INVALID = "Adressbestand mit der ID {0} existiert nicht!";
   private static final String SQL_SELECT_ORDNUNGSFELD = "SELECT QUELL_REFERENZ_OF_LAENGE,QUELL_REFERENZ_OF_TYP, QUELL_REFERENZ_KUERZEL FROM quell_referenz_verwaltung WHERE QUELL_REFERENZ_ID = ?";
   private static final String SQL_SELECT_OF_EXISTS = "SELECT QUELL_REFERENZ_OF FROM adressen WHERE QUELL_REFERENZ_ID = {0} AND QUELL_REFERENZ_OF IN({1}) AND STATUS != \"LOESCH\"";
-  private static final String SQL_SELECT_MELDER_EXISTS = "SELECT MELDER_ID FROM melder WHERE MELDER_ID IN({1}) AND STATUS != \"LOESCH\"";
+  private static final String SQL_SELECT_MELDER_EXISTS = "SELECT MELDER_ID FROM melder WHERE MELDER_ID IN({0}) AND STATUS != \"LOESCH\"";
   private final JobBean jobBean;
   private boolean fehlerLimitNichtErreicht;
   private final SqlUtil sqlUtil;

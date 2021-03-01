@@ -12,8 +12,10 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class MainTest
 {
@@ -37,6 +39,7 @@ public class MainTest
   @Test
   public void testPruefUtil()
   {
+
     SqlUtil sqlUtil = new SqlUtil(getConnection());
     assertNotNull(sqlUtil);
     JobBean bean = new JobBean();
@@ -87,10 +90,17 @@ public class MainTest
       assertEquals("Test", bean.quellReferenzName);
       assertEquals("NUM", bean.getAdressen().ordnungsfeldTyp);
       assertTrue(bean.quellReferenzNumerisch);
-
+      //
+      HashMap<String, Integer>map = new HashMap<>();
+      map.put("1000000",1);
+      map.put("1000001",2);
+      map.put("Mei's",3);
+      assertFalse(util.checkOrdnungsfelderExistieren(map));
+      assertFalse(util.checkMelderExistieren(map));
     } catch (JobException e)
     {
       log.error(e.getMessage());
+      fail();
     }
 
     //
