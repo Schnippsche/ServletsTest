@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * The type Pruefe register import.
+ */
 public class PruefeRegisterImport extends AbstractPruefeImport
 {
 
@@ -23,6 +26,12 @@ public class PruefeRegisterImport extends AbstractPruefeImport
   private List<String> rows;
   private Integer quellReferenzId;
 
+  /**
+   * Instantiates a new Pruefe register import.
+   *
+   * @param jobBean the job bean
+   * @param sqlUtil the sql util
+   */
   public PruefeRegisterImport(JobBean jobBean, SqlUtil sqlUtil)
   {
     super(jobBean, sqlUtil);

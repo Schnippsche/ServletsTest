@@ -8,11 +8,20 @@ import de.werum.sis.idev.res.job.JobException;
 import java.text.MessageFormat;
 import java.util.List;
 
+/**
+ * The type Pruefe idev import.
+ */
 public class PruefeIdevImport extends AbstractPruefeImport
 {
   private List<String[]> rows;
   private int anzahlSpalten;
 
+  /**
+   * Instantiates a new Pruefe idev import.
+   *
+   * @param jobBean the job bean
+   * @param sqlUtil the sql util
+   */
   public PruefeIdevImport(JobBean jobBean, SqlUtil sqlUtil)
   {
     super(jobBean, sqlUtil);

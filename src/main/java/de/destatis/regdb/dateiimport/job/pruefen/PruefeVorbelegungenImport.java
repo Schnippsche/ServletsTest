@@ -9,13 +9,20 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * The type Pruefe vorbelegungen import.
+ */
 public class PruefeVorbelegungenImport extends AbstractPruefeImport
 {
   private List<String[]> rows;
   private int anzahlSpalten;
-  private HashMap<String, Integer> quellOfRows;
-  private HashMap<String, Integer> melderIdRows;
 
+  /**
+   * Instantiates a new Pruefe vorbelegungen import.
+   *
+   * @param jobBean the job bean
+   * @param sqlUtil the sql util
+   */
   public PruefeVorbelegungenImport(JobBean jobBean, SqlUtil sqlUtil)
   {
     super(jobBean, sqlUtil);
@@ -45,8 +52,8 @@ public class PruefeVorbelegungenImport extends AbstractPruefeImport
 
   private void validate(int offset) throws JobException
   {
-    quellOfRows = new HashMap<>(rows.size());
-    melderIdRows = new HashMap<>(rows.size());
+    HashMap<String, Integer> quellOfRows = new HashMap<>(rows.size());
+    HashMap<String, Integer> melderIdRows = new HashMap<>(rows.size());
     int rowNumber = offset;
     for (String[] cols : rows)
     {

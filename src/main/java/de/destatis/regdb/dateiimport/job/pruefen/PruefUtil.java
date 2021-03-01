@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * The type Pruef util.
+ */
 public class PruefUtil
 {
   private static final Pattern numberPattern = Pattern.compile("\\d+");
@@ -32,6 +35,12 @@ public class PruefUtil
   private boolean fehlerLimitNichtErreicht;
   private final SqlUtil sqlUtil;
 
+  /**
+   * Instantiates a new Pruef util.
+   *
+   * @param jobBean the job bean
+   * @param sqlUtil the sql util
+   */
   public PruefUtil(JobBean jobBean, SqlUtil sqlUtil)
   {
     this.jobBean = jobBean;
@@ -39,11 +48,24 @@ public class PruefUtil
     this.fehlerLimitNichtErreicht = jobBean.getFormatPruefung().anzahlFehler < jobBean.getFormatPruefung().maximaleAnzahlFehler;
   }
 
+  /**
+   * Is fehler limit nicht erreicht boolean.
+   *
+   * @return the boolean
+   */
   public boolean isFehlerLimitNichtErreicht()
   {
     return this.fehlerLimitNichtErreicht;
   }
 
+  /**
+   * Check min spalten laenge boolean.
+   *
+   * @param pruefWert the pruef wert
+   * @param minimum   the minimum
+   * @param rowNumber the row number
+   * @return the boolean
+   */
   public boolean checkMinSpaltenLaenge(int pruefWert, int minimum, int rowNumber)
   {
     if (pruefWert < minimum)
@@ -58,6 +80,14 @@ public class PruefUtil
     return true;
   }
 
+  /**
+   * Check fix spalten laenge boolean.
+   *
+   * @param pruefWert     the pruef wert
+   * @param anzahlErlaubt the anzahl erlaubt
+   * @param rowNumber     the row number
+   * @return the boolean
+   */
   public boolean checkFixSpaltenLaenge(int pruefWert, int anzahlErlaubt, int rowNumber)
   {
     // Spaltenlänge +1 erlaubt, da CSV mit abschliessendem Semikolon erlaubt wurde!
@@ -73,6 +103,15 @@ public class PruefUtil
     return true;
   }
 
+  /**
+   * Check min string laenge boolean.
+   *
+   * @param pruefWert the pruef wert
+   * @param hinweis   the hinweis
+   * @param minimum   the minimum
+   * @param rowNumber the row number
+   * @return the boolean
+   */
   public boolean checkMinStringLaenge(String pruefWert, String hinweis, int minimum, int rowNumber)
   {
     if (pruefWert == null || pruefWert.length() < minimum)
@@ -87,6 +126,15 @@ public class PruefUtil
     return true;
   }
 
+  /**
+   * Check max string laenge boolean.
+   *
+   * @param pruefWert the pruef wert
+   * @param hinweis   the hinweis
+   * @param maximum   the maximum
+   * @param rowNumber the row number
+   * @return the boolean
+   */
   public boolean checkMaxStringLaenge(String pruefWert, String hinweis, int maximum, int rowNumber)
   {
     if (pruefWert != null && pruefWert.length() > maximum)
@@ -101,6 +149,13 @@ public class PruefUtil
     return true;
   }
 
+  /**
+   * Check ordnungsfeld boolean.
+   *
+   * @param pruefWert the pruef wert
+   * @param rowNumber the row number
+   * @return the boolean
+   */
   public boolean checkOrdnungsfeld(String pruefWert, int rowNumber)
   {
     boolean result = true;
@@ -132,6 +187,14 @@ public class PruefUtil
     return result;
   }
 
+  /**
+   * Check nicht leer boolean.
+   *
+   * @param pruefWert the pruef wert
+   * @param hinweis   the hinweis
+   * @param rowNumber the row number
+   * @return the boolean
+   */
   public boolean checkNichtLeer(String pruefWert, String hinweis, int rowNumber)
   {
     if (pruefWert == null || pruefWert.isEmpty())
@@ -146,6 +209,14 @@ public class PruefUtil
     return true;
   }
 
+  /**
+   * Check ohne leerzeichen boolean.
+   *
+   * @param pruefWert the pruef wert
+   * @param hinweis   the hinweis
+   * @param rowNumber the row number
+   * @return the boolean
+   */
   public boolean checkOhneLeerzeichen(String pruefWert, String hinweis, int rowNumber)
   {
     if (pruefWert != null && pruefWert.contains(" "))
@@ -160,6 +231,11 @@ public class PruefUtil
     return true;
   }
 
+  /**
+   * Add error.
+   *
+   * @param message the message
+   */
   public void addError(String message)
   {
     if (fehlerLimitNichtErreicht)
@@ -169,6 +245,13 @@ public class PruefUtil
     }
   }
 
+  /**
+   * Check adressbestand boolean.
+   *
+   * @param quellRefId the quell ref id
+   * @return the boolean
+   * @throws JobException the job exception
+   */
   public boolean checkAdressbestand(Integer quellRefId) throws JobException
   {
     try (PreparedSelect ps = sqlUtil.createPreparedSelect(SQL_SELECT_ORDNUNGSFELD))
@@ -191,6 +274,13 @@ public class PruefUtil
     return false;
   }
 
+  /**
+   * Check ordnungsfelder existieren boolean.
+   *
+   * @param ofRows the of rows
+   * @return the boolean
+   * @throws JobException the job exception
+   */
   public boolean checkOrdnungsfelderExistieren(Map<String, Integer> ofRows) throws JobException
   {
     String sql = MessageFormat.format(SQL_SELECT_OF_EXISTS, this.jobBean.quellReferenzId, sqlUtil.convertStringList(ofRows.keySet()));
@@ -214,6 +304,13 @@ public class PruefUtil
     return false;
   }
 
+  /**
+   * Check melder existieren boolean.
+   *
+   * @param melderIdRows the melder id rows
+   * @return the boolean
+   * @throws JobException the job exception
+   */
   public boolean checkMelderExistieren(Map<String, Integer> melderIdRows) throws JobException
   {
     String sql = MessageFormat.format(SQL_SELECT_MELDER_EXISTS, sqlUtil.convertStringList(melderIdRows.keySet()));
