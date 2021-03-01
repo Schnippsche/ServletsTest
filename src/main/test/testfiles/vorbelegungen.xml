@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<regdbdaten>
+	<erhebungsblock>
+		<erhebung>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<bzr>201801</bzr>
+			<erster_meldungstermin>20180101</erster_meldungstermin>
+			<letzter_meldungstermin>20181101</letzter_meldungstermin>
+			<statspez_key />
+			<formular_id>formBXSAAAKBH</formular_id>
+			<aktion>ANY</aktion>
+			<archivierung>N</archivierung>
+			<zuruecksetzen>N</zuruecksetzen>
+			<weitere_meldung>AUTO</weitere_meldung>
+		</erhebung>
+		<erhebung>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<bzr>201801</bzr>
+			<erster_meldungstermin>20180101</erster_meldungstermin>
+			<letzter_meldungstermin>20181101</letzter_meldungstermin>
+			<statspez_key />
+			<formular_id>formBXSAAAKBH</formular_id>
+			<aktion>ANY</aktion>
+			<archivierung>N</archivierung>
+			<zuruecksetzen>AUTO</zuruecksetzen>
+			<weitere_meldung>AUTO</weitere_meldung>
+		</erhebung>
+	</erhebungsblock>
+	<adressenblock>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000000</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Krohnskamp</strasse>
+			<hausnummer>74</hausnummer>
+			<postleitzahl>18195</postleitzahl>
+			<ort>Stubbendorf</ort>
+			<postfach>18195</postfach>
+			<postfach_plz>18195</postfach_plz>
+			<postfach_ort>Stubbendorf</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+	</adressenblock>
+	<unternehmenblock>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000000</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Ciaramitaro</name>
+			<name_ergaenzung>Blisse</name_ergaenzung>
+			<ansprechpartner_anrede>Frau</ansprechpartner_anrede>
+			<ansprechpartner_name>Ciaramitaro</ansprechpartner_name>
+			<ansprechpartner_telefon>03782 / 73001</ansprechpartner_telefon>
+			<ansprechpartner_fax>01527 / 10683</ansprechpartner_fax>
+			<ansprechpartner_email>blisse.ciaramitaro@aol.de</ansprechpartner_email>
+		</firma>
+	</unternehmenblock>
+	<melderblock>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>10000000</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Frau</anrede>
+			<name>Ciaramitaro</name>
+			<vorname>Blisse</vorname>
+			<telefon>03782 / 73001</telefon>
+			<fax>01527 / 10683</fax>
+			<email>blisse.ciaramitaro@aol.de</email>
+		</melder>
+	</melderblock>
+	<vorbelegungsblock>
+		<!--es folgen 1 bis n Vorbelegungen-->
+		<vorbelegung>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000000</quell_referenz_of>
+			<quell_referenz_int />
+			<!-- <melder_kennung>0002855201</melder_kennung>  -->
+			<bzr>200307</bzr>
+			<formularname />
+			<aktion>ANY</aktion>
+			<!--es folgen 0 bis n Vorbelegungswerte-->
+			<params>
+				<param name="felda">
+					<![CDATA[werta]]>
+				</param>
+				<param name="feldb">
+					<![CDATA[wertb]]>
+				</param>
+				<param name="feldc">wertc</param>
+				<param name="felda">
+					<![CDATA[werta2c]]>
+				</param>
+			</params>
+		</vorbelegung>
+	</vorbelegungsblock>
+</regdbdaten>

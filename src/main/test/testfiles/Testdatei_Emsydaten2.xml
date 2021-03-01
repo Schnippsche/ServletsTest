@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+<!DOCTYPE regdbdaten SYSTEM "regdb.dtd">
+<regdbdaten>
+	<erhebungsblock>
+		<erhebung>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<bzr>201801</bzr>
+			<erster_meldungstermin>20180101</erster_meldungstermin>
+			<letzter_meldungstermin>20181101</letzter_meldungstermin>
+			<statspez_key />
+			<formular_id>formBXSAAAKBH</formular_id>
+			<aktion>ANY</aktion>
+		</erhebung>
+	</erhebungsblock>
+	<adressenblock>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>600000</quell_referenz_of>
+			<aktion>ANY</aktion>
+
+			<kurztext />
+			<strasse>Teststrasse</strasse>
+			<hausnummer> 29 - 31</hausnummer>
+			<postleitzahl>12345</postleitzahl>
+			<ort>Musterstadt</ort>
+			<postfach></postfach>
+			<postfach_plz></postfach_plz>
+			<postfach_ort></postfach_ort>
+			<land>Deutschland</land>
+			<zusatz1 />
+			<zusatz2 />
+			<zusatz3 />
+			<zusatz4 />
+			<zusatz5 />
+			<zusatz6 />
+			<zusatz7 />
+			<zusatz8 />
+			<zusatz9 />
+			<zusatz10 />
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>600001</quell_referenz_of>
+			<aktion>ANY</aktion>
+
+			<kurztext />
+			<strasse>Testweg</strasse>
+			<hausnummer>1</hausnummer>
+			<postleitzahl>56789</postleitzahl>
+			<ort>Musterdorf</ort>
+			<postfach></postfach>
+			<postfach_plz></postfach_plz>
+			<postfach_ort></postfach_ort>
+			<land>Deutschland</land>
+			<zusatz1 />
+			<zusatz2 />
+			<zusatz3 />
+			<zusatz4 />
+			<zusatz5 />
+			<zusatz6 />
+			<zusatz7 />
+			<zusatz8 />
+			<zusatz9 />
+			<zusatz10 />
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>600002</quell_referenz_of>
+			<aktion>ANY</aktion>
+
+			<kurztext />
+			<strasse>Postfach</strasse>
+			<hausnummer>4711</hausnummer>
+			<postleitzahl>66666</postleitzahl>
+			<ort>Teststadt</ort>
+			<postfach></postfach>
+			<postfach_plz></postfach_plz>
+			<postfach_ort></postfach_ort>
+			<land>Deutschland</land>
+			<zusatz1 />
+			<zusatz2 />
+			<zusatz3 />
+			<zusatz4 />
+			<zusatz5 />
+			<zusatz6 />
+			<zusatz7 />
+			<zusatz8 />
+			<zusatz9 />
+			<zusatz10 />
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>600003</quell_referenz_of>
+			<aktion>ANY</aktion>
+
+			<kurztext />
+			<strasse>Teststrasse</strasse>
+			<hausnummer></hausnummer>
+			<postleitzahl>56789</postleitzahl>
+			<ort>Musterdorf</ort>
+			<postfach></postfach>
+			<postfach_plz></postfach_plz>
+			<postfach_ort></postfach_ort>
+			<land>Deutschland</land>
+			<zusatz1 />
+			<zusatz2 />
+			<zusatz3 />
+			<zusatz4 />
+			<zusatz5 />
+			<zusatz6 />
+			<zusatz7 />
+			<zusatz8 />
+			<zusatz9 />
+			<zusatz10 />
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>600004</quell_referenz_of>
+			<aktion>ANY</aktion>
+
+			<kurztext />
+			<strasse>Willi-Bleicher-Straße</strasse>
+			<hausnummer>36</hausnummer>
+			<postleitzahl>66666</postleitzahl>
+			<ort>Teststadt</ort>
+			<postfach></postfach>
+			<postfach_plz></postfach_plz>
+			<postfach_ort></postfach_ort>
+			<land>Deutschland</land>
+			<zusatz1 />
+			<zusatz2 />
+			<zusatz3 />
+			<zusatz4 />
+			<zusatz5 />
+			<zusatz6 />
+			<zusatz7 />
+			<zusatz8 />
+			<zusatz9 />
+			<zusatz10 />
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>600005</quell_referenz_of>
+			<aktion>ANY</aktion>
+
+			<kurztext />
+			<strasse></strasse>
+			<hausnummer></hausnummer>
+			<postleitzahl>52353</postleitzahl>
+			<ort>Düren</ort>
+			<postfach>1149</postfach>
+			<postfach_plz>52353</postfach_plz>
+			<postfach_ort>Düren</postfach_ort>
+			<land>Deutschland</land>
+			<zusatz1 />
+			<zusatz2 />
+			<zusatz3 />
+			<zusatz4 />
+			<zusatz5 />
+			<zusatz6 />
+			<zusatz7 />
+			<zusatz8 />
+			<zusatz9 />
+			<zusatz10 />
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>600006</quell_referenz_of>
+			<aktion>ANY</aktion>
+
+			<kurztext />
+			<strasse>Beuthener Straße</strasse>
+			<hausnummer>41</hausnummer>
+			<postleitzahl>35001</postleitzahl>
+			<ort>Marburg</ort>
+			<postfach></postfach>
+			<postfach_plz></postfach_plz>
+			<postfach_ort></postfach_ort>
+			<land>Deutschland</land>
+			<zusatz1 />
+			<zusatz2 />
+			<zusatz3 />
+			<zusatz4 />
+			<zusatz5 />
+			<zusatz6 />
+			<zusatz7 />
+			<zusatz8 />
+			<zusatz9 />
+			<zusatz10 />
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>600007</quell_referenz_of>
+			<aktion>ANY</aktion>
+
+			<kurztext />
+			<strasse>Beuthener Straße</strasse>
+			<hausnummer>41</hausnummer>
+			<postleitzahl>90471</postleitzahl>
+			<ort>Nürnberg</ort>
+			<postfach></postfach>
+			<postfach_plz></postfach_plz>
+			<postfach_ort></postfach_ort>
+			<land>Deutschland</land>
+			<zusatz1 />
+			<zusatz2 />
+			<zusatz3 />
+			<zusatz4 />
+			<zusatz5 />
+			<zusatz6 />
+			<zusatz7 />
+			<zusatz8 />
+			<zusatz9 />
+			<zusatz10 />
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>600008</quell_referenz_of>
+			<aktion>ANY</aktion>
+
+			<kurztext />
+			<strasse>Willi-test-Straße</strasse>
+			<hausnummer>36</hausnummer>
+			<postleitzahl>90471</postleitzahl>
+			<ort>Nürnberg</ort>
+			<postfach></postfach>
+			<postfach_plz></postfach_plz>
+			<postfach_ort></postfach_ort>
+			<land>Deutschland</land>
+			<zusatz1 />
+			<zusatz2 />
+			<zusatz3 />
+			<zusatz4 />
+			<zusatz5 />
+			<zusatz6 />
+			<zusatz7 />
+			<zusatz8 />
+			<zusatz9 />
+			<zusatz10 />
+		</adresse>
+	</adressenblock>
+	<unternehmenblock>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<quell_referenz_of>600000</quell_referenz_of>
+			<amt>00</amt>
+			<aktion>ANY</aktion>
+
+
+			<name>Musterfirma</name>
+			<name_ergaenzung></name_ergaenzung>
+			<kurztext />
+			<ansprechpartner_anrede />
+			<ansprechpartner_name>Sven</ansprechpartner_name>
+			<ansprechpartner_vorname>Weber</ansprechpartner_vorname>
+			<ansprechpartner_telefon>01234 / 444-4438</ansprechpartner_telefon>
+			<ansprechpartner_fax>01234 / 444-4480</ansprechpartner_fax>
+			<ansprechpartner_email>test@web.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<quell_referenz_of>600001</quell_referenz_of>
+			<amt>00</amt>
+			<aktion>ANY</aktion>
+
+
+			<name>Testfirma1</name>
+			<name_ergaenzung>Abteilung Test</name_ergaenzung>
+			<kurztext />
+			<ansprechpartner_anrede />
+			<ansprechpartner_name>Achim</ansprechpartner_name>
+			<ansprechpartner_vorname>Mohr</ansprechpartner_vorname>
+			<ansprechpartner_telefon>04567 / 123-4567</ansprechpartner_telefon>
+			<ansprechpartner_fax>04567 / 123-4568</ansprechpartner_fax>
+			<ansprechpartner_email>test2@web.de</ansprechpartner_email>
+		</firma>
+		<firma>
+
+			<stat_online_key>42111001</stat_online_key>
+			<quell_referenz_of>600002</quell_referenz_of>
+			<amt>00</amt>
+			<aktion>ANY</aktion>
+
+
+			<name>Muster AG</name>
+			<name_ergaenzung></name_ergaenzung>
+			<kurztext />
+			<ansprechpartner_anrede />
+			<ansprechpartner_name>Stefan</ansprechpartner_name>
+			<ansprechpartner_vorname>Ungethüm</ansprechpartner_vorname>
+			<ansprechpartner_telefon>09989 / 567-8910</ansprechpartner_telefon>
+			<ansprechpartner_fax>09989 / 567-123</ansprechpartner_fax>
+			<ansprechpartner_email>test@web.de</ansprechpartner_email>
+		</firma>
+		<firma>
+
+			<stat_online_key>42111001</stat_online_key>
+			<quell_referenz_of>600003</quell_referenz_of>
+			<amt>00</amt>
+			<aktion>ANY</aktion>
+
+			<name>Test GmbH</name>
+			<name_ergaenzung>Testcentrum</name_ergaenzung>
+			<kurztext />
+			<ansprechpartner_anrede />
+			<ansprechpartner_name>Anja</ansprechpartner_name>
+			<ansprechpartner_vorname>Tilp</ansprechpartner_vorname>
+			<ansprechpartner_telefon>01111 / 111-4444</ansprechpartner_telefon>
+			<ansprechpartner_fax>01111 / 111-5555</ansprechpartner_fax>
+			<ansprechpartner_email>test5@web.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<quell_referenz_of>600004</quell_referenz_of>
+			<amt>00</amt>
+			<aktion>ANY</aktion>
+
+			<name>Müller</name>
+			<name_ergaenzung>Hans</name_ergaenzung>
+			<kurztext />
+			<ansprechpartner_anrede />
+			<ansprechpartner_name></ansprechpartner_name>
+			<ansprechpartner_vorname></ansprechpartner_vorname>
+			<ansprechpartner_telefon>09989 / 567-8910</ansprechpartner_telefon>
+			<ansprechpartner_fax>09989 / 567-123</ansprechpartner_fax>
+			<ansprechpartner_email>test@web.de</ansprechpartner_email>
+		</firma>
+		<firma>
+
+			<stat_online_key>42111001</stat_online_key>
+			<quell_referenz_of>600005</quell_referenz_of>
+			<amt>00</amt>
+			<aktion>ANY</aktion>
+
+			<name>Meier</name>
+			<name_ergaenzung>Peter</name_ergaenzung>
+			<kurztext />
+			<ansprechpartner_anrede />
+			<ansprechpartner_name></ansprechpartner_name>
+			<ansprechpartner_vorname></ansprechpartner_vorname>
+			<ansprechpartner_telefon>0711 / 406-4438</ansprechpartner_telefon>
+			<ansprechpartner_fax>0711 / 406-4480</ansprechpartner_fax>
+			<ansprechpartner_email>test@web.de</ansprechpartner_email>
+		</firma>
+		<firma>
+
+			<stat_online_key>42111001</stat_online_key>
+			<quell_referenz_of>600006</quell_referenz_of>
+			<amt>00</amt>
+			<aktion>ANY</aktion>
+
+			<name>Mustermann</name>
+			<name_ergaenzung>Willy</name_ergaenzung>
+			<kurztext />
+			<ansprechpartner_anrede />
+			<ansprechpartner_name></ansprechpartner_name>
+			<ansprechpartner_vorname></ansprechpartner_vorname>
+			<ansprechpartner_telefon>02421 / 121-2201</ansprechpartner_telefon>
+			<ansprechpartner_fax>02421 / 121-2141</ansprechpartner_fax>
+			<ansprechpartner_email>test7@web.de</ansprechpartner_email>
+		</firma>
+		<firma>
+
+			<stat_online_key>42111001</stat_online_key>
+			<quell_referenz_of>600007</quell_referenz_of>
+			<amt>00</amt>
+			<aktion>ANY</aktion>
+
+			<name>Musterfrau</name>
+			<name_ergaenzung>Brunhilde</name_ergaenzung>
+			<kurztext />
+			<ansprechpartner_anrede />
+			<ansprechpartner_name></ansprechpartner_name>
+			<ansprechpartner_vorname></ansprechpartner_vorname>
+			<ansprechpartner_telefon>06421 / 39-4357</ansprechpartner_telefon>
+			<ansprechpartner_fax>06421 / 39-3157</ansprechpartner_fax>
+			<ansprechpartner_email>test@web.de</ansprechpartner_email>
+		</firma>
+		<firma>
+
+			<stat_online_key>42111001</stat_online_key>
+			<quell_referenz_of>600008</quell_referenz_of>
+			<amt>00</amt>
+			<aktion>ANY</aktion>
+
+			<name>GRUNDIG</name>
+			<name_ergaenzung>Car Inter Media System GmbH</name_ergaenzung>
+			<kurztext />
+			<ansprechpartner_anrede />
+			<ansprechpartner_name>Sascha</ansprechpartner_name>
+			<ansprechpartner_vorname>Lauter</ansprechpartner_vorname>
+			<ansprechpartner_telefon>0911 / 703-1750</ansprechpartner_telefon>
+			<ansprechpartner_fax>0911 / 703-1723</ansprechpartner_fax>
+			<ansprechpartner_email>test@web.de</ansprechpartner_email>
+		</firma>
+	</unternehmenblock>
+	<melderblock>
+		<melder>
+
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>600000</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kennung>Kennung1</kennung>
+
+
+
+			<kommentar />
+			<anrede></anrede>
+			<name>Musterfirma</name>
+			<vorname />
+			<telefon />
+			<fax />
+			<email />
+		</melder>
+		<melder>
+
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>600001</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kennung>Kennung2</kennung>
+
+
+			<kommentar />
+			<anrede></anrede>
+			<name>Testfirma1</name>
+			<vorname />
+			<telefon />
+			<fax />
+			<email />
+		</melder>
+		<melder>
+
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>600002</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kennung>Kennung3</kennung>
+
+
+
+			<kommentar />
+			<anrede></anrede>
+			<name>Muster AG</name>
+			<vorname />
+			<telefon />
+			<fax />
+			<email />
+		</melder>
+		<melder>
+
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>600003</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kennung>Kennung4</kennung>
+
+
+
+			<kommentar />
+			<anrede></anrede>
+			<name>Test GmbH</name>
+			<vorname />
+			<telefon />
+			<fax />
+			<email />
+		</melder>
+		<melder>
+
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>600004</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kennung>Kennung5</kennung>
+
+
+
+			<kommentar />
+			<anrede>Herr</anrede>
+			<name>Müller</name>
+			<vorname />
+			<telefon />
+			<fax />
+			<email />
+		</melder>
+		<melder>
+
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>600005</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kennung>Kennung6</kennung>
+
+
+
+			<kommentar />
+			<anrede>Herr</anrede>
+			<name>Meier</name>
+			<vorname />
+			<telefon />
+			<fax />
+			<email />
+		</melder>
+		<melder>
+
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>600006</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kennung>Kennung7</kennung>
+
+
+
+			<kommentar />
+			<anrede>Herr</anrede>
+			<name>Mustermann</name>
+			<vorname />
+			<telefon />
+			<fax />
+			<email />
+		</melder>
+		<melder>
+
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>600007</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kennung>Kennung8</kennung>
+			<kommentar />
+			<anrede>Frau</anrede>
+			<name>Musterfrau</name>
+			<vorname />
+			<telefon />
+			<fax />
+			<email />
+		</melder>
+		<melder>
+
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>600008</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kennung>Kennung9</kennung>
+
+			<kommentar />
+			<anrede></anrede>
+			<name>GRUNDIG</name>
+			<vorname />
+			<telefon />
+			<fax />
+			<email />
+		</melder>
+	</melderblock>
+</regdbdaten>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    

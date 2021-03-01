@@ -64,6 +64,10 @@ public class JobBean
   @XmlAttribute
   public int quellReferenzId;
   @XmlAttribute
+  public String quellReferenzName;
+  @XmlAttribute
+  public boolean quellReferenzNumerisch;
+  @XmlAttribute
   public int sachbearbeiterId;
   @XmlElement
   public String sachbearbeiterLand;

@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<regdbdaten><erhebungsblock>
+  <erhebung>
+    <stat_online_key>221110052T</stat_online_key>
+    <amt>14</amt>
+    <bzr>2020</bzr>
+    <erster_meldungstermin>20201101</erster_meldungstermin>
+    <letzter_meldungstermin>20201231</letzter_meldungstermin>
+    <statspez_key/>
+    <formular_id>formWAEILKQGP</formular_id>
+    <aktion>ANY</aktion>
+  </erhebung>
+</erhebungsblock><adressenblock>
+  <adresse>
+    <stat_online_key>221110052T</stat_online_key>
+    <amt>14</amt>
+    <quell_referenz_of>12345678</quell_referenz_of>
+    <aktion>ANY</aktion>
+    <rolle/>
+    <kurztext>Musteramt</kurztext>
+    <name>Musteramt</name>
+    <name_ergaenzung></name_ergaenzung>
+    <urs1>Musteramt</urs1>
+    <urs2></urs2>
+    <urs3></urs3>
+    <urs4></urs4>
+    <urs5>Teststr. 99</urs5>
+    <urs6>01234</urs6>
+    <urs7>Musterstadt</urs7>
+    <strasse>Teststr. 99</strasse>
+    <hausnummer></hausnummer>
+    <postleitzahl>01234</postleitzahl>
+    <ort>Dresden</ort>
+    <postfach></postfach>
+    <postfach_plz></postfach_plz>
+    <postfach_ort></postfach_ort>
+    <land></land>
+    <zusatz1>Bearbeiter 1</zusatz1>
+    <zusatz2>+49 1111 33-2222</zusatz2>
+    <zusatz3></zusatz3>
+    <zusatz4></zusatz4>
+    <zusatz5></zusatz5>
+    <zusatz6></zusatz6>
+    <zusatz7></zusatz7>
+    <zusatz8></zusatz8>
+    <zusatz9></zusatz9>
+    <zusatz10></zusatz10>
+  </adresse>
+</adressenblock><unternehmenblock>
+  <firma>
+    <stat_online_key>221110052T</stat_online_key>
+    <quell_referenz_of>12345678</quell_referenz_of>
+    <amt>14</amt>
+    <aktion>ANY</aktion>
+    <kommentar/>
+    <name>Musteramt</name>
+    <name_ergaenzung></name_ergaenzung>
+    <kurztext/>
+    <ansprechpartner_anrede></ansprechpartner_anrede>
+    <ansprechpartner_name></ansprechpartner_name>
+    <ansprechpartner_vorname></ansprechpartner_vorname>
+    <ansprechpartner_telefon></ansprechpartner_telefon>
+    <ansprechpartner_mobil></ansprechpartner_mobil>
+    <ansprechpartner_fax></ansprechpartner_fax>
+    <ansprechpartner_email></ansprechpartner_email>
+  </firma>
+</unternehmenblock><melderblock>
+  <melder>
+    <stat_online_key>221110052T</stat_online_key>
+    <bzr>2020</bzr>
+    <amt>14</amt>
+    <quell_referenz_of>12345678</quell_referenz_of>
+    <aktion>ANY</aktion>
+    <kommentar/>
+    <kennung></kennung>
+    <name>Musteramt</name>
+    <telefon></telefon>
+    <fax></fax>
+    <email></email>
+  </melder>
+</melderblock><vorbelegungsblock>
+  <vorbelegung>
+    <stat_online_key>221110052T</stat_online_key>
+    <amt>14</amt>
+    <quell_referenz_of>12345678</quell_referenz_of>
+    <quell_referenz_int></quell_referenz_int>
+    <melder_kennung></melder_kennung>
+    <bzr>2020</bzr>
+    <formularname></formularname>
+    <aktion>ANY</aktion>
+    <params>
+      <param feldname="BERICHTSJAHR" feldwert="2018"/>
+      <param feldname="ANREDE" feldwert=""/>
+      <param feldname="BEARB1" feldwert="Bearbeiter 1"/>
+      <param feldname="EMAIL" feldwert="ausgaben_einnahmen@statistik.sachsen.de"/>
+      <param feldname="TEL1" feldwert="+49 1111 33-2222"/>
+      <param feldname="BE" feldwert="12345678"/>
+    </params>
+  </vorbelegung>
+</vorbelegungsblock></regdbdaten>
