@@ -18,8 +18,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <idev.tomcat.shared.lib>C:/idev46/idev/programme/tomcat/shared/lib/</idev.tomcat.shared.lib>
-        <idev.freigabe.lib>C:/Users/Stefan/servletsNeu/WEB-INF/lib/</idev.freigabe.lib>
     </properties>
 
     <dependencies>
