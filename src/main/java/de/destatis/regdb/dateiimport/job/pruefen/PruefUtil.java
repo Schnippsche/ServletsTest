@@ -75,7 +75,7 @@ public class PruefUtil
 
   public boolean checkMinStringLaenge(String pruefWert, String hinweis, int minimum, int rowNumber)
   {
-    if (pruefWert.length() < minimum)
+    if (pruefWert == null || pruefWert.length() < minimum)
     {
       if (fehlerLimitNichtErreicht)
       {
@@ -89,7 +89,7 @@ public class PruefUtil
 
   public boolean checkMaxStringLaenge(String pruefWert, String hinweis, int maximum, int rowNumber)
   {
-    if (pruefWert.length() > maximum)
+    if (pruefWert != null && pruefWert.length() > maximum)
     {
       if (fehlerLimitNichtErreicht)
       {
@@ -105,17 +105,29 @@ public class PruefUtil
   {
     boolean result = true;
     // Laengenpruefung des OF
-    if (pruefWert.length() != this.jobBean.getAdressen().ordnungsfeldLaenge)
+    if (pruefWert == null)
     {
-      addError(MessageFormat.format(MSG_OF_UNGLEICHE_LAENGE, rowNumber, pruefWert.length(), this.jobBean.getAdressen().ordnungsfeldLaenge));
+      addError(MessageFormat.format(MSG_OF_UNGLEICHE_LAENGE, rowNumber, 0, this.jobBean.getAdressen().ordnungsfeldLaenge));
+      if (this.jobBean.quellReferenzNumerisch)
+      {
+        addError(MessageFormat.format(MSG_OF_NICHT_NUMERISCH, rowNumber, "null"));
+      }
       result = false;
-    }
-    // Typpruefung OF wenn Typ = NOV
-    if (this.jobBean.quellReferenzNumerisch && !numberPattern.matcher(pruefWert)
-      .matches())
+    } else
     {
-      addError(MessageFormat.format(MSG_OF_NICHT_NUMERISCH, rowNumber, pruefWert));
-      result = false;
+      if (pruefWert.length() != this.jobBean.getAdressen().ordnungsfeldLaenge)
+      {
+        addError(MessageFormat.format(MSG_OF_UNGLEICHE_LAENGE, rowNumber, pruefWert.length(), this.jobBean.getAdressen().ordnungsfeldLaenge));
+        result = false;
+      }
+
+      // Typpruefung OF wenn Typ = NOV
+      if (this.jobBean.quellReferenzNumerisch && !numberPattern.matcher(pruefWert)
+        .matches())
+      {
+        addError(MessageFormat.format(MSG_OF_NICHT_NUMERISCH, rowNumber, pruefWert));
+        result = false;
+      }
     }
     return result;
   }
@@ -133,6 +145,7 @@ public class PruefUtil
     }
     return true;
   }
+
   public boolean checkOhneLeerzeichen(String pruefWert, String hinweis, int rowNumber)
   {
     if (pruefWert != null && pruefWert.contains(" "))
@@ -167,7 +180,7 @@ public class PruefUtil
         this.jobBean.getAdressen().ordnungsfeldLaenge = rs.getInt("QUELL_REFERENZ_OF_LAENGE");
         this.jobBean.quellReferenzName = rs.getString("QUELL_REFERENZ_KUERZEL");
         this.jobBean.getAdressen().ordnungsfeldTyp = rs.getString("QUELL_REFERENZ_OF_TYP");
-        this.jobBean.quellReferenzNumerisch = "NOV".equals(this.jobBean.getAdressen().ordnungsfeldTyp);
+        this.jobBean.quellReferenzNumerisch = "NUM".equals(this.jobBean.getAdressen().ordnungsfeldTyp);
         this.jobBean.quellReferenzId = quellRefId;
         return true;
       } else
