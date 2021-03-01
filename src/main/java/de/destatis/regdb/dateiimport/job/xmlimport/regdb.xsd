@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+	<xs:element name="regdbdaten">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" ref="erhebungsblock" />
+				<xs:element minOccurs="0" ref="adressenblock" />
+				<xs:element minOccurs="0" ref="unternehmenblock" />
+				<xs:element minOccurs="0" ref="melderblock" />
+				<xs:element minOccurs="0" ref="vorbelegungsblock" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="erhebungsblock">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="erhebung" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="adressenblock">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="adresse" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="unternehmenblock">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="firma" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="melderblock">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="melder" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="vorbelegungsblock">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="vorbelegung" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="erhebung">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stat_online_key" />
+				<xs:element ref="amt" />
+				<xs:element ref="bzr" />
+				<xs:element minOccurs="0" ref="erster_meldungstermin" />
+				<xs:element minOccurs="0" ref="letzter_meldungstermin" />
+				<xs:element minOccurs="0" ref="statspez_key" />
+				<xs:element ref="formular_id" />
+				<xs:element ref="aktion" />
+				<xs:element minOccurs="0" ref="vorbelegungsabhaengig" />
+				<xs:element minOccurs="0" ref="senden" />
+				<xs:element minOccurs="0" ref="zuruecksetzen" />
+				<xs:element minOccurs="0" ref="pruefung" />
+				<xs:element minOccurs="0" ref="lokalsicherung" />
+				<xs:element minOccurs="0" ref="serversicherung" />
+				<xs:element minOccurs="0" ref="archivierung" />
+				<xs:element minOccurs="0" ref="weitere_meldung" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="adresse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stat_online_key" />
+				<xs:element ref="amt" />
+				<xs:element ref="quell_referenz_of" />
+				<xs:element name="aktion">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="ANY" />
+							<xs:enumeration value="NEU" />
+							<xs:enumeration value="UPDATE" />
+							<xs:enumeration value="LOESCH" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element minOccurs="0" ref="rolle" />
+				<xs:element minOccurs="0" ref="kurztext" />
+				<xs:element ref="strasse" />
+				<xs:element ref="hausnummer" />
+				<xs:element ref="postleitzahl" />
+				<xs:element ref="ort" />
+				<xs:element minOccurs="0" ref="postfach" />
+				<xs:element minOccurs="0" ref="postfach_plz" />
+				<xs:element minOccurs="0" ref="postfach_ort" />
+				<xs:element minOccurs="0" ref="land" />
+				<xs:element minOccurs="0" ref="zusatz1" />
+				<xs:element minOccurs="0" ref="zusatz2" />
+				<xs:element minOccurs="0" ref="zusatz3" />
+				<xs:element minOccurs="0" ref="zusatz4" />
+				<xs:element minOccurs="0" ref="zusatz5" />
+				<xs:element minOccurs="0" ref="zusatz6" />
+				<xs:element minOccurs="0" ref="zusatz7" />
+				<xs:element minOccurs="0" ref="zusatz8" />
+				<xs:element minOccurs="0" ref="zusatz9" />
+				<xs:element minOccurs="0" ref="zusatz10" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="firma">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stat_online_key" />
+				<xs:element ref="amt" />
+				<xs:element ref="quell_referenz_of" />
+				<xs:element ref="aktion" />
+				<xs:element minOccurs="0" ref="kommentar" />
+				<xs:element ref="anrede" />
+				<xs:element ref="name" />
+				<xs:element ref="name_ergaenzung" />
+				<xs:element ref="kurztext" />
+				<xs:element minOccurs="0" ref="abteilung" />
+				<xs:element minOccurs="0" ref="telefon" />
+				<xs:element minOccurs="0" ref="fax" />
+				<xs:element minOccurs="0" ref="email" />
+				<xs:element minOccurs="0" ref="ansprechpartner_anrede" />
+				<xs:element minOccurs="0" ref="ansprechpartner_name" />
+				<xs:element minOccurs="0" ref="ansprechpartner_vorname" />
+				<xs:element minOccurs="0" ref="ansprechpartner_telefon" />
+				<xs:element minOccurs="0" ref="ansprechpartner_mobil" />
+				<xs:element minOccurs="0" ref="ansprechpartner_fax" />
+				<xs:element minOccurs="0" ref="ansprechpartner_email" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="melder">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stat_online_key" />
+				<xs:element ref="amt" />
+				<xs:element ref="quell_referenz_of" />
+				<xs:element ref="firmen_identifikator" />
+				<xs:element ref="kennung" />
+				<xs:element ref="passwort" />
+				<xs:element ref="aktion" />
+				<xs:element minOccurs="0" ref="beleg_nr" />
+				<xs:element minOccurs="0" ref="kommentar" />
+				<xs:element ref="anrede" />
+				<xs:element ref="name" />
+				<xs:element ref="vorname" />
+				<xs:element minOccurs="0" ref="telefon" />
+				<xs:element minOccurs="0" ref="fax" />
+				<xs:element minOccurs="0" ref="email" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="vorbelegung">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stat_online_key" />
+				<xs:element ref="amt" />
+				<xs:element ref="quell_referenz_of" />
+				<xs:element minOccurs="0" ref="quell_referenz_int" />
+				<xs:element ref="firmen_identifikator" />
+				<xs:element minOccurs="0" ref="melder_kennung" />
+				<xs:element minOccurs="0" ref="bzr" />
+				<xs:element minOccurs="0" ref="formularname" />
+				<xs:element ref="aktion" />
+				<xs:element minOccurs="0" ref="params" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="abteilung" type="xs:string" />
+	<xs:element name="aktion" type="xs:string" />
+	<xs:element name="amt" type="xs:string" />
+	<xs:element name="anrede" type="xs:string" />
+	<xs:element name="ansprechpartner_anrede" type="xs:string" />
+	<xs:element name="ansprechpartner_email" type="xs:string" />
+	<xs:element name="ansprechpartner_fax" type="xs:string" />
+	<xs:element name="ansprechpartner_mobil" type="xs:string" />
+	<xs:element name="ansprechpartner_name" type="xs:string" />
+	<xs:element name="ansprechpartner_telefon" type="xs:string" />
+	<xs:element name="ansprechpartner_vorname" type="xs:string" />
+	<xs:element name="archivierung" type="xs:string" />
+	<xs:element name="beleg_nr" type="xs:string" />
+	<xs:element name="bzr" type="xs:string" />
+	<xs:element name="email" type="xs:string" />
+	<xs:element name="erster_meldungstermin" type="xs:string" />
+	<xs:element name="fax" type="xs:string" />
+	<xs:element name="firmen_identifikator" type="xs:string" />
+	<xs:element name="formular_id" type="xs:string" />
+	<xs:element name="formularname" type="xs:string" />
+	<xs:element name="hausnummer" type="xs:string" />
+	<xs:element name="kennung" type="xs:string" />
+	<xs:element name="kommentar" type="xs:string" />
+	<xs:element name="kurztext" type="xs:string" />
+	<xs:element name="land" type="xs:string" />
+	<xs:element name="lokalsicherung" type="xs:string" />
+	<xs:element name="letzter_meldungstermin" type="xs:string" />
+	<xs:element name="melder_kennung" type="xs:string" />
+	<xs:element name="name" type="xs:string" />
+	<xs:element name="name_ergaenzung" type="xs:string" />
+	<xs:element name="ort" type="xs:string" />
+	<xs:element name="param">
+		<xs:complexType mixed="true">
+			<xs:attribute name="name" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="params">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="param" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="passwort" type="xs:string" />
+	<xs:element name="postfach" type="xs:string" />
+	<xs:element name="postfach_ort" type="xs:string" />
+	<xs:element name="postfach_plz" type="xs:string" />
+	<xs:element name="postleitzahl" type="xs:string" />
+	<xs:element name="pruefung" type="xs:string" />
+	<xs:element name="quell_referenz_int" type="xs:string" />
+	<xs:element name="quell_referenz_of" type="xs:string" />
+	<xs:element name="rolle" type="xs:string" />
+	<xs:element name="senden" type="xs:string" />
+	<xs:element name="serversicherung" type="xs:string" />
+	<xs:element name="stat_online_key" type="xs:string" />
+	<xs:element name="statspez_key" type="xs:string" />
+	<xs:element name="strasse" type="xs:string" />
+	<xs:element name="telefon" type="xs:string" />
+	<xs:element name="vorbelegungsabhaengig" type="xs:string" />
+	<xs:element name="vorname" type="xs:string" />
+	<xs:element name="weitere_meldung" type="xs:string" />
+	<xs:element name="zuruecksetzen" type="xs:string" />
+	<xs:element name="zusatz1" type="xs:string" />
+	<xs:element name="zusatz2" type="xs:string" />
+	<xs:element name="zusatz3" type="xs:string" />
+	<xs:element name="zusatz4" type="xs:string" />
+	<xs:element name="zusatz5" type="xs:string" />
+	<xs:element name="zusatz6" type="xs:string" />
+	<xs:element name="zusatz7" type="xs:string" />
+	<xs:element name="zusatz8" type="xs:string" />
+	<xs:element name="zusatz9" type="xs:string" />
+	<xs:element name="zusatz10" type="xs:string" />
+</xs:schema>
