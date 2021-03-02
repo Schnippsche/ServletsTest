@@ -2,6 +2,7 @@ package de.destatis.regdb.dateiimport.job.pruefen;
 
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.dateiimport.job.registerimport.RegisterImportJob;
+import de.destatis.regdb.dateiimport.reader.SegmentedFileReader;
 import de.destatis.regdb.dateiimport.reader.SegmentedStringFileReader;
 import de.destatis.regdb.db.ResultRow;
 import de.destatis.regdb.db.SqlUtil;
@@ -9,6 +10,7 @@ import de.destatis.regdb.db.StringUtil;
 import de.werum.sis.idev.res.job.JobException;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,14 +18,13 @@ import java.util.List;
 /**
  * The type Pruefe register import.
  */
-public class PruefeRegisterImport extends AbstractPruefeImport
+public class PruefeRegisterImport extends AbstractPruefeImport<String>
 {
 
   private final PruefUtil pruefUtil;
   private final HashMap<String, Integer> amtStatOnlineKeys;
   private final HashSet<String> amtStatistikBzr;
 
-  private List<String> rows;
   private Integer quellReferenzId;
 
   /**
@@ -34,34 +35,15 @@ public class PruefeRegisterImport extends AbstractPruefeImport
    */
   public PruefeRegisterImport(JobBean jobBean, SqlUtil sqlUtil)
   {
-    super(jobBean, sqlUtil);
-
+    super(new SegmentedStringFileReader(), jobBean, sqlUtil);
     this.pruefUtil = new PruefUtil(jobBean, sqlUtil);
     this.amtStatOnlineKeys = new HashMap<>();
     this.amtStatistikBzr = new HashSet<>();
     this.quellReferenzId = null;
   }
 
-  public void pruefeDatei() throws JobException
-  {
-    SegmentedStringFileReader reader = new SegmentedStringFileReader();
-    int offset = 0;
-    this.jobBean.getImportdatei().anzahlDatensaetze = 0;
-    do
-    {
-      this.log.debug(MessageFormat.format(MSG_PRUEFSTART, offset, offset + jobBean.importBlockGroesse, jobBean.getImportdatei().getPath().getFileName()));
-      rows = reader.readSegment(jobBean.getImportdatei().getPath(), jobBean.getImportdatei().getCharset(), offset, jobBean.importBlockGroesse);
-      if (!rows.isEmpty())
-      {
-        this.jobBean.getImportdatei().anzahlDatensaetze += rows.size();
-        validate(offset);
-        offset += jobBean.importBlockGroesse;
-      }
-    } while (!rows.isEmpty() && pruefUtil.isFehlerLimitNichtErreicht());
-    this.log.debug(MessageFormat.format(MSG_PRUEFENDE, jobBean.getFormatPruefung().anzahlFehler));
-  }
-
-  private void validate(int offset) throws JobException
+  @Override
+  protected void validate(ArrayList<String> rows, int offset) throws JobException
   {
     int rowNumber = offset;
     for (String row : rows)
@@ -97,7 +79,7 @@ public class PruefeRegisterImport extends AbstractPruefeImport
           statistikId = rs.getInt(1);
           quellRefId = rs.getInt(2);
           amtStatOnlineKeys.put(key, statistikId);
-          if (quellRefId == null)
+          if (quellReferenzId == null)
           {
             quellReferenzId = quellRefId;
             pruefUtil.checkAdressbestand(quellReferenzId);
@@ -111,18 +93,22 @@ public class PruefeRegisterImport extends AbstractPruefeImport
         this.jobBean.statistikId = statistikId;
       }
       // Pruefe Erhebung
-      String bzr = StringUtil.substring(row, 22, 28)
-        .trim();
-      key = tmpAmt + "|" + statistikId + "|" + bzr;
-      if (!amtStatistikBzr.contains(key))
+      // Aber nur, wenn gültige Statistik vorliegt
+      if (statistikId != null)
       {
-        String sql = MessageFormat.format(RegisterImportJob.SQL_SELECT_BZR, StringUtil.escapeSqlString(tmpAmt), "" + statistikId, StringUtil.escapeSqlString(bzr));
-        ResultRow rs = sqlUtil.fetchOne(sql);
-        if (rs == null)
+        String bzr = StringUtil.substring(row, 22, 28)
+          .trim();
+        key = tmpAmt + "|" + statistikId + "|" + bzr;
+        if (!amtStatistikBzr.contains(key))
         {
-          pruefUtil.addError("Keine Erhebung für Amt (" + tmpAmt + "), Statistik-Id  (" + statistikId + ") und Bzr (" + bzr + ") gefunden!");
+          String sql = MessageFormat.format(RegisterImportJob.SQL_SELECT_BZR, StringUtil.escapeSqlString(tmpAmt), "" + statistikId, StringUtil.escapeSqlString(bzr));
+          ResultRow rs = sqlUtil.fetchOne(sql);
+          if (rs == null)
+          {
+            pruefUtil.addError("Keine Erhebung für Amt (" + tmpAmt + "), Statistik-Id  (" + statistikId + ") und Bzr (" + bzr + ") gefunden!");
+          }
+          amtStatistikBzr.add(key);
         }
-        amtStatistikBzr.add(key);
       }
       //
       // Alles Okay, nehme Ordnungsfeld auf

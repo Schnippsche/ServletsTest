@@ -5,17 +5,15 @@ import de.destatis.regdb.dateiimport.reader.SegmentedCsvFileReader;
 import de.destatis.regdb.db.SqlUtil;
 import de.werum.sis.idev.res.job.JobException;
 
-import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * The type Pruefe vorbelegungen import.
  */
-public class PruefeVorbelegungenImport extends AbstractPruefeImport
+public class PruefeVorbelegungenImport extends AbstractPruefeImport<String[]>
 {
-  private List<String[]> rows;
-  private int anzahlSpalten;
+   private final int anzahlSpalten;
 
   /**
    * Instantiates a new Pruefe vorbelegungen import.
@@ -25,32 +23,12 @@ public class PruefeVorbelegungenImport extends AbstractPruefeImport
    */
   public PruefeVorbelegungenImport(JobBean jobBean, SqlUtil sqlUtil)
   {
-    super(jobBean, sqlUtil);
+    super(new SegmentedCsvFileReader(), jobBean, sqlUtil);
+    anzahlSpalten = 4;
   }
 
   @Override
-  public void pruefeDatei() throws JobException
-  {
-    SegmentedCsvFileReader reader = new SegmentedCsvFileReader();
-    int offset = 0;
-    anzahlSpalten = 4;
-    this.jobBean.getImportdatei().anzahlDatensaetze = 0;
-    pruefUtil.checkAdressbestand(this.jobBean.quellReferenzId);
-    do
-    {
-      this.log.debug(MessageFormat.format(MSG_PRUEFSTART, offset, offset + jobBean.importBlockGroesse, jobBean.getImportdatei().getPath().getFileName()));
-      rows = reader.readSegment(jobBean.getImportdatei().getPath(), jobBean.getImportdatei().getCharset(), offset, jobBean.importBlockGroesse);
-      if (!rows.isEmpty())
-      {
-        this.jobBean.getImportdatei().anzahlDatensaetze += rows.size();
-        validate(offset);
-        offset += jobBean.importBlockGroesse;
-      }
-    } while (!rows.isEmpty() && pruefUtil.isFehlerLimitNichtErreicht());
-    this.log.debug(MessageFormat.format(MSG_PRUEFENDE, jobBean.getFormatPruefung().anzahlFehler));
-  }
-
-  private void validate(int offset) throws JobException
+  protected void validate(ArrayList<String[]> rows, int offset) throws JobException
   {
     HashMap<String, Integer> quellOfRows = new HashMap<>(rows.size());
     HashMap<String, Integer> melderIdRows = new HashMap<>(rows.size());

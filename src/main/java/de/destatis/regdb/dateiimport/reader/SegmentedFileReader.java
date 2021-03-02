@@ -4,6 +4,8 @@ import de.werum.sis.idev.res.job.JobException;
 
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The interface Segmented file reader.
@@ -22,5 +24,5 @@ public interface SegmentedFileReader<T>
    * @return the t
    * @throws JobException the job exception
    */
-  public T readSegment(Path path, Charset charset, int offset, int len) throws JobException;
+  public ArrayList<T> readSegment(Path path, Charset charset, int offset, int len) throws JobException;
 }

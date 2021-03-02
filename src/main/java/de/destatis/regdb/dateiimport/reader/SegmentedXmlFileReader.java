@@ -16,7 +16,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
-public class SegmentedXmlFileReader implements SegmentedFileReader<ArrayList<XmlBean>>
+/**
+ * The type Segmented xml file reader.
+ */
+public class SegmentedXmlFileReader implements SegmentedFileReader<XmlBean>
 {
   @Override
   public ArrayList<XmlBean> readSegment(Path path, Charset charset, int offset, int len) throws JobException

@@ -1,7 +1,9 @@
 package de.destatis.tests;
 
 import de.destatis.regdb.JobBean;
+import de.destatis.regdb.dateiimport.ImportFormat;
 import de.destatis.regdb.dateiimport.job.pruefen.PruefUtil;
+import de.destatis.regdb.dateiimport.job.pruefen.PruefeRegisterImport;
 import de.destatis.regdb.db.SqlUtil;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.job.LogLevel;
@@ -10,12 +12,14 @@ import de.werum.sis.idev.res.log.LoggerIfc;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.HashMap;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class MainTest
 {
@@ -41,7 +45,6 @@ public class MainTest
   {
 
     SqlUtil sqlUtil = new SqlUtil(getConnection());
-    assertNotNull(sqlUtil);
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 1000;
     PruefUtil util = new PruefUtil(bean, sqlUtil);
@@ -109,9 +112,54 @@ public class MainTest
   }
 
   @Test
-  public void test()
+  public void pruefeFehlerhaftenRegisterImport()
   {
-    assertEquals(1, 1);
+    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    JobBean bean = new JobBean();
+    bean.getFormatPruefung().maximaleAnzahlFehler = 100;
+    bean.getImportdatei().importFormat = ImportFormat.REGISTERIMPORT;
+    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
+    bean.getImportdatei().importVerzeichnis= Paths.get(file.toString(), "registerimport").toString();
+    bean.getImportdatei().dateiName = "fehlerhaft.txt";
+    bean.importBlockGroesse = 6;
+    bean.jobId = 1;
+    PruefeRegisterImport imp = new PruefeRegisterImport(bean, sqlUtil);
+    try
+    {
+      imp.pruefeDatei();
+      showLogErrors(bean);
+      assertTrue( bean.getFormatPruefung().anzahlFehler> 7);
+      assertEquals(bean.getImportdatei().anzahlDatensaetze, 14);
+    } catch (JobException e)
+    {
+      fail();
+    }
+  }
+
+  @Test
+  public void pruefeKorrektenRegisterImport()
+  {
+    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    JobBean bean = new JobBean();
+    bean.getFormatPruefung().maximaleAnzahlFehler = 100;
+    bean.getImportdatei().importFormat = ImportFormat.REGISTERIMPORT;
+    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
+    bean.getImportdatei().importVerzeichnis= Paths.get(file.toString(), "registerimport").toString();
+    bean.getImportdatei().dateiName = "10_saetze_korrekt.txt";
+    bean.importBlockGroesse = 6;
+    bean.jobId = 1;
+    PruefeRegisterImport imp = new PruefeRegisterImport(bean, sqlUtil);
+    try
+    {
+      imp.pruefeDatei();
+      showLogErrors(bean);
+      assertEquals( bean.getFormatPruefung().anzahlFehler, 0);
+      assertEquals(bean.getImportdatei().anzahlDatensaetze, 10);
+    } catch (JobException e)
+    {
+      fail();
+    }
+
   }
 
   public void showLogErrors(JobBean bean)

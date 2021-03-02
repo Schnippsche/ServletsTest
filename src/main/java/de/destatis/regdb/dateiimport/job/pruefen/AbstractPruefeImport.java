@@ -1,15 +1,23 @@
 package de.destatis.regdb.dateiimport.job.pruefen;
 
 import de.destatis.regdb.JobBean;
+import de.destatis.regdb.dateiimport.reader.SegmentedFileReader;
+import de.destatis.regdb.dateiimport.reader.SegmentedStringFileReader;
 import de.destatis.regdb.db.SqlUtil;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The type Abstract pruefe import.
+ *
+ * @param <T> the type parameter
  */
-public abstract class AbstractPruefeImport
+public abstract class AbstractPruefeImport<T>
 {
   /**
    * The constant MSG_PRUEFSTART.
@@ -37,15 +45,22 @@ public abstract class AbstractPruefeImport
   protected final PruefUtil pruefUtil;
 
   /**
+   * The Reader.
+   */
+  protected final SegmentedFileReader<T> reader;
+
+  /**
    * Instantiates a new Abstract pruefe import.
    *
+   * @param reader  the reader
    * @param jobBean the job bean
    * @param sqlUtil the sql util
    */
-  public AbstractPruefeImport(JobBean jobBean, SqlUtil sqlUtil)
+  protected AbstractPruefeImport(SegmentedFileReader reader, JobBean jobBean, SqlUtil sqlUtil)
   {
     log = Logger.getInstance()
       .getLogger(this.getClass());
+    this.reader = reader;
     this.jobBean = jobBean;
     this.sqlUtil = sqlUtil;
     this.pruefUtil = new PruefUtil(jobBean, sqlUtil);
@@ -56,5 +71,31 @@ public abstract class AbstractPruefeImport
    *
    * @throws JobException the job exception
    */
-  public abstract void pruefeDatei() throws JobException;
+  public void pruefeDatei() throws JobException
+  {
+    int offset = 0;
+    this.jobBean.getImportdatei().anzahlDatensaetze = 0;
+    ArrayList<T> rows;
+    do
+    {
+      this.log.debug(MessageFormat.format(MSG_PRUEFSTART, offset, offset + jobBean.importBlockGroesse - 1, jobBean.getImportdatei().getPath().getFileName()));
+      rows = reader.readSegment(jobBean.getImportdatei().getPath(), jobBean.getImportdatei().getCharset(), offset, jobBean.importBlockGroesse);
+      if (!rows.isEmpty())
+      {
+        this.jobBean.getImportdatei().anzahlDatensaetze += rows.size();
+        validate(rows, offset);
+        offset += jobBean.importBlockGroesse;
+      }
+    } while (!rows.isEmpty() && pruefUtil.isFehlerLimitNichtErreicht() && rows.size() == jobBean.importBlockGroesse);
+    this.log.debug(MessageFormat.format(MSG_PRUEFENDE, jobBean.getFormatPruefung().anzahlFehler));
+  }
+
+  /**
+   * Validate.
+   *
+   * @param rows   the rows
+   * @param offset the offset
+   * @throws JobException the job exception
+   */
+  protected abstract void validate(ArrayList<T> rows, int offset) throws JobException;
 }

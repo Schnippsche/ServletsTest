@@ -9,17 +9,16 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The type Segmented csv file reader.
  */
-public class SegmentedCsvFileReader implements SegmentedFileReader<List<String[]>>
+public class SegmentedCsvFileReader implements SegmentedFileReader<String[]>
 {
   @Override
-  public List<String[]> readSegment(Path path, Charset charset, int offset, int len) throws JobException
+  public ArrayList<String[]> readSegment(Path path, Charset charset, int offset, int len) throws JobException
   {
-    List<String[]> rows = new ArrayList<>(len);
+    ArrayList<String[]> rows = new ArrayList<>(len);
     try (BufferedReader br = Files.newBufferedReader(path, charset))
     {
       FileUtil.ignoreUtfBom(br, charset.toString());
