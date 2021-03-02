@@ -1,5 +1,6 @@
 package de.destatis.regdb.dateiimport.job.pruefen;
 
+import de.destatis.regdb.FormatError;
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.db.PreparedSelect;
 import de.destatis.regdb.db.ResultRow;
@@ -17,16 +18,16 @@ import java.util.regex.Pattern;
 public class PruefUtil
 {
   private static final Pattern numberPattern = Pattern.compile("\\d+");
-  private static final String MSG_OF_UNGLEICHE_LAENGE = "Zeile {0}: Ordnungsfeldlänge {1} ungleich der geforderten Länge {2}";
-  private static final String MSG_OF_NICHT_NUMERISCH = "Zeile {0}: Ordnungsfeld \"{1}\" ist nicht numerisch";
-  private static final String MSG_SPALTENANZAHL = "Zeile {0}: Spaltenzahl {1} ungleich erforderlicher Anzahl {2}";
-  private static final String MSG_MIN_SPALTENANZAHL = "Zeile {0}: Spaltenzahl {1} kleiner als erforderliche Anzahl {2}";
-  private static final String MSG_MIN_LENGTH = "Zeile {0}: {1} ist kleiner als {2}";
-  private static final String MSG_MAX_LENGTH = "Zeile {0}: {1} ist grösser als {2}";
-  private static final String MSG_EMPTY = "Zeile {0}: {1} ist leer!";
-  private static final String MSG_LEERZEICHEN = "Zeile {0}: {1} enthält unerlaubt Leerzeichen";
-  private static final String MSG_OF_NICHT_VORHANDEN = "Zeile {0}: Ordnungsfeld \"{1}\" nicht in Adressbestand gefunden";
-  private static final String MSG_MELDER_NICHT_VORHANDEN = "Zeile {0}: Melder-ID \"{1}\" nicht gefunden";
+  private static final String MSG_OF_UNGLEICHE_LAENGE = "Ordnungsfeldlänge {0} ungleich der geforderten Länge {1}";
+  private static final String MSG_OF_NICHT_NUMERISCH = "Ordnungsfeld \"{0}\" ist nicht numerisch";
+  private static final String MSG_SPALTENANZAHL = "Spaltenzahl {0} ungleich erforderlicher Anzahl {1}";
+  private static final String MSG_MIN_SPALTENANZAHL = "Spaltenzahl {0} kleiner als erforderliche Anzahl {1}";
+  private static final String MSG_MIN_LENGTH = "{0} ist kleiner als {1}";
+  private static final String MSG_MAX_LENGTH = "{0} ist grösser als {1}";
+  private static final String MSG_EMPTY = "{0} ist leer!";
+  private static final String MSG_LEERZEICHEN = "{0} enthält nicht zulässige Leerzeichen";
+  private static final String MSG_OF_NICHT_VORHANDEN = "Ordnungsfeld \"{0}\" nicht in Adressbestand gefunden";
+  private static final String MSG_MELDER_NICHT_VORHANDEN = "Melder-ID \"{0}\" nicht gefunden";
   private static final String MSG_ADRESSBESTAND_INVALID = "Adressbestand mit der ID {0} existiert nicht!";
   private static final String SQL_SELECT_ORDNUNGSFELD = "SELECT QUELL_REFERENZ_OF_LAENGE,QUELL_REFERENZ_OF_TYP, QUELL_REFERENZ_KUERZEL FROM quell_referenz_verwaltung WHERE QUELL_REFERENZ_ID = ?";
   private static final String SQL_SELECT_OF_EXISTS = "SELECT QUELL_REFERENZ_OF FROM adressen WHERE QUELL_REFERENZ_ID = {0} AND QUELL_REFERENZ_OF IN({1}) AND STATUS != \"LOESCH\"";
@@ -70,11 +71,7 @@ public class PruefUtil
   {
     if (pruefWert < minimum)
     {
-      if (fehlerLimitNichtErreicht)
-      {
-        this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-          .addFehler(MessageFormat.format(MSG_MIN_SPALTENANZAHL, rowNumber, pruefWert, minimum));
-      }
+      addError(rowNumber, MessageFormat.format(MSG_MIN_SPALTENANZAHL, pruefWert, minimum));
       return false;
     }
     return true;
@@ -93,11 +90,7 @@ public class PruefUtil
     // Spaltenlänge +1 erlaubt, da CSV mit abschliessendem Semikolon erlaubt wurde!
     if (pruefWert < anzahlErlaubt || pruefWert > anzahlErlaubt + 1)
     {
-      if (fehlerLimitNichtErreicht)
-      {
-        this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-          .addFehler(MessageFormat.format(MSG_SPALTENANZAHL, rowNumber, pruefWert, anzahlErlaubt));
-      }
+      addError(rowNumber, MessageFormat.format(MSG_SPALTENANZAHL, pruefWert, anzahlErlaubt));
       return false;
     }
     return true;
@@ -116,11 +109,7 @@ public class PruefUtil
   {
     if (pruefWert == null || pruefWert.length() < minimum)
     {
-      if (fehlerLimitNichtErreicht)
-      {
-        this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-          .addFehler(MessageFormat.format(MSG_MIN_LENGTH, rowNumber, hinweis, minimum));
-      }
+      addError(rowNumber, MessageFormat.format(MSG_MIN_LENGTH, hinweis, minimum));
       return false;
     }
     return true;
@@ -139,11 +128,7 @@ public class PruefUtil
   {
     if (pruefWert != null && pruefWert.length() > maximum)
     {
-      if (fehlerLimitNichtErreicht)
-      {
-        this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-          .addFehler(MessageFormat.format(MSG_MAX_LENGTH, rowNumber, hinweis, maximum));
-      }
+      addError(rowNumber, MessageFormat.format(MSG_MAX_LENGTH, hinweis, maximum));
       return false;
     }
     return true;
@@ -162,17 +147,17 @@ public class PruefUtil
     // Laengenpruefung des OF
     if (pruefWert == null)
     {
-      addError(MessageFormat.format(MSG_OF_UNGLEICHE_LAENGE, rowNumber, 0, this.jobBean.getAdressen().ordnungsfeldLaenge));
+      addError(rowNumber, MessageFormat.format(MSG_OF_UNGLEICHE_LAENGE, 0, this.jobBean.getAdressen().ordnungsfeldLaenge));
       if (this.jobBean.quellReferenzNumerisch)
       {
-        addError(MessageFormat.format(MSG_OF_NICHT_NUMERISCH, rowNumber, "null"));
+        addError(rowNumber, MessageFormat.format(MSG_OF_NICHT_NUMERISCH, "null"));
       }
       result = false;
     } else
     {
       if (pruefWert.length() != this.jobBean.getAdressen().ordnungsfeldLaenge)
       {
-        addError(MessageFormat.format(MSG_OF_UNGLEICHE_LAENGE, rowNumber, pruefWert.length(), this.jobBean.getAdressen().ordnungsfeldLaenge));
+        addError(rowNumber, MessageFormat.format(MSG_OF_UNGLEICHE_LAENGE, pruefWert.length(), this.jobBean.getAdressen().ordnungsfeldLaenge));
         result = false;
       }
 
@@ -180,7 +165,7 @@ public class PruefUtil
       if (this.jobBean.quellReferenzNumerisch && !numberPattern.matcher(pruefWert)
         .matches())
       {
-        addError(MessageFormat.format(MSG_OF_NICHT_NUMERISCH, rowNumber, pruefWert));
+        addError(rowNumber, MessageFormat.format(MSG_OF_NICHT_NUMERISCH, pruefWert));
         result = false;
       }
     }
@@ -199,11 +184,7 @@ public class PruefUtil
   {
     if (pruefWert == null || pruefWert.isEmpty())
     {
-      if (fehlerLimitNichtErreicht)
-      {
-        this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-          .addFehler(MessageFormat.format(MSG_EMPTY, rowNumber, hinweis));
-      }
+      addError(rowNumber, MessageFormat.format(MSG_EMPTY, hinweis));
       return false;
     }
     return true;
@@ -221,11 +202,7 @@ public class PruefUtil
   {
     if (pruefWert != null && pruefWert.contains(" "))
     {
-      if (fehlerLimitNichtErreicht)
-      {
-        this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-          .addFehler(MessageFormat.format(MSG_LEERZEICHEN, rowNumber, hinweis));
-      }
+      addError(rowNumber, MessageFormat.format(MSG_LEERZEICHEN, hinweis));
       return false;
     }
     return true;
@@ -236,12 +213,12 @@ public class PruefUtil
    *
    * @param message the message
    */
-  public void addError(String message)
+  public void addError(Integer rowNumber, String message)
   {
     if (fehlerLimitNichtErreicht)
     {
       this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-        .addFehler(message);
+        .addFehler(new FormatError(rowNumber, message));
     }
   }
 
@@ -268,7 +245,7 @@ public class PruefUtil
         return true;
       } else
       {
-        addError(MessageFormat.format(MSG_ADRESSBESTAND_INVALID, quellRefId));
+        addError(null, MessageFormat.format(MSG_ADRESSBESTAND_INVALID, quellRefId));
       }
     }
     return false;
@@ -284,22 +261,27 @@ public class PruefUtil
   public boolean checkOrdnungsfelderExistieren(Map<String, Integer> ofRows) throws JobException
   {
     String sql = MessageFormat.format(SQL_SELECT_OF_EXISTS, this.jobBean.quellReferenzId, sqlUtil.convertStringList(ofRows.keySet()));
+    return removeExistingEntries(ofRows, sql, MSG_OF_NICHT_VORHANDEN);
+  }
+
+  private boolean removeExistingEntries(Map<String, Integer> checkMap, String sql, String msgNichtVorhanden) throws JobException
+  {
     try (PreparedSelect ps = sqlUtil.createPreparedSelect(sql))
     {
       List<ResultRow> rows = ps.fetchMany();
       for (ResultRow row : rows)
       {
-        String of = row.getString(1); // OF
-        // Alle Ordnungsfelder, die existieren, aus Liste löschen
-        // Übrig bleiben die Ordnungsfelder mit Zeilennummer, die nicht existieren!
-        ofRows.remove(of);
+        String of = row.getString(1);
+        // Alle Felder, die existieren, aus Liste löschen
+        // Übrig bleiben die felder mit Zeilennummer, die nicht existieren!
+        checkMap.remove(of);
       }
     }
-    if (ofRows.isEmpty())
+    if (checkMap.isEmpty())
       return true;
-    for (Map.Entry<String, Integer> entry : ofRows.entrySet())
+    for (Map.Entry<String, Integer> entry : checkMap.entrySet())
     {
-      addError(MessageFormat.format(MSG_OF_NICHT_VORHANDEN, entry.getValue(), entry.getKey()));
+      addError(entry.getValue(), MessageFormat.format(msgNichtVorhanden, entry.getKey()));
     }
     return false;
   }
@@ -313,25 +295,12 @@ public class PruefUtil
    */
   public boolean checkMelderExistieren(Map<String, Integer> melderIdRows) throws JobException
   {
-    String sql = MessageFormat.format(SQL_SELECT_MELDER_EXISTS, sqlUtil.convertStringList(melderIdRows.keySet()));
-    try (PreparedSelect ps = sqlUtil.createPreparedSelect(sql))
-    {
-      List<ResultRow> rows = ps.fetchMany();
-      for (ResultRow row : rows)
-      {
-        String melderId = row.getString(1);
-        // Alle MelderIDs, die existieren, aus Liste löschen
-        // Übrig bleiben die Melder mit Zeilennummer, die nicht existieren!
-        melderIdRows.remove(melderId);
-      }
-    }
     if (melderIdRows.isEmpty())
-      return true;
-    for (Map.Entry<String, Integer> entry : melderIdRows.entrySet())
     {
-      addError(MessageFormat.format(MSG_MELDER_NICHT_VORHANDEN, entry.getValue(), entry.getKey()));
+      return true;
     }
-    return false;
+    String sql = MessageFormat.format(SQL_SELECT_MELDER_EXISTS, sqlUtil.convertStringList(melderIdRows.keySet()));
+    return removeExistingEntries(melderIdRows, sql, MSG_MELDER_NICHT_VORHANDEN);
   }
 
 }

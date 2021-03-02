@@ -35,9 +35,16 @@ public class PruefeIdevImport extends AbstractPruefeImport<String[]>
         anzahlSpalten = 16;
         break;
       default:
-        pruefUtil.addError("Ungueltiges Format:" + this.jobBean.getImportdatei().importFormat.toString());
+        pruefUtil.addError(null, "Ungueltiges Format:" + this.jobBean.getImportdatei().importFormat.toString());
     }
   }
+
+  @Override
+  protected boolean validateBeforeFileLoad() throws JobException
+  {
+    return pruefUtil.checkAdressbestand(this.jobBean.quellReferenzId);
+  }
+
 
   @Override
   protected void validate(ArrayList<String[]> rows, int offset) throws JobException

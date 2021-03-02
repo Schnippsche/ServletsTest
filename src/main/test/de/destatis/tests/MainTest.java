@@ -1,9 +1,12 @@
 package de.destatis.tests;
 
+import de.destatis.regdb.FormatError;
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.dateiimport.ImportFormat;
 import de.destatis.regdb.dateiimport.job.pruefen.PruefUtil;
+import de.destatis.regdb.dateiimport.job.pruefen.PruefeIdevImport;
 import de.destatis.regdb.dateiimport.job.pruefen.PruefeRegisterImport;
+import de.destatis.regdb.dateiimport.job.pruefen.PruefeVorbelegungenImport;
 import de.destatis.regdb.db.SqlUtil;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.job.LogLevel;
@@ -16,7 +19,9 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -126,12 +131,13 @@ public class MainTest
     PruefeRegisterImport imp = new PruefeRegisterImport(bean, sqlUtil);
     try
     {
-      imp.pruefeDatei();
+      imp.checkFile();
       showLogErrors(bean);
       assertTrue( bean.getFormatPruefung().anzahlFehler> 7);
       assertEquals(bean.getImportdatei().anzahlDatensaetze, 14);
     } catch (JobException e)
     {
+      log.error(e.getMessage());
       fail();
     }
   }
@@ -151,23 +157,142 @@ public class MainTest
     PruefeRegisterImport imp = new PruefeRegisterImport(bean, sqlUtil);
     try
     {
-      imp.pruefeDatei();
+      imp.checkFile();
       showLogErrors(bean);
       assertEquals( bean.getFormatPruefung().anzahlFehler, 0);
       assertEquals(bean.getImportdatei().anzahlDatensaetze, 10);
+      assertEquals(bean.getAdressen().getOrdnungsfelder().size(), 10);
     } catch (JobException e)
     {
+      log.error(e.getMessage());
       fail();
     }
 
   }
 
+  @Test
+  public void pruefeFehlerhaftenIdevImport()
+  {
+    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    JobBean bean = new JobBean();
+    bean.getFormatPruefung().maximaleAnzahlFehler = 100;
+    bean.getImportdatei().importFormat = ImportFormat.IMPORTMITZUSATZFELDER;
+    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
+    bean.getImportdatei().importVerzeichnis= Paths.get(file.toString(), "importmitzusatzfelder").toString();
+    bean.getImportdatei().dateiName = "fehlerhaft.csv";
+    bean.quellReferenzId=1;
+    bean.importBlockGroesse = 6;
+    bean.quellReferenzNumerisch = true;
+    bean.jobId = 1;
+    PruefeIdevImport imp = new PruefeIdevImport(bean, sqlUtil);
+    try
+    {
+      imp.checkFile();
+      showLogErrors(bean);
+      assertTrue( bean.getFormatPruefung().anzahlFehler>9);
+      assertEquals(bean.getImportdatei().anzahlDatensaetze, 6);
+      assertEquals(bean.getAdressen().getOrdnungsfelder().size(), 0);
+    } catch (JobException e)
+    {
+      log.error(e.getMessage());
+      fail();
+    }
+  }
+
+  @Test
+  public void pruefeKorrektenIdevImport()
+  {
+    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    JobBean bean = new JobBean();
+    bean.getFormatPruefung().maximaleAnzahlFehler = 100;
+    bean.getImportdatei().importFormat = ImportFormat.IMPORTMITZUSATZFELDER;
+    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
+    bean.getImportdatei().importVerzeichnis= Paths.get(file.toString(), "importmitzusatzfelder").toString();
+    bean.getImportdatei().dateiName = "adressen_100.csv";
+    bean.quellReferenzId=1;
+    bean.importBlockGroesse = 9;
+    bean.quellReferenzNumerisch = true;
+    bean.jobId = 1;
+    PruefeIdevImport imp = new PruefeIdevImport(bean, sqlUtil);
+    try
+    {
+      imp.checkFile();
+      showLogErrors(bean);
+      assertEquals( bean.getFormatPruefung().anzahlFehler, 0);
+      assertEquals(bean.getImportdatei().anzahlDatensaetze, 100);
+      assertEquals(bean.getAdressen().getOrdnungsfelder().size(), 100);
+    } catch (JobException e)
+    {
+      log.error(e.getMessage());
+      fail();
+    }
+  }
+
+  @Test
+  public void pruefeFehlerhaftenVorbelegungsImport()
+  {
+    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    JobBean bean = new JobBean();
+    bean.getFormatPruefung().maximaleAnzahlFehler = 100;
+    bean.getImportdatei().importFormat = ImportFormat.VORBELEGUNGSIMPORT;
+    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
+    bean.getImportdatei().importVerzeichnis= Paths.get(file.toString(), "importvorbelegungen").toString();
+    bean.getImportdatei().dateiName = "fehlerhaft.csv";
+    bean.quellReferenzId=1;
+    bean.importBlockGroesse = 6;
+    bean.quellReferenzNumerisch = true;
+    bean.jobId = 1;
+    PruefeVorbelegungenImport imp = new PruefeVorbelegungenImport(bean, sqlUtil);
+    try
+    {
+      imp.checkFile();
+      showLogErrors(bean);
+      assertTrue( bean.getFormatPruefung().anzahlFehler>7);
+      assertEquals(bean.getImportdatei().anzahlDatensaetze, 6);
+      assertEquals(bean.getAdressen().getOrdnungsfelder().size(), 0);
+    } catch (JobException e)
+    {
+      log.error(e.getMessage());
+      fail();
+    }
+  }
+
+  @Test
+  public void pruefeKorrektenVorbelegungsImport()
+  {
+    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    JobBean bean = new JobBean();
+    bean.getFormatPruefung().maximaleAnzahlFehler = 100;
+    bean.getImportdatei().importFormat = ImportFormat.VORBELEGUNGSIMPORT;
+    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
+    bean.getImportdatei().importVerzeichnis= Paths.get(file.toString(), "importvorbelegungen").toString();
+    bean.getImportdatei().dateiName = "vorbelegungen.csv";
+    bean.quellReferenzId=1;
+    bean.importBlockGroesse = 6;
+    bean.quellReferenzNumerisch = true;
+    bean.jobId = 1;
+    PruefeVorbelegungenImport imp = new PruefeVorbelegungenImport(bean, sqlUtil);
+    try
+    {
+      imp.checkFile();
+      showLogErrors(bean);
+      assertTrue( bean.getFormatPruefung().anzahlFehler>7);
+      assertEquals(bean.getImportdatei().anzahlDatensaetze, 8);
+      assertEquals(bean.getAdressen().getOrdnungsfelder().size(), 0);
+    } catch (JobException e)
+    {
+      log.error(e.getMessage());
+      fail();
+    }
+  }
+
   public void showLogErrors(JobBean bean)
   {
     log.debug("Anzahl Fehler:" + bean.getFormatPruefung().anzahlFehler);
+    List<FormatError> sorted = bean.getFormatPruefung().getSortedErrors();
     for (int i = 0; i < bean.getFormatPruefung().anzahlFehler; i++)
     {
-      log.debug(bean.getFormatPruefung().getError().get(i));
+      log.debug(bean.getFormatPruefung().getSortedErrors().get(i).toString());
     }
   }
 

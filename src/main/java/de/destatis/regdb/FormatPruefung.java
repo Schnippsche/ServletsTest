@@ -2,6 +2,7 @@ package de.destatis.regdb;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ public class FormatPruefung
   @XmlAttribute
   public int maximaleAnzahlFehler;
 
-  private List<String> error;
+  private List<FormatError> error;
 
   /**
    * Instantiates a new Format pruefung.
@@ -43,19 +44,13 @@ public class FormatPruefung
    *
    * @return the error
    */
-  public List<String> getError()
+  public List<FormatError> getSortedErrors()
   {
-    return this.error;
-  }
+    if (this.error == null)
+      return Collections.emptyList();
 
-  /**
-   * Sets error.
-   *
-   * @param error the error
-   */
-  public void setError(List<String> error)
-  {
-    this.error = error;
+    Collections.sort(error);
+    return this.error;
   }
 
   /**
@@ -64,7 +59,7 @@ public class FormatPruefung
    * @param fehler the fehler
    * @return the boolean false if limit reached
    */
-  public boolean addFehler(String fehler)
+  public boolean addFehler(FormatError fehler)
   {
     if (this.error == null)
     {

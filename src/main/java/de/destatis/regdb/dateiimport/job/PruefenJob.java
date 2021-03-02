@@ -6,6 +6,7 @@
 package de.destatis.regdb.dateiimport.job;
 
 import au.com.bytecode.opencsv.CSVReader;
+import de.destatis.regdb.FormatError;
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.JobStatus;
 import de.destatis.regdb.dateiimport.job.adressimport.AdressImportJob;
@@ -243,7 +244,7 @@ public class PruefenJob extends AbstractJob
     if (!adressBestandOk)
     {
       this.jobBean.getFormatPruefung()
-        .addFehler("Adressbestand mit der ID " + this.jobBean.quellReferenzId + " existiert nicht!");
+        .addFehler(new FormatError(null, "Adressbestand mit der ID " + this.jobBean.quellReferenzId + " existiert nicht!"));
     }
   }
 
@@ -256,12 +257,12 @@ public class PruefenJob extends AbstractJob
   {
     this.log.info(MessageFormat.format(MSG_PRUEFUNG_FEHLGESCHLAGEN, this.jobBean.getImportdatei().originalDateiname));
     this.fehler = (this.jobBean.getFormatPruefung().anzahlFehler == 1) ? this.jobBean.getFormatPruefung()
-      .getError()
-      .get(0) : this.jobBean.getFormatPruefung().anzahlFehler + " Fehler siehe Protokoll";
-    for (String err : this.jobBean.getFormatPruefung()
-      .getError())
+      .getSortedErrors()
+      .get(0).toString() : this.jobBean.getFormatPruefung().anzahlFehler + " Fehler siehe Protokoll";
+    for (FormatError err : this.jobBean.getFormatPruefung()
+      .getSortedErrors())
     {
-      this.log.info(err);
+      this.log.info(err.toString());
     }
     this.jobBean.setStatusAndInfo(JobStatus.FEHLER, this.fehler);
     return null;
@@ -372,7 +373,7 @@ public class PruefenJob extends AbstractJob
             // Spaltenanzahl stimmt nicht
             this.fehler = MessageFormat.format(MSG_UNGLEICHE_SPALTENANZAHL, cols.length, 18, this.jobBean.getImportdatei().anzahlDatensaetze);
             this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-              .addFehler(this.fehler);
+              .addFehler(new FormatError(null, this.fehler));
           }
           if (quellReferenzId == null)
             quellReferenzId = cols[3];
@@ -380,7 +381,7 @@ public class PruefenJob extends AbstractJob
           {
             this.fehler = "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen";
             this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-              .addFehler(this.fehler);
+              .addFehler(new FormatError(null, this.fehler));
             quellReferenzId = cols[3];
           }
           String meldungsId = cols[0].trim();
@@ -395,7 +396,7 @@ public class PruefenJob extends AbstractJob
             {
               this.fehler = MessageFormat.format("Meldungs-ID {0} existiert nicht im Tabelle melderkonto!", meldungsId);
               this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-                .addFehler(this.fehler);
+                .addFehler(new FormatError(null, this.fehler));
             }
 
             psMelderkonto1.addValue(meldungsId); // MeldungsId
@@ -406,7 +407,7 @@ public class PruefenJob extends AbstractJob
             {
               this.fehler = MessageFormat.format("Kombination aus MeldungsID {0}, Amt {1} und StatistikId {2} existiert nicht!", meldungsId, cols[2], cols[1]);
               this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-                .addFehler(this.fehler);
+                .addFehler(new FormatError(null, this.fehler));
             }
           }
         }
@@ -426,7 +427,7 @@ public class PruefenJob extends AbstractJob
     {
       // Spaltenanzahl stimmt nicht
       this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-        .addFehler("Spaltenzahl muss mindestens 4 betragen, nicht erfüllt bei Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze);
+        .addFehler(new FormatError(null, "Spaltenzahl muss mindestens 4 betragen, nicht erfüllt bei Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze));
     }
     String of = cols[0];
     // Pruefe ob OF in Adressbestand ist
@@ -442,7 +443,7 @@ public class PruefenJob extends AbstractJob
       if (adressenId == null)
       {
         this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-          .addFehler("Ordnungsfeld '" + of + "' nicht in Adressbestand gefunden bei Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze);
+          .addFehler(new FormatError(null, "Ordnungsfeld '" + of + "' nicht in Adressbestand gefunden bei Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze));
       }
     }
     // Bei Feldnamen, die mit _datei enden, auf Leerzeichen Pruefen
@@ -453,7 +454,7 @@ public class PruefenJob extends AbstractJob
       if (feldname.endsWith("_datei") && feldinhalt.contains(" "))
       {
         this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-          .addFehler("Der Dateiname '" + feldinhalt + "' enthält Leerzeichen in Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze);
+          .addFehler(new FormatError(null, "Der Dateiname '" + feldinhalt + "' enthält Leerzeichen in Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze));
       }
     }
     // Pruefe Melder ID
@@ -466,7 +467,7 @@ public class PruefenJob extends AbstractJob
         if (mrow == null)
         {
           this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-            .addFehler("Die Melder-ID '" + melderId + "' existiert nicht in Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze);
+            .addFehler(new FormatError(null, "Die Melder-ID '" + melderId + "' existiert nicht in Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze));
         }
       }
     }
@@ -495,7 +496,7 @@ public class PruefenJob extends AbstractJob
             // Spaltenanzahl stimmt nicht
             this.fehler = MessageFormat.format(MSG_UNGLEICHE_SPALTENANZAHL, cols.length, anzahlSpalten, this.jobBean.getImportdatei().anzahlDatensaetze);
             this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-              .addFehler(this.fehler);
+              .addFehler(new FormatError(null, this.fehler));
           }
           String of = cols[0];
           // Laengenpruefung des OF
@@ -503,7 +504,7 @@ public class PruefenJob extends AbstractJob
           {
             this.fehler = MessageFormat.format(MSG_OF_UNGLEICHE_LAENGE, of.length(), this.jobBean.getAdressen().ordnungsfeldLaenge, this.jobBean.getImportdatei().anzahlDatensaetze);
             this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-              .addFehler(this.fehler);
+              .addFehler(new FormatError(null, this.fehler));
           }
           // Typpruefung OF wenn Typ = NOV
           if (this.isNumerisch && !numberPattern.matcher(of)
@@ -511,7 +512,7 @@ public class PruefenJob extends AbstractJob
           {
             this.fehler = MessageFormat.format(MSG_OF_NICHT_NUMERISCH, of, this.jobBean.getImportdatei().anzahlDatensaetze);
             this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-              .addFehler(this.fehler);
+              .addFehler(new FormatError(null, this.fehler));
           }
           // Alles okay, nehme Ordnungsfeld auf
           if (this.jobBean.getFormatPruefung().fehlerfrei)
@@ -554,7 +555,7 @@ public class PruefenJob extends AbstractJob
         {
           this.fehler = "Zeilenlänge (" + row.length() + ") passt nicht in Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze;
           this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-            .addFehler(this.fehler);
+            .addFehler(new FormatError(null, this.fehler));
         }
         String statOnlineKey = StringUtil.substring(row, 0, 10)
           .trim();
@@ -562,7 +563,7 @@ public class PruefenJob extends AbstractJob
         {
           this.fehler = "StatOnline-Key ist leer in Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze;
           this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-            .addFehler(this.fehler);
+            .addFehler(new FormatError(null, this.fehler));
         }
         String of = StringUtil.substring(row, 10, 20)
           .trim();
@@ -570,7 +571,7 @@ public class PruefenJob extends AbstractJob
         {
           this.fehler = "Quell-Referenz-Of ist leer in Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze;
           this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-            .addFehler(this.fehler);
+            .addFehler(new FormatError(null, this.fehler));
 
         }
         String tmpAmt = StringUtil.substring(row, 20, 22)
@@ -579,7 +580,7 @@ public class PruefenJob extends AbstractJob
         {
           this.fehler = "Amt ist leer in Zeile " + this.jobBean.getImportdatei().anzahlDatensaetze;
           this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-            .addFehler(this.fehler);
+            .addFehler(new FormatError(null, this.fehler));
         } else
         {
           this.jobBean.amt = tmpAmt;
@@ -603,14 +604,14 @@ public class PruefenJob extends AbstractJob
             {
               this.fehler = "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen";
               this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-                .addFehler(this.fehler);
+                .addFehler(new FormatError(null, this.fehler));
             }
             this.jobBean.quellReferenzId = quellReferenzId;
           } else
           {
             this.fehler = String.valueOf(ergebnis);
             this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-              .addFehler(this.fehler);
+              .addFehler(new FormatError(null, this.fehler));
           }
         } else
         {
@@ -694,7 +695,7 @@ public class PruefenJob extends AbstractJob
         this.fehler += "auf dem Adressbestand '" + this.quellRefName + "', ID " + quellReferenzId;
       }
       this.jobBean.getFormatPruefung()
-        .addFehler(this.fehler);
+        .addFehler(new FormatError(null, this.fehler));
     }
   }
 
@@ -736,7 +737,7 @@ public class PruefenJob extends AbstractJob
     if (rs == null)
     {
       this.jobBean.getFormatPruefung()
-        .addFehler("Keine Erhebung für Amt (" + amt + "), Statistik-Id  (" + statistikId + ") und Bzr (" + bzr + ") gefunden!");
+        .addFehler(new FormatError(null, "Keine Erhebung für Amt (" + amt + "), Statistik-Id  (" + statistikId + ") und Bzr (" + bzr + ") gefunden!"));
     }
   }
 

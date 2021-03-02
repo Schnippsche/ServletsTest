@@ -2,7 +2,6 @@ package de.destatis.regdb.dateiimport.job.pruefen;
 
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.dateiimport.job.registerimport.RegisterImportJob;
-import de.destatis.regdb.dateiimport.reader.SegmentedFileReader;
 import de.destatis.regdb.dateiimport.reader.SegmentedStringFileReader;
 import de.destatis.regdb.db.ResultRow;
 import de.destatis.regdb.db.SqlUtil;
@@ -13,7 +12,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * The type Pruefe register import.
@@ -73,7 +71,7 @@ public class PruefeRegisterImport extends AbstractPruefeImport<String>
         ResultRow rs = sqlUtil.fetchOne(sql);
         if (rs == null)
         {
-          pruefUtil.addError(MessageFormat.format("Kombination aus Amt ({0}) und StatOnlineKey ({1}) existiert nicht!", tmpAmt, statOnlineKey));
+          pruefUtil.addError(null, MessageFormat.format("Kombination aus Amt ({0}) und StatOnlineKey ({1}) existiert nicht!", tmpAmt, statOnlineKey));
         } else
         {
           statistikId = rs.getInt(1);
@@ -85,7 +83,7 @@ public class PruefeRegisterImport extends AbstractPruefeImport<String>
             pruefUtil.checkAdressbestand(quellReferenzId);
           } else if (!quellReferenzId.equals(quellRefId))
           {
-            pruefUtil.addError("Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
+            pruefUtil.addError(null, "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
           }
         }
       } else
@@ -105,7 +103,7 @@ public class PruefeRegisterImport extends AbstractPruefeImport<String>
           ResultRow rs = sqlUtil.fetchOne(sql);
           if (rs == null)
           {
-            pruefUtil.addError("Keine Erhebung für Amt (" + tmpAmt + "), Statistik-Id  (" + statistikId + ") und Bzr (" + bzr + ") gefunden!");
+            pruefUtil.addError(null, "Keine Erhebung für Amt (" + tmpAmt + "), Statistik-Id  (" + statistikId + ") und Bzr (" + bzr + ") gefunden!");
           }
           amtStatistikBzr.add(key);
         }

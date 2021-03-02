@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public class PruefeVorbelegungenImport extends AbstractPruefeImport<String[]>
 {
-   private final int anzahlSpalten;
+  private final int anzahlSpalten;
 
   /**
    * Instantiates a new Pruefe vorbelegungen import.
@@ -25,6 +25,12 @@ public class PruefeVorbelegungenImport extends AbstractPruefeImport<String[]>
   {
     super(new SegmentedCsvFileReader(), jobBean, sqlUtil);
     anzahlSpalten = 4;
+  }
+
+  @Override
+  protected boolean validateBeforeFileLoad() throws JobException
+  {
+    return pruefUtil.checkAdressbestand(this.jobBean.quellReferenzId);
   }
 
   @Override
@@ -55,7 +61,10 @@ public class PruefeVorbelegungenImport extends AbstractPruefeImport<String[]>
           }
         }
         String melderId = cols[2].trim();
-        melderIdRows.put(melderId, rowNumber);
+        if (!"0".equals(melderId) && melderId.length() > 0)
+        {
+          melderIdRows.put(melderId, rowNumber);
+        }
       }
     }
     pruefUtil.checkOrdnungsfelderExistieren(quellOfRows);

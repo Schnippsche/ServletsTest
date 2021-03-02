@@ -1,5 +1,6 @@
 package de.destatis.regdb.dateiimport.job.xmlimport;
 
+import de.destatis.regdb.FormatError;
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.JobStatus;
 import de.destatis.regdb.dateiimport.MelderDatenService;
@@ -14,17 +15,8 @@ import de.destatis.regdb.dateiimport.reader.SegmentedXmlFileReader;
 import de.destatis.regdb.db.*;
 import de.werum.sis.idev.intern.actions.util.MelderDaten;
 import de.werum.sis.idev.res.job.JobException;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -153,7 +145,7 @@ public class XmlImportJob extends AbstractImportJob
   }
 
   @Override
-  protected void doInTransaction() throws SQLException, JobException
+  protected void doInTransaction() throws JobException
   {
     this.erzeugeNeueErhebungen();
     this.erzeugeNeueAdressen();
@@ -199,7 +191,7 @@ public class XmlImportJob extends AbstractImportJob
             String fehler = "Adresse zur Vorbelegung mit dem Ordnungsfeld '" + bean.getQuellReferenzOf() + "' existiert nicht";
             this.log.info(fehler);
             this.jobBean.getFormatPruefung()
-              .addFehler(fehler);
+              .addFehler(new FormatError(null, fehler));
           } else
           {
             VorbelegungsImportBean vb = this.convertIntoVorbelegung(bean, info);
@@ -214,7 +206,7 @@ public class XmlImportJob extends AbstractImportJob
                 String fehler = "Melder mit angegebener Kennung '" + kennung + "' existiert nicht!";
                 this.log.info(fehler);
                 this.jobBean.getFormatPruefung()
-                  .addFehler(fehler);
+                  .addFehler(new FormatError(null,fehler));
                 okay = false;
               } else
               {
@@ -277,7 +269,7 @@ public class XmlImportJob extends AbstractImportJob
   {
     this.ordnungsfelder = new HashMap<>();
     this.amtStatOnlineKeys = new HashMap<>();
-    this.vorbelegungsJob.setVorbelegungsImportBeans(new ArrayList<VorbelegungsImportBean>(this.jobBean.importBlockGroesse));
+    this.vorbelegungsJob.setVorbelegungsImportBeans(new ArrayList<>(this.jobBean.importBlockGroesse));
     SegmentedXmlFileReader reader = new SegmentedXmlFileReader();
     this.xmlBeans = reader.readSegment(path, this.jobBean.getImportdatei().getCharset(), this.jobBean.getImportdatei().datensatzOffset, this.jobBean.importBlockGroesse);
     this.ermittleStatistikIds();
@@ -647,7 +639,7 @@ public class XmlImportJob extends AbstractImportJob
           String fehler = "Aktion 'NEU' auf vorhandener Erhebung mit Amt '" + bean.getAmt() + "', Statistik-Id " + bean.getStatistikId() + ", Bzr '" + bean.getBzr() + "'";
           this.log.info(fehler);
           this.jobBean.getFormatPruefung()
-            .addFehler(fehler);
+            .addFehler(new FormatError(null,fehler));
         } else if (!vorhanden)
         {
           bean.setAktion(XmlImportJob.AKTION_NEU);
@@ -879,7 +871,7 @@ public class XmlImportJob extends AbstractImportJob
           String fehler = "Aktion 'UPDATE' auf nicht vorhandener Erhebung mit Amt '" + bean.getAmt() + "', Statistik-Id " + bean.getStatistikId() + ", Bzr '" + bean.getBzr() + "'";
           this.log.info(fehler);
           this.jobBean.getFormatPruefung()
-            .addFehler(fehler);
+            .addFehler(new FormatError(null,fehler));
         } else if (vorhanden)
         {
           bean.setAktion(XmlImportJob.AKTION_UPDATE);
@@ -1264,6 +1256,8 @@ public class XmlImportJob extends AbstractImportJob
         statId = this.getStatistikIdFromAmtStatOnlineKey(tmpAmt, tmpStatOnlineKey);
         this.amtStatOnlineKeys.put(key, statId);
       }
+      if (statId == null)
+        statId = 0;
       bean.setStatistikId(statId);
       this.jobBean.statistikId = statId;
     }
