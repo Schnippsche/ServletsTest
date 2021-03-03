@@ -1,6 +1,5 @@
 package de.destatis.tests;
 
-import de.destatis.regdb.FormatError;
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.dateiimport.ImportFormat;
 import de.destatis.regdb.dateiimport.job.pruefen.PruefUtil;
@@ -19,9 +18,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -289,7 +286,6 @@ public class MainTest
   public void showLogErrors(JobBean bean)
   {
     log.debug("Anzahl Fehler:" + bean.getFormatPruefung().anzahlFehler);
-    List<FormatError> sorted = bean.getFormatPruefung().getSortedErrors();
     for (int i = 0; i < bean.getFormatPruefung().anzahlFehler; i++)
     {
       log.debug(bean.getFormatPruefung().getSortedErrors().get(i).toString());

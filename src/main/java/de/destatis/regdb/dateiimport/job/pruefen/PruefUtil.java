@@ -27,14 +27,16 @@ public class PruefUtil
   private static final String MSG_EMPTY = "{0} ist leer!";
   private static final String MSG_LEERZEICHEN = "{0} enthält nicht zulässige Leerzeichen";
   private static final String MSG_OF_NICHT_VORHANDEN = "Ordnungsfeld \"{0}\" nicht in Adressbestand gefunden";
+  private static final String MSG_MELDUNG_NICHT_VORHANDEN = "Meldungs-Id {0} nicht vorhanden";
   private static final String MSG_MELDER_NICHT_VORHANDEN = "Melder-ID \"{0}\" nicht gefunden";
   private static final String MSG_ADRESSBESTAND_INVALID = "Adressbestand mit der ID {0} existiert nicht!";
   private static final String SQL_SELECT_ORDNUNGSFELD = "SELECT QUELL_REFERENZ_OF_LAENGE,QUELL_REFERENZ_OF_TYP, QUELL_REFERENZ_KUERZEL FROM quell_referenz_verwaltung WHERE QUELL_REFERENZ_ID = ?";
   private static final String SQL_SELECT_OF_EXISTS = "SELECT QUELL_REFERENZ_OF FROM adressen WHERE QUELL_REFERENZ_ID = {0} AND QUELL_REFERENZ_OF IN({1}) AND STATUS != \"LOESCH\"";
   private static final String SQL_SELECT_MELDER_EXISTS = "SELECT MELDER_ID FROM melder WHERE MELDER_ID IN({0}) AND STATUS != \"LOESCH\"";
+  private static final String SQL_SELECT_MELDUNGSID_EXISTS = "SELECT MELDUNG_ID FROM meldung WHERE MELDUNG_ID IN({1}) AND STATUS != \"LOESCH\"";
   private final JobBean jobBean;
-  private boolean fehlerLimitNichtErreicht;
   private final SqlUtil sqlUtil;
+  private boolean fehlerLimitNichtErreicht;
 
   /**
    * Instantiates a new Pruef util.
@@ -211,7 +213,8 @@ public class PruefUtil
   /**
    * Add error.
    *
-   * @param message the message
+   * @param rowNumber the row number
+   * @param message   the message
    */
   public void addError(Integer rowNumber, String message)
   {
@@ -264,6 +267,14 @@ public class PruefUtil
     return removeExistingEntries(ofRows, sql, MSG_OF_NICHT_VORHANDEN);
   }
 
+  public boolean checkMeldungsIdsExistieren(Map<String, Integer> idRows) throws JobException
+  {
+    String sql = MessageFormat.format(SQL_SELECT_MELDUNGSID_EXISTS, sqlUtil.convertStringList(idRows.keySet()));
+    return removeExistingEntries(idRows, sql, MSG_MELDUNG_NICHT_VORHANDEN);
+  }
+
+
+
   private boolean removeExistingEntries(Map<String, Integer> checkMap, String sql, String msgNichtVorhanden) throws JobException
   {
     try (PreparedSelect ps = sqlUtil.createPreparedSelect(sql))
@@ -301,6 +312,24 @@ public class PruefUtil
     }
     String sql = MessageFormat.format(SQL_SELECT_MELDER_EXISTS, sqlUtil.convertStringList(melderIdRows.keySet()));
     return removeExistingEntries(melderIdRows, sql, MSG_MELDER_NICHT_VORHANDEN);
+  }
+
+  /**
+   * Check ist zahl boolean.
+   *
+   * @param pruefWert the pruef wert
+   * @param rowNumber the row number
+   * @return the boolean
+   */
+  public boolean checkIstZahl(String pruefWert, int rowNumber)
+  {
+    if (numberPattern.matcher(pruefWert)
+      .matches())
+    {
+      return true;
+    }
+    addError(rowNumber, MessageFormat.format("{0} ist keine Zahl", pruefWert));
+    return false;
   }
 
 }

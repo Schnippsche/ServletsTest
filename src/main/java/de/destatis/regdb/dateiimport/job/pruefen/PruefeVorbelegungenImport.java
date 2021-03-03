@@ -38,6 +38,8 @@ public class PruefeVorbelegungenImport extends AbstractPruefeImport<String[]>
   {
     HashMap<String, Integer> quellOfRows = new HashMap<>(rows.size());
     HashMap<String, Integer> melderIdRows = new HashMap<>(rows.size());
+    HashMap<String, Integer> meldungAmtStatistikRows = new HashMap<>(rows.size());
+
     int rowNumber = offset;
     for (String[] cols : rows)
     {
