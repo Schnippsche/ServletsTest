@@ -1,6 +1,3 @@
-/**
- *
- */
 package de.destatis.regdb.dateiimport.job.melderkontoimport;
 
 import de.destatis.regdb.DesEncrypter;
@@ -21,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -62,6 +58,7 @@ public class MelderkontoImportJob extends AbstractImportJob
   {
     super.doBeforeFirstImport();
     // Zusatzdaten entpacken
+    importVerzeichnis = this.jobBean.getImportdatei().importVerzeichnis;
     Path destination = Paths.get(importVerzeichnis);
     File uploadFile = Paths.get(importVerzeichnis, "dateiupload.zip")
       .toFile();
@@ -104,7 +101,7 @@ public class MelderkontoImportJob extends AbstractImportJob
   }
 
   @Override
-  protected AbstractJob doAfterLastImport() throws JobException
+  protected AbstractJob doAfterLastImport()
   {
     AufraeumUtil util = new AufraeumUtil();
     util.entferneDateien(this.jobBean.jobId);
@@ -112,7 +109,7 @@ public class MelderkontoImportJob extends AbstractImportJob
   }
 
   @Override
-  protected void doInTransaction() throws SQLException, JobException
+  protected void doInTransaction() throws JobException
   {
     this.erzeugeOderAktualisiereEintraege();
   }
@@ -138,10 +135,6 @@ public class MelderkontoImportJob extends AbstractImportJob
     }
   }
 
-  /**
-   * @param vorhandeneBeans Liste Beans
-   * @throws JobException
-   */
   private void ermittleMelderkontoIds(List<MelderkontoImportBean> vorhandeneBeans) throws JobException
   {
     this.log.debug("ermittleMelderkontoIds mit " + vorhandeneBeans.size() + " Eintraegen");

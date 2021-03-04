@@ -2,7 +2,6 @@ package de.destatis.regdb.dateiimport.job.pruefen;
 
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.dateiimport.job.AbstractJob;
-import de.destatis.regdb.dateiimport.job.melderkontoimport.MelderkontoImportJob;
 import de.destatis.regdb.dateiimport.job.registerimport.RegisterImportJob;
 import de.destatis.regdb.dateiimport.job.xmlimport.XmlBean;
 import de.destatis.regdb.dateiimport.job.xmlimport.XmlImportJob;

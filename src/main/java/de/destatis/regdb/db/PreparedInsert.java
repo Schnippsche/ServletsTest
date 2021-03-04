@@ -23,7 +23,7 @@ public class PreparedInsert extends PreparedSql
    */
   public PreparedInsert(Connection connection, String sql) throws JobException
   {
-    super(sql);
+    super();
     try
     {
       ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);

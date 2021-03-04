@@ -23,7 +23,7 @@ public class PreparedSelect extends PreparedSql
    */
   public PreparedSelect(Connection connection, String sql) throws JobException
   {
-    super(sql);
+    super();
     try
     {
       ps = connection.prepareStatement(sql);

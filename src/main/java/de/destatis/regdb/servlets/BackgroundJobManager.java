@@ -66,7 +66,7 @@ public class BackgroundJobManager implements ServletContextListener
       }
       catch (NumberFormatException e)
       {
-        this.log.error(MessageFormat.format("angegebener Konfigurationswert ''{3}'' fuer ''{0}\'' ist ungueltig: Muss zwischen {1} und {2} liegen! Verwende Default-Wert {4}", configValue, "" + min, "" + max, newValue, ""
+        this.log.error(MessageFormat.format("angegebener Konfigurationswert ''{3}'' fuer ''{0}'' ist ungueltig: Muss zwischen {1} und {2} liegen! Verwende Default-Wert {4}", configValue, "" + min, "" + max, newValue, ""
             + defaultValue));
         result = defaultValue;
       }

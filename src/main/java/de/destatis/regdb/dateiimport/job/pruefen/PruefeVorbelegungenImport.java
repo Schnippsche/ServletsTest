@@ -1,7 +1,6 @@
 package de.destatis.regdb.dateiimport.job.pruefen;
 
 import de.destatis.regdb.JobBean;
-import de.destatis.regdb.Vorbelegungen;
 import de.destatis.regdb.dateiimport.job.AbstractJob;
 import de.destatis.regdb.dateiimport.job.vorbelegungsimport.VorbelegungsImportJob;
 import de.destatis.regdb.dateiimport.reader.SegmentedCsvFileReader;

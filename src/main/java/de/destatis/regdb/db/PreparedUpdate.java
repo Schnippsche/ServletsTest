@@ -20,7 +20,7 @@ public class PreparedUpdate extends PreparedSql
    */
   public PreparedUpdate(Connection connection, String sql) throws JobException
   {
-    super(sql);
+    super();
     try
     {
       ps = connection.prepareStatement(sql);

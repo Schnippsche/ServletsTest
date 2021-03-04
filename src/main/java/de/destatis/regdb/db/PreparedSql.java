@@ -17,25 +17,18 @@ import java.util.List;
 public abstract class PreparedSql implements AutoCloseable
 {
   private static final LoggerIfc log = Logger.getInstance()
-      .getLogger(PreparedSql.class);
-  /**
-   * The Sql.
-   */
-  protected final String sql;
+    .getLogger(PreparedSql.class);
+  protected final List<Object> values;
   /**
    * The Ps.
    */
   protected PreparedStatement ps;
-  protected List<Object> values;
 
   /**
    * Instantiates a new Prepared sql.
-   *
-   * @param sql the sql
    */
-  protected PreparedSql(String sql)
+  protected PreparedSql()
   {
-    this.sql = sql;
     this.values = new ArrayList<>();
   }
 
@@ -88,8 +81,7 @@ public abstract class PreparedSql implements AutoCloseable
     {
       if (ps != null)
         ps.close();
-    }
-    catch (SQLException e)
+    } catch (SQLException e)
     {
       log.debug("Fehler beim Schliessen:" + e.getMessage());
     }

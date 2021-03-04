@@ -5,7 +5,6 @@ import de.werum.sis.idev.res.job.JobException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The interface Segmented file reader.
