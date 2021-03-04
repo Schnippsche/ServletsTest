@@ -84,24 +84,33 @@ XmlDefaultHandler extends DefaultHandler
   public void startElement(String uri, String localName, String qName, Attributes attributes)
   {
     this.builder.setLength(0);
-    // Parameter fuer Vorbelegungen sind mit Attributen versehen!
-    if (XML_PARAM.equals(qName))
+    qName = qName.trim()
+      .toLowerCase();
+    switch (qName)
     {
-      int attributeLength = attributes.getLength();
-      for (int i = 0; i < attributeLength; i++)
-      {
-        String attrName = attributes.getQName(i);
-        if ("feldname".equals(attrName))
+      case XmlImportJob.XML_ERHEBUNG:
+      case XmlImportJob.XML_ADRESSE:
+      case XmlImportJob.XML_FIRMA:
+      case XmlImportJob.XML_MELDER:
+      case XmlImportJob.XML_VORBELEGUNG:
+        lineNumber = locator != null ? locator.getLineNumber() : 0;
+        break;
+      case XML_PARAM:
+        lineNumber = locator != null ? locator.getLineNumber() : 0;
+        int attributeLength = attributes.getLength();
+        for (int i = 0; i < attributeLength; i++)
         {
-          this.attributeName = attrName + "." + attributes.getValue(i).trim();
+          String attrName = attributes.getQName(i);
+          if ("feldname".equals(attrName))
+          {
+            this.attributeName = attrName + "." + attributes.getValue(i).trim();
+          }
+          if ("feldwert".equals(attrName))
+          {
+            this.builder.append(attributes.getValue(i));
+          }
         }
-        if ("feldwert".equals(attrName))
-        {
-          this.builder.append(attributes.getValue(i));
-        }
-      }
     }
-    lineNumber = locator != null ? locator.getLineNumber() : 0;
   }
 
   /**
@@ -174,6 +183,7 @@ XmlDefaultHandler extends DefaultHandler
       this.values.put(XmlBean.ELEMENT_NAME, elementName);
       XmlBean bean = new XmlBean(identifier, this.values);
       bean.setRowNumber(lineNumber);
+      log.debug(bean.toString());
       this.beans.add(bean);
     }
     this.values.clear();
@@ -183,6 +193,7 @@ XmlDefaultHandler extends DefaultHandler
       throw new SAXException("LIMIT");
     }
   }
+
   /**
    * Gets the schema.
    *

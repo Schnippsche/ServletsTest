@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<regdbdaten>
+	<adressenblock>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000000</quell_referenz_of>
+			<aktion>ANY</aktion>			
+			<kurztext>Kurztext</kurztext>
+			<abteilung>Abteilung</abteilung>
+			<anrede>Anrede</anrede>
+			<name>Name</name>
+			<name_ergaenzung>Name_ergaenzung</name_ergaenzung>
+			<strasse>Krohnskamp</strasse>
+			<hausnummer>74</hausnummer>
+			<postleitzahl>18195</postleitzahl>
+			<ort>Stubbendorf</ort>
+			<postfach>18195</postfach>
+			<postfach_plz>18195</postfach_plz>
+			<postfach_ort>Stubbendorf</postfach_ort>
+			<land>Land</land>
+			<telefon>Telefon</telefon>
+			<fax>Fax</fax>
+			<email>Email</email>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+			<melder_aenderbar>N</melder_aenderbar>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000001</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Obere Sandstr.</strasse>
+			<hausnummer>57</hausnummer>
+			<postleitzahl>27245</postleitzahl>
+			<ort>Barenburg, Flecken</ort>
+			<postfach>27245</postfach>
+			<postfach_plz>27245</postfach_plz>
+			<postfach_ort>Barenburg, Flecken</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000002</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Baumtwiete</strasse>
+			<hausnummer>555</hausnummer>
+			<postleitzahl>56479</postleitzahl>
+			<ort>Neunkirchen</ort>
+			<postfach>56479</postfach>
+			<postfach_plz>56479</postfach_plz>
+			<postfach_ort>Neunkirchen</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000003</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Mittlerer Kaulberg</strasse>
+			<hausnummer>107</hausnummer>
+			<postleitzahl>19406</postleitzahl>
+			<ort>Hohen Pritz</ort>
+			<postfach>19406</postfach>
+			<postfach_plz>19406</postfach_plz>
+			<postfach_ort>Hohen Pritz</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000004</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Stadtdeich</strasse>
+			<hausnummer>150</hausnummer>
+			<postleitzahl>47495</postleitzahl>
+			<ort>Rheinberg</ort>
+			<postfach>47495</postfach>
+			<postfach_plz>47495</postfach_plz>
+			<postfach_ort>Rheinberg</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000005</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Obeliskgasse</strasse>
+			<hausnummer>13</hausnummer>
+			<postleitzahl>14822</postleitzahl>
+			<ort>Borkwalde</ort>
+			<postfach>14822</postfach>
+			<postfach_plz>14822</postfach_plz>
+			<postfach_ort>Borkwalde</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000006</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Grotefendstraße</strasse>
+			<hausnummer>208</hausnummer>
+			<postleitzahl>25572</postleitzahl>
+			<ort>Aebtissinwisch</ort>
+			<postfach>25572</postfach>
+			<postfach_plz>25572</postfach_plz>
+			<postfach_ort>Aebtissinwisch</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000007</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Dunantring</strasse>
+			<hausnummer>89</hausnummer>
+			<postleitzahl>65391</postleitzahl>
+			<ort>Sauerthal</ort>
+			<postfach>65391</postfach>
+			<postfach_plz>65391</postfach_plz>
+			<postfach_ort>Sauerthal</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000008</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Käthe-Kollwitz-Platz</strasse>
+			<hausnummer>823</hausnummer>
+			<postleitzahl>15299</postleitzahl>
+			<ort>Grunow-Dammendorf</ort>
+			<postfach>15299</postfach>
+			<postfach_plz>15299</postfach_plz>
+			<postfach_ort>Grunow-Dammendorf</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000009</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Sachsdorfer Straße</strasse>
+			<hausnummer>121</hausnummer>
+			<postleitzahl>39646</postleitzahl>
+			<ort>Oebisfelde-Weferlingen</ort>
+			<postfach>39646</postfach>
+			<postfach_plz>39646</postfach_plz>
+			<postfach_ort>Oebisfelde-Weferlingen</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+	</adressenblock>
+	<unternehmenblock>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000000</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Ciaramitaro</name>
+			<name_ergaenzung>Blisse</name_ergaenzung>
+			<kurztext>Kurztext</kurztext>
+			<ansprechpartner_anrede>Frau</ansprechpartner_anrede>
+			<ansprechpartner_name>Ciaramitaro</ansprechpartner_name>
+			<ansprechpartner_telefon>03782 / 73001</ansprechpartner_telefon>
+			<ansprechpartner_fax>01527 / 10683</ansprechpartner_fax>
+			<ansprechpartner_email>blisse.ciaramitaro@aol.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000001</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Poupard</name>
+			<name_ergaenzung>Odovacar</name_ergaenzung>
+			<ansprechpartner_anrede>Herr</ansprechpartner_anrede>
+			<ansprechpartner_name>Poupard</ansprechpartner_name>
+			<ansprechpartner_telefon>02082 / 76869</ansprechpartner_telefon>
+			<ansprechpartner_fax>04105 / 9333</ansprechpartner_fax>
+			<ansprechpartner_email>odovacar.poupard@web.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000002</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Brosco</name>
+			<name_ergaenzung>Hebel</name_ergaenzung>
+			<ansprechpartner_anrede>Herr</ansprechpartner_anrede>
+			<ansprechpartner_name>Brosco</ansprechpartner_name>
+			<ansprechpartner_telefon>010374 / 7612</ansprechpartner_telefon>
+			<ansprechpartner_fax>05800 / 3473</ansprechpartner_fax>
+			<ansprechpartner_email>hebel.brosco@gmail.com</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000003</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Lysak</name>
+			<name_ergaenzung>Kamron</name_ergaenzung>
+			<ansprechpartner_anrede>Herr</ansprechpartner_anrede>
+			<ansprechpartner_name>Lysak</ansprechpartner_name>
+			<ansprechpartner_telefon>08392 / 29680</ansprechpartner_telefon>
+			<ansprechpartner_fax>08027 / 31529</ansprechpartner_fax>
+			<ansprechpartner_email>kamron.lysak@unitybox.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000004</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Laporta</name>
+			<name_ergaenzung>Iliana</name_ergaenzung>
+			<ansprechpartner_anrede>Frau</ansprechpartner_anrede>
+			<ansprechpartner_name>Laporta</ansprechpartner_name>
+			<ansprechpartner_telefon>05678 / 50494</ansprechpartner_telefon>
+			<ansprechpartner_fax>05005 / 36852</ansprechpartner_fax>
+			<ansprechpartner_email>iliana.laporta@mail.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000005</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Wan</name>
+			<name_ergaenzung>Ecatrinna</name_ergaenzung>
+			<ansprechpartner_anrede>Frau</ansprechpartner_anrede>
+			<ansprechpartner_name>Wan</ansprechpartner_name>
+			<ansprechpartner_telefon>09277 / 32343</ansprechpartner_telefon>
+			<ansprechpartner_fax>04646 / 53978</ansprechpartner_fax>
+			<ansprechpartner_email>ecatrinna.wan@freenet.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000006</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Liebl</name>
+			<name_ergaenzung>Shurik</name_ergaenzung>
+			<ansprechpartner_anrede>Herr</ansprechpartner_anrede>
+			<ansprechpartner_name>Liebl</ansprechpartner_name>
+			<ansprechpartner_telefon>09418 / 12269</ansprechpartner_telefon>
+			<ansprechpartner_fax>08923 / 40351</ansprechpartner_fax>
+			<ansprechpartner_email>shurik.liebl@vodafone.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000007</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Siegfreid</name>
+			<name_ergaenzung>Liljana</name_ergaenzung>
+			<ansprechpartner_anrede>Frau</ansprechpartner_anrede>
+			<ansprechpartner_name>Siegfreid</ansprechpartner_name>
+			<ansprechpartner_telefon>07573 / 5692</ansprechpartner_telefon>
+			<ansprechpartner_fax>05872 / 63946</ansprechpartner_fax>
+			<ansprechpartner_email>liljana.siegfreid@yahoo.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000008</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Abu</name>
+			<name_ergaenzung>Jörg</name_ergaenzung>
+			<ansprechpartner_anrede>Herr</ansprechpartner_anrede>
+			<ansprechpartner_name>Abu</ansprechpartner_name>
+			<ansprechpartner_telefon>07737 / 24051</ansprechpartner_telefon>
+			<ansprechpartner_fax>04232 / 5757</ansprechpartner_fax>
+			<ansprechpartner_email>jörg.abu@firemail.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000009</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Cracas</name>
+			<name_ergaenzung>Phillie</name_ergaenzung>
+			<ansprechpartner_anrede>Frau</ansprechpartner_anrede>
+			<ansprechpartner_name>Cracas</ansprechpartner_name>
+			<ansprechpartner_telefon>03083 / 8456</ansprechpartner_telefon>
+			<ansprechpartner_fax>02244 / 8438</ansprechpartner_fax>
+			<ansprechpartner_email>phillie.cracas@kabelmail.de</ansprechpartner_email>
+		</firma>
+	</unternehmenblock>
+	<melderblock>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>			
+			<quell_referenz_of>10000000</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Frau</anrede>
+			<name>Ciaramitaro</name>
+			<vorname>Blisse</vorname>
+			<telefon>03782 / 73001</telefon>
+			<fax>01527 / 10683</fax>
+			<email>blisse.ciaramitaro@aol.de</email>
+		</melder>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>10000001</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Herr</anrede>
+			<name>Poupard</name>
+			<vorname>Odovacar</vorname>
+			<telefon>02082 / 76869</telefon>
+			<fax>04105 / 9333</fax>
+			<email>odovacar.poupard@web.de</email>
+		</melder>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>10000002</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Herr</anrede>
+			<name>Brosco</name>
+			<vorname>Hebel</vorname>
+			<telefon>010374 / 7612</telefon>
+			<fax>05800 / 3473</fax>
+			<email>hebel.brosco@gmail.com</email>
+		</melder>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>10000003</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Herr</anrede>
+			<name>Lysak</name>
+			<vorname>Kamron</vorname>
+			<telefon>08392 / 29680</telefon>
+			<fax>08027 / 31529</fax>
+			<email>kamron.lysak@unitybox.de</email>
+		</melder>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>10000004</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Frau</anrede>
+			<name>Laporta</name>
+			<vorname>Iliana</vorname>
+			<telefon>05678 / 50494</telefon>
+			<fax>05005 / 36852</fax>
+			<email>iliana.laporta@mail.de</email>
+		</melder>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>10000005</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Frau</anrede>
+			<name>Wan</name>
+			<vorname>Ecatrinna</vorname>
+			<telefon>09277 / 32343</telefon>
+			<fax>04646 / 53978</fax>
+			<email>ecatrinna.wan@freenet.de</email>
+		</melder>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>10000006</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Herr</anrede>
+			<name>Liebl</name>
+			<vorname>Shurik</vorname>
+			<telefon>09418 / 12269</telefon>
+			<fax>08923 / 40351</fax>
+			<email>shurik.liebl@vodafone.de</email>
+		</melder>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>10000007</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Frau</anrede>
+			<name>Siegfreid</name>
+			<vorname>Liljana</vorname>
+			<telefon>07573 / 5692</telefon>
+			<fax>05872 / 63946</fax>
+			<email>liljana.siegfreid@yahoo.de</email>
+		</melder>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>10000008</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Herr</anrede>
+			<name>Abu</name>
+			<vorname>Jörg</vorname>
+			<telefon>07737 / 24051</telefon>
+			<fax>04232 / 5757</fax>
+			<email>jörg.abu@firemail.de</email>
+		</melder>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>00</amt>
+			<quell_referenz_of>10000009</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Frau</anrede>
+			<name>Cracas</name>
+			<vorname>Phillie</vorname>
+			<telefon>03083 / 8456</telefon>
+			<fax>02244 / 8438</fax>
+			<email>phillie.cracas@kabelmail.de</email>
+		</melder>
+	</melderblock>
+	<vorbelegungsblock>
+		<!--es folgen 1 bis n Vorbelegungen-->
+		<vorbelegung>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000000</quell_referenz_of>
+			<quell_referenz_int/>
+			<melder_kennung/>
+			<bzr>200307</bzr>
+			<formularname/>
+			<aktion>ANY</aktion>
+			<!--es folgen 0 bis n Vorbelegungswerte-->
+			<params>
+				<param name="felda"><![CDATA[werta]]></param>
+				<param name="feldb"><![CDATA[wertb]]></param>
+				<param name="feldc"><![CDATA[wertc]]></param>
+				<param name="felda"><![CDATA[werta2c]]></param>
+			</params>
+		</vorbelegung>		
+	</vorbelegungsblock>
+</regdbdaten>

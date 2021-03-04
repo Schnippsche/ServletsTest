@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<regdbdaten>
+	<adressenblock>
+		<adresse>
+			<stat_online_key></stat_online_key>
+			<amt></amt>
+			<quell_referenz_of></quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Obere Sandstr.</strasse>
+			<hausnummer>57</hausnummer>
+			<postleitzahl>27245</postleitzahl>
+			<ort>Barenburg, Flecken</ort>
+			<postfach>27245</postfach>
+			<postfach_plz>27245</postfach_plz>
+			<postfach_ort>Barenburg, Flecken</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>xxxxxxxx</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000002</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Baumtwiete</strasse>
+			<hausnummer>555</hausnummer>
+			<postleitzahl>56479</postleitzahl>
+			<ort>Neunkirchen</ort>
+			<postfach>56479</postfach>
+			<postfach_plz>56479</postfach_plz>
+			<postfach_ort>Neunkirchen</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>22</amt>
+			<quell_referenz_of>10000003</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Mittlerer Kaulberg</strasse>
+			<hausnummer>107</hausnummer>
+			<postleitzahl>19406</postleitzahl>
+			<ort>Hohen Pritz</ort>
+			<postfach>19406</postfach>
+			<postfach_plz>19406</postfach_plz>
+			<postfach_ort>Hohen Pritz</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000004</quell_referenz_of>
+			<aktion>WURST</aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Stadtdeich</strasse>
+			<hausnummer>150</hausnummer>
+			<postleitzahl>47495</postleitzahl>
+			<ort>Rheinberg</ort>
+			<postfach>47495</postfach>
+			<postfach_plz>47495</postfach_plz>
+			<postfach_ort>Rheinberg</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+		<adresse>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000005</quell_referenz_of>
+			<aktion></aktion>
+			<kurztext>Kurztext</kurztext>
+			<strasse>Obeliskgasse</strasse>
+			<hausnummer>13</hausnummer>
+			<postleitzahl>14822</postleitzahl>
+			<ort>Borkwalde</ort>
+			<postfach>14822</postfach>
+			<postfach_plz>14822</postfach_plz>
+			<postfach_ort>Borkwalde</postfach_ort>
+			<land>Land</land>
+			<zusatz1>zusatz1</zusatz1>
+			<zusatz2>zusatz2</zusatz2>
+			<zusatz3>zusatz3</zusatz3>
+			<zusatz4>zusatz4</zusatz4>
+			<zusatz5>zusatz5</zusatz5>
+			<zusatz6>zusatz6</zusatz6>
+			<zusatz7>zusatz7</zusatz7>
+			<zusatz8>zusatz8</zusatz8>
+			<zusatz9>zusatz9</zusatz9>
+			<zusatz10>zusatz10</zusatz10>
+		</adresse>
+	</adressenblock>
+	<unternehmenblock>
+		<firma>
+			<stat_online_key>42111001</stat_online_key>
+			<amt>00</amt>
+			<quell_referenz_of>10000000</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Ciaramitaro</name>
+			<name_ergaenzung>Blisse</name_ergaenzung>
+			<kurztext>Kurztext</kurztext>
+			<ansprechpartner_anrede>Frau</ansprechpartner_anrede>
+			<ansprechpartner_name>Ciaramitaro</ansprechpartner_name>
+			<ansprechpartner_telefon>03782 / 73001</ansprechpartner_telefon>
+			<ansprechpartner_fax>01527 / 10683</ansprechpartner_fax>
+			<ansprechpartner_email>blisse.ciaramitaro@aol.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key></stat_online_key>
+			<amt></amt>
+			<quell_referenz_of></quell_referenz_of>
+			<aktion></aktion>
+			<name>Poupard</name>
+			<name_ergaenzung>Odovacar</name_ergaenzung>
+			<ansprechpartner_anrede>Herr</ansprechpartner_anrede>
+			<ansprechpartner_name>Poupard</ansprechpartner_name>
+			<ansprechpartner_telefon>02082 / 76869</ansprechpartner_telefon>
+			<ansprechpartner_fax>04105 / 9333</ansprechpartner_fax>
+			<ansprechpartner_email>odovacar.poupard@web.de</ansprechpartner_email>
+		</firma>
+		<firma>
+			<stat_online_key>xxxxxx</stat_online_key>
+			<amt>11</amt>
+			<quell_referenz_of>x</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<name>Brosco</name>
+			<name_ergaenzung>Hebel</name_ergaenzung>
+			<ansprechpartner_anrede>Herr</ansprechpartner_anrede>
+			<ansprechpartner_name>Brosco</ansprechpartner_name>
+			<ansprechpartner_telefon>010374 / 7612</ansprechpartner_telefon>
+			<ansprechpartner_fax>05800 / 3473</ansprechpartner_fax>
+			<ansprechpartner_email>hebel.brosco@gmail.com</ansprechpartner_email>
+		</firma>
+
+
+	</unternehmenblock>
+	<melderblock>
+		<melder>
+			<stat_online_key></stat_online_key>
+			<bzr></bzr>
+			<amt></amt>
+			<quell_referenz_of></quell_referenz_of>
+			<aktion></aktion>
+			<anrede>Frau</anrede>
+			<name>Ciaramitaro</name>
+			<vorname>Blisse</vorname>
+			<telefon>03782 / 73001</telefon>
+			<fax>01527 / 10683</fax>
+			<email>blisse.ciaramitaro@aol.de</email>
+		</melder>
+		<melder>
+			<stat_online_key>x'"xxxx</stat_online_key>
+			<bzr></bzr>
+			<amt>"'xx'"</amt>
+			<quell_referenz_of>x</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Herr</anrede>
+			<name>Poupard</name>
+			<vorname>Odovacar</vorname>
+			<telefon>02082 / 76869</telefon>
+			<fax>04105 / 9333</fax>
+			<email>odovacar.poupard@web.de</email>
+		</melder>
+		<melder>
+			<stat_online_key>42111001</stat_online_key>
+			<bzr>201801</bzr>
+			<amt>02</amt>
+			<quell_referenz_of>10000002</quell_referenz_of>
+			<aktion>ANY</aktion>
+			<anrede>Herr</anrede>
+			<name>Brosco</name>
+			<vorname>Hebel</vorname>
+			<telefon>010374 / 7612</telefon>
+			<fax>05800 / 3473</fax>
+			<email>hebel.brosco@gmail.com</email>
+		</melder>
+					</melderblock>
+	<vorbelegungsblock>
+		<!--es folgen 1 bis n Vorbelegungen-->
+		<vorbelegung>
+			<stat_online_key></stat_online_key>
+			<amt></amt>
+			<quell_referenz_of></quell_referenz_of>
+			<quell_referenz_int/>
+			<melder_kennung></melder_kennung>
+			<bzr>200307</bzr>
+			<formularname/>
+			<aktion>ANY</aktion>
+			<!--es folgen 0 bis n Vorbelegungswerte-->
+			<params>
+				<param name="felda"><![CDATA[werta]]></param>
+				<param name="feldb"><![CDATA[wertb]]></param>
+				<param name="feldc"><![CDATA[wertc]]></param>
+				<param name="felda"><![CDATA[werta2c]]></param>
+			</params>
+		</vorbelegung>		
+	</vorbelegungsblock>
+</regdbdaten>

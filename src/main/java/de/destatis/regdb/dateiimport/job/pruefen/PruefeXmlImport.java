@@ -9,6 +9,7 @@ import de.destatis.regdb.dateiimport.job.xmlimport.XmlImportJob;
 import de.destatis.regdb.dateiimport.reader.SegmentedXmlFileReader;
 import de.destatis.regdb.db.ResultRow;
 import de.destatis.regdb.db.SqlUtil;
+import de.destatis.regdb.db.StringUtil;
 import de.werum.sis.idev.res.job.JobException;
 
 import java.text.MessageFormat;
@@ -20,8 +21,6 @@ import java.util.HashMap;
  */
 public class PruefeXmlImport extends AbstractPruefeImport<XmlBean>
 {
-  private String statOnlineKey;
-  private String amt;
   private Integer quellReferenzId;
   private final HashMap<String, Integer> amtStatOnlineKeys;
 
@@ -40,15 +39,18 @@ public class PruefeXmlImport extends AbstractPruefeImport<XmlBean>
   @Override
   protected void validate(ArrayList<XmlBean> rows, int offset) throws JobException
   {
+     String amt;
     for (XmlBean bean : rows)
     {
+      amt = "";
+      String statOnlineKey = "";
       if (pruefUtil.checkNichtLeer(bean.getAmt(), "'Amt'", bean.getRowNumber()))
       {
-        this.amt = bean.getAmt();
+        amt = bean.getAmt();
       }
       if (pruefUtil.checkNichtLeer(bean.getStatOnlineKey(), "'Stat-Online-Key'", bean.getRowNumber()))
       {
-        this.statOnlineKey = bean.getStatOnlineKey();
+        statOnlineKey = bean.getStatOnlineKey();
       }
       if (pruefUtil.checkNichtLeer(bean.getAktion(), "'Aktion'", bean.getRowNumber()))
       {
@@ -58,7 +60,7 @@ public class PruefeXmlImport extends AbstractPruefeImport<XmlBean>
           pruefUtil.addError(bean.getRowNumber(), "Ungültige Aktion '" + aktion + "'");
         }
       }
-      if (amt != null && statOnlineKey != null)
+      if (!amt.isEmpty() && !statOnlineKey.isEmpty())
         pruefeStatOnlineKey(bean);
     }
   }
@@ -67,18 +69,18 @@ public class PruefeXmlImport extends AbstractPruefeImport<XmlBean>
   private void pruefeStatOnlineKey(XmlBean bean) throws JobException
   {
     // Pruefe auf passenden STAT-ONLINE-KEY und ermittle dabei die StatistikId und quellReferenzId
-    String key = this.amt + "|" + this.statOnlineKey;
+    String key = bean.getAmt() + "|" + bean.getStatOnlineKey();
     Integer statistId = this.amtStatOnlineKeys.get(key);
     Integer quellRefId;
     // Neu aufnehmen?
     if (statistId == null)
     {
-      String sql = MessageFormat.format(RegisterImportJob.SQL_SELECT_STATONLINEKEY, amt, statOnlineKey);
+      String sql = MessageFormat.format(RegisterImportJob.SQL_SELECT_STATONLINEKEY, StringUtil.escapeSqlString(bean.getAmt()), StringUtil.escapeSqlString(bean.getStatOnlineKey()));
       ResultRow row = sqlUtil.fetchOne(sql);
       if (row != null)
       {
         Integer statistikId = row.getInt(1);
-        this.amtStatOnlineKeys.put(key, statistId);
+        this.amtStatOnlineKeys.put(key, statistikId);
         bean.setStatistikId(statistikId);
         jobBean.statistikId = statistikId;
         quellRefId = row.getInt(2);
@@ -92,7 +94,7 @@ public class PruefeXmlImport extends AbstractPruefeImport<XmlBean>
         }
       } else
       {
-        pruefUtil.addError(bean.getRowNumber(), "Kombination aus Amt (" + amt + ") und StatOnlineKey (" + statOnlineKey + ") existiert nicht!");
+        pruefUtil.addError(bean.getRowNumber(), "Kombination aus Amt (" + bean.getAmt() + ") und StatOnlineKey (" + bean.getStatOnlineKey() + ") existiert nicht!");
       }
     }
   }

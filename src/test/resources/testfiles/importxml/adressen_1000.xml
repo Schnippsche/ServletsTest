@@ -38030,7 +38030,7 @@
 		<melder>
 			<stat_online_key>42111001</stat_online_key>
 			<bzr>201801</bzr>
-			<amt>01</amt>
+			<amt>00</amt>
 			<quell_referenz_of>10000001</quell_referenz_of>
 			<aktion>ANY</aktion>
 			<anrede>Herr</anrede>
@@ -38043,7 +38043,7 @@
 		<melder>
 			<stat_online_key>42111001</stat_online_key>
 			<bzr>201801</bzr>
-			<amt>02</amt>
+			<amt>00</amt>
 			<quell_referenz_of>10000002</quell_referenz_of>
 			<aktion>ANY</aktion>
 			<anrede>Herr</anrede>

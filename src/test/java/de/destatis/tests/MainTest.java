@@ -2,10 +2,7 @@ package de.destatis.tests;
 
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.dateiimport.ImportFormat;
-import de.destatis.regdb.dateiimport.job.pruefen.PruefUtil;
-import de.destatis.regdb.dateiimport.job.pruefen.PruefeIdevImport;
-import de.destatis.regdb.dateiimport.job.pruefen.PruefeRegisterImport;
-import de.destatis.regdb.dateiimport.job.pruefen.PruefeVorbelegungenImport;
+import de.destatis.regdb.dateiimport.job.pruefen.*;
 import de.destatis.regdb.db.SqlUtil;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.job.LogLevel;
@@ -143,7 +140,7 @@ public class MainTest
       imp.checkFile();
       showLogErrors(bean);
       assertTrue(bean.getFormatPruefung().anzahlFehler > 7);
-      assertEquals(bean.getImportdatei().anzahlDatensaetze, 14);
+      assertEquals(14, bean.getImportdatei().anzahlDatensaetze);
     } catch (JobException e)
     {
       log.error(e.getMessage());
@@ -169,9 +166,9 @@ public class MainTest
     {
       imp.checkFile();
       showLogErrors(bean);
-      assertEquals(bean.getFormatPruefung().anzahlFehler, 0);
-      assertEquals(bean.getImportdatei().anzahlDatensaetze, 10);
-      assertEquals(bean.getAdressen().getOrdnungsfelder().size(), 10);
+      assertEquals(0, bean.getFormatPruefung().anzahlFehler);
+      assertEquals(10, bean.getImportdatei().anzahlDatensaetze);
+      assertEquals(10, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
       log.error(e.getMessage());
@@ -201,8 +198,8 @@ public class MainTest
       imp.checkFile();
       showLogErrors(bean);
       assertTrue(bean.getFormatPruefung().anzahlFehler > 9);
-      assertEquals(bean.getImportdatei().anzahlDatensaetze, 6);
-      assertEquals(bean.getAdressen().getOrdnungsfelder().size(), 0);
+      assertEquals(6, bean.getImportdatei().anzahlDatensaetze);
+      assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
       log.error(e.getMessage());
@@ -230,9 +227,9 @@ public class MainTest
     {
       imp.checkFile();
       showLogErrors(bean);
-      assertEquals(bean.getFormatPruefung().anzahlFehler, 0);
-      assertEquals(bean.getImportdatei().anzahlDatensaetze, 100);
-      assertEquals(bean.getAdressen().getOrdnungsfelder().size(), 100);
+      assertEquals(0, bean.getFormatPruefung().anzahlFehler);
+      assertEquals(100, bean.getImportdatei().anzahlDatensaetze);
+      assertEquals(100, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
       log.error(e.getMessage());
@@ -261,8 +258,8 @@ public class MainTest
       imp.checkFile();
       showLogErrors(bean);
       assertTrue(bean.getFormatPruefung().anzahlFehler > 7);
-      assertEquals(bean.getImportdatei().anzahlDatensaetze, 6);
-      assertEquals(bean.getAdressen().getOrdnungsfelder().size(), 0);
+      assertEquals(6, bean.getImportdatei().anzahlDatensaetze);
+      assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
       log.error(e.getMessage());
@@ -291,11 +288,71 @@ public class MainTest
       imp.checkFile();
       showLogErrors(bean);
       assertTrue(bean.getFormatPruefung().anzahlFehler > 7);
-      assertEquals(bean.getImportdatei().anzahlDatensaetze, 8);
-      assertEquals(bean.getAdressen().getOrdnungsfelder().size(), 0);
+      assertEquals(8, bean.getImportdatei().anzahlDatensaetze);
+      assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
       log.error(e.getMessage());
+      fail();
+    }
+  }
+
+  @DisplayName("pruefe fehlerhaften Xmlimport")
+  @Test
+  public void pruefeFehlerhaftenXmlImport()
+  {
+    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    JobBean bean = new JobBean();
+    bean.getFormatPruefung().maximaleAnzahlFehler = 100;
+    bean.getImportdatei().importFormat = ImportFormat.XMLIMPORT;
+    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
+    bean.getImportdatei().importVerzeichnis = Paths.get(file.toString(), "importxml").toString();
+    bean.getImportdatei().dateiName = "fehlerhaft.xml";
+    bean.quellReferenzId = 1;
+    bean.importBlockGroesse = 50;
+    bean.quellReferenzNumerisch = true;
+    bean.jobId = 1;
+    PruefeXmlImport imp = new PruefeXmlImport(bean, sqlUtil);
+    try
+    {
+      imp.checkFile();
+      showLogErrors(bean);
+      assertTrue(bean.getFormatPruefung().anzahlFehler > 16);
+      assertEquals(12, bean.getImportdatei().anzahlDatensaetze);
+      assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
+    } catch (JobException e)
+    {
+      log.error(e.getMessage(), e);
+      fail();
+    }
+  }
+
+  @DisplayName("pruefe korrekten Xmlimport")
+  @Test
+  public void pruefeKorrektenXmlImport()
+  {
+    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    JobBean bean = new JobBean();
+    bean.getFormatPruefung().maximaleAnzahlFehler = 100;
+    bean.getImportdatei().importFormat = ImportFormat.XMLIMPORT;
+    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
+    bean.getImportdatei().importVerzeichnis = Paths.get(file.toString(), "importxml").toString();
+    bean.getImportdatei().dateiName = "korrekt.xml";
+    bean.quellReferenzId = 1;
+    bean.importBlockGroesse = 50;
+    bean.quellReferenzNumerisch = true;
+    bean.jobId = 1;
+    PruefeXmlImport imp = new PruefeXmlImport(bean, sqlUtil);
+    try
+    {
+      imp.checkFile();
+      showLogErrors(bean);
+      assertEquals(0, bean.getFormatPruefung().anzahlFehler);
+      assertEquals(31, bean.getImportdatei().anzahlDatensaetze);
+      assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
+    } catch (JobException e)
+    {
+      log.error(e.getMessage(), e);
       fail();
     }
   }
