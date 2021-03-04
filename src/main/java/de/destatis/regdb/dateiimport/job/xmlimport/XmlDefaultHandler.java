@@ -1,14 +1,21 @@
 package de.destatis.regdb.dateiimport.job.xmlimport;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
+
+import javax.xml.XMLConstants;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 /**
  * @author Stefan
@@ -21,7 +28,7 @@ XmlDefaultHandler extends DefaultHandler
   private static final String KEY_STATSPEZ = "statspez_key";
   private static final String XML_PARAM = "param";
   protected final LoggerIfc log = Logger.getInstance()
-      .getLogger(this.getClass());
+    .getLogger(this.getClass());
   private final StringBuilder builder;
   private final HashMap<String, String> values;
   private final ArrayList<XmlBean> beans;
@@ -29,11 +36,13 @@ XmlDefaultHandler extends DefaultHandler
   private final int offset;
   private final int maxSize;
   private String attributeName;
+  private Locator locator;
+  private int lineNumber;
 
   /**
    * Instantiates a new xml default handler.
    *
-   * @param offset the offset
+   * @param offset  the offset
    * @param maxSize the max size
    */
   public XmlDefaultHandler(int offset, int maxSize)
@@ -57,12 +66,18 @@ XmlDefaultHandler extends DefaultHandler
     return this.beans;
   }
 
+  @Override
+  public void setDocumentLocator(final Locator locator)
+  {
+    this.locator = locator; // Save the locator, so that it can be used later for line tracking when traversing nodes.
+  }
+
   /**
    * Start element.
    *
-   * @param uri the uri
-   * @param localName the local name
-   * @param qName the q name
+   * @param uri        the uri
+   * @param localName  the local name
+   * @param qName      the q name
    * @param attributes the attributes
    */
   @Override
@@ -86,14 +101,15 @@ XmlDefaultHandler extends DefaultHandler
         }
       }
     }
+    lineNumber = locator != null ? locator.getLineNumber() : 0;
   }
 
   /**
    * End element.
    *
-   * @param uri the uri
+   * @param uri       the uri
    * @param localName the local name
-   * @param qName the q name
+   * @param qName     the q name
    * @throws SAXException the SAX exception
    */
   @Override
@@ -102,7 +118,7 @@ XmlDefaultHandler extends DefaultHandler
     String value = this.builder.toString();
     this.builder.setLength(0);
     qName = qName.trim()
-        .toLowerCase();
+      .toLowerCase();
     switch (qName)
     {
       case XmlImportJob.XML_ERHEBUNG:
@@ -132,8 +148,8 @@ XmlDefaultHandler extends DefaultHandler
   /**
    * Characters.
    *
-   * @param ch the ch
-   * @param start the start
+   * @param ch     the ch
+   * @param start  the start
    * @param length the length
    */
   @Override
@@ -146,7 +162,7 @@ XmlDefaultHandler extends DefaultHandler
   /**
    * Adds the element.
    *
-   * @param identifier the identifier
+   * @param identifier  the identifier
    * @param elementName the element name
    * @throws SAXException the SAX exception
    */
@@ -156,7 +172,9 @@ XmlDefaultHandler extends DefaultHandler
     if (this.rows > this.offset)
     {
       this.values.put(XmlBean.ELEMENT_NAME, elementName);
-      this.beans.add(new XmlBean(identifier, this.values));
+      XmlBean bean = new XmlBean(identifier, this.values);
+      bean.setRowNumber(lineNumber);
+      this.beans.add(bean);
     }
     this.values.clear();
     if (this.beans.size() >= this.maxSize)
@@ -165,5 +183,26 @@ XmlDefaultHandler extends DefaultHandler
       throw new SAXException("LIMIT");
     }
   }
-
+  /**
+   * Gets the schema.
+   *
+   * @return the schema
+   */
+  public Schema getSchema()
+  {
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    Schema schema = null;
+    try
+    {
+      File file = new File(getClass().getResource("regdb.xsd")
+        .toURI());
+      this.log.debug("File:" + file.toString());
+      schema = schemaFactory.newSchema(file);
+      this.log.debug("Verwende XML Schema " + schema);
+    } catch (SAXException | URISyntaxException exc)
+    {
+      log.error("Fehler bei XML DTD" + exc.getMessage(), exc);
+    }
+    return schema;
+  }
 }

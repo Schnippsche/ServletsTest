@@ -1,6 +1,8 @@
 package de.destatis.regdb.dateiimport.job.pruefen;
 
 import de.destatis.regdb.JobBean;
+import de.destatis.regdb.dateiimport.job.AbstractJob;
+import de.destatis.regdb.dateiimport.job.melderkontoimport.MelderkontoImportJob;
 import de.destatis.regdb.dateiimport.reader.SegmentedCsvFileReader;
 import de.destatis.regdb.db.PreparedSelect;
 import de.destatis.regdb.db.SqlUtil;
@@ -17,8 +19,10 @@ import java.util.HashMap;
 public class PruefeMelderkontoImport extends AbstractPruefeImport<String[]>
 {
   private static final String SQL_SELECT_MELDERKONTO = "SELECT MKTO_ID from melderkonto WHERE MELDUNG_ID = ? AND AMT=? and STATISTIK_ID = ?";
+  /**
+   * The Quell ref id.
+   */
   int quellRefId = 0;
-
 
   /**
    * Instantiates a new Pruefe idev import.
@@ -84,6 +88,12 @@ public class PruefeMelderkontoImport extends AbstractPruefeImport<String[]>
       }
     }
     pruefUtil.checkMeldungsIdsExistieren(meldungIdRowNr);
+  }
+
+  @Override
+  protected AbstractJob jobAfterValidation()
+  {
+    return new MelderkontoImportJob(this.jobBean);
   }
 
 }

@@ -1,6 +1,7 @@
 package de.destatis.regdb.dateiimport.job.pruefen;
 
 import de.destatis.regdb.JobBean;
+import de.destatis.regdb.dateiimport.job.AbstractJob;
 import de.destatis.regdb.dateiimport.job.registerimport.RegisterImportJob;
 import de.destatis.regdb.dateiimport.reader.SegmentedStringFileReader;
 import de.destatis.regdb.db.ResultRow;
@@ -80,7 +81,7 @@ public class PruefeRegisterImport extends AbstractPruefeImport<String>
           if (quellReferenzId == null)
           {
             quellReferenzId = quellRefId;
-            pruefUtil.checkAdressbestand(quellReferenzId);
+            this.jobBean.quellReferenzId = quellRefId;
           } else if (!quellReferenzId.equals(quellRefId))
           {
             pruefUtil.addError(null, "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
@@ -117,6 +118,11 @@ public class PruefeRegisterImport extends AbstractPruefeImport<String>
           .add(of);
       }
     }
+  }
+  @Override
+  protected AbstractJob jobAfterValidation()
+  {
+    return new RegisterImportJob(this.jobBean);
   }
 
 }

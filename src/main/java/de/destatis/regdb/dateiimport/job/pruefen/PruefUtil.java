@@ -33,7 +33,9 @@ public class PruefUtil
   private static final String SQL_SELECT_ORDNUNGSFELD = "SELECT QUELL_REFERENZ_OF_LAENGE,QUELL_REFERENZ_OF_TYP, QUELL_REFERENZ_KUERZEL FROM quell_referenz_verwaltung WHERE QUELL_REFERENZ_ID = ?";
   private static final String SQL_SELECT_OF_EXISTS = "SELECT QUELL_REFERENZ_OF FROM adressen WHERE QUELL_REFERENZ_ID = {0} AND QUELL_REFERENZ_OF IN({1}) AND STATUS != \"LOESCH\"";
   private static final String SQL_SELECT_MELDER_EXISTS = "SELECT MELDER_ID FROM melder WHERE MELDER_ID IN({0}) AND STATUS != \"LOESCH\"";
-  private static final String SQL_SELECT_MELDUNGSID_EXISTS = "SELECT MELDUNG_ID FROM meldung WHERE MELDUNG_ID IN({1}) AND STATUS != \"LOESCH\"";
+  private static final String SQL_SELECT_MELDUNGSID_EXISTS = "SELECT MELDUNG_ID FROM meldung WHERE MELDUNG_ID IN({0}) AND STATUS != \"LOESCH\"";
+  private static final String SQL_SELECT_QUELLREFID_IMPORT = "SELECT COUNT(*), quell_referenz_verwaltung.QUELL_REFERENZ_KUERZEL FROM import_verwaltung INNER JOIN quell_referenz_verwaltung USING(QUELL_REFERENZ_ID) WHERE import_verwaltung.GESAMT_STATUS = \"AKTIV\" AND import_verwaltung.QUELL_REFERENZ_ID={0} AND import_verwaltung.IMPORT_VERWALTUNG_ID != {1}";
+
   private final JobBean jobBean;
   private final SqlUtil sqlUtil;
   private boolean fehlerLimitNichtErreicht;
@@ -267,13 +269,18 @@ public class PruefUtil
     return removeExistingEntries(ofRows, sql, MSG_OF_NICHT_VORHANDEN);
   }
 
+  /**
+   * Check meldungs ids existieren boolean.
+   *
+   * @param idRows the id rows
+   * @return the boolean
+   * @throws JobException the job exception
+   */
   public boolean checkMeldungsIdsExistieren(Map<String, Integer> idRows) throws JobException
   {
     String sql = MessageFormat.format(SQL_SELECT_MELDUNGSID_EXISTS, sqlUtil.convertStringList(idRows.keySet()));
     return removeExistingEntries(idRows, sql, MSG_MELDUNG_NICHT_VORHANDEN);
   }
-
-
 
   private boolean removeExistingEntries(Map<String, Integer> checkMap, String sql, String msgNichtVorhanden) throws JobException
   {
@@ -323,7 +330,7 @@ public class PruefUtil
    */
   public boolean checkIstZahl(String pruefWert, int rowNumber)
   {
-    if (numberPattern.matcher(pruefWert)
+    if (pruefWert != null && numberPattern.matcher(pruefWert)
       .matches())
     {
       return true;
@@ -332,4 +339,27 @@ public class PruefUtil
     return false;
   }
 
+  /**
+   * Check running import boolean.
+   *
+   * @param quellReferenzId the quell referenz id
+   * @return the boolean
+   * @throws JobException the job exception
+   */
+  public boolean checkRunningImport(Integer quellReferenzId) throws JobException
+  {
+    if (quellReferenzId != null)
+    {
+      String sql = MessageFormat.format(SQL_SELECT_QUELLREFID_IMPORT, "" + quellReferenzId, "" + this.jobBean.jobId);
+      ResultRow rs = sqlUtil.fetchOne(sql);
+      if (rs != null && rs.getInt(1) > 0)
+      {
+        String fehler = MessageFormat.format("Es läuft bereits ein Import auf dem Adressbestand {0}, ID {1}", rs.getString(2), rs.getString(1));
+        this.jobBean.getFormatPruefung()
+          .addFehler(new FormatError(null, fehler));
+        return false;
+      }
+    }
+    return true;
+  }
 }

@@ -1,6 +1,8 @@
 package de.destatis.regdb.dateiimport.job.pruefen;
 
 import de.destatis.regdb.JobBean;
+import de.destatis.regdb.dateiimport.job.AbstractJob;
+import de.destatis.regdb.dateiimport.job.adressimport.AdressImportJob;
 import de.destatis.regdb.dateiimport.reader.SegmentedCsvFileReader;
 import de.destatis.regdb.db.SqlUtil;
 import de.werum.sis.idev.res.job.JobException;
@@ -67,6 +69,12 @@ public class PruefeIdevImport extends AbstractPruefeImport<String[]>
         }
       }
     }
+  }
+
+  @Override
+  protected AbstractJob jobAfterValidation()
+  {
+    return new AdressImportJob(this.jobBean);
   }
 
 }

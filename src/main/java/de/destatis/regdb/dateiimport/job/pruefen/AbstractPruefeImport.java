@@ -1,7 +1,11 @@
 package de.destatis.regdb.dateiimport.job.pruefen;
 
 import de.destatis.regdb.JobBean;
+import de.destatis.regdb.JobStatus;
+import de.destatis.regdb.dateiimport.job.AbstractJob;
+import de.destatis.regdb.dateiimport.job.AuswirkungenJob;
 import de.destatis.regdb.dateiimport.reader.SegmentedFileReader;
+import de.destatis.regdb.db.LoeschUtil;
 import de.destatis.regdb.db.SqlUtil;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.log.Logger;
@@ -25,6 +29,7 @@ public abstract class AbstractPruefeImport<T>
    * The constant MSG_PRUEFENDE.
    */
   protected static final String MSG_PRUEFENDE = "Prüfung mit {0} Fehlern abgeschlossen";
+
   /**
    * The Log.
    */
@@ -69,7 +74,7 @@ public abstract class AbstractPruefeImport<T>
    *
    * @throws JobException the job exception
    */
-  public void checkFile() throws JobException
+  public AbstractJob checkFile() throws JobException
   {
 
     int offset = 0;
@@ -79,7 +84,7 @@ public abstract class AbstractPruefeImport<T>
     {
       do
       {
-        this.log.debug(MessageFormat.format(MSG_PRUEFSTART, offset, offset + jobBean.importBlockGroesse - 1, jobBean.getImportdatei().getPath().getFileName()));
+        this.log.info(MessageFormat.format(MSG_PRUEFSTART, offset, offset + jobBean.importBlockGroesse - 1, jobBean.getImportdatei().getPath().getFileName()));
         rows = reader.readSegment(jobBean.getImportdatei().getPath(), jobBean.getImportdatei().getCharset(), offset, jobBean.importBlockGroesse);
         if (!rows.isEmpty())
         {
@@ -89,8 +94,38 @@ public abstract class AbstractPruefeImport<T>
         }
       } while (!rows.isEmpty() && pruefUtil.isFehlerLimitNichtErreicht() && rows.size() == jobBean.importBlockGroesse);
     }
-    this.log.debug(MessageFormat.format(MSG_PRUEFENDE, jobBean.getFormatPruefung().anzahlFehler));
+    pruefUtil.checkRunningImport(this.jobBean.quellReferenzId);
+    this.log.info(MessageFormat.format(MSG_PRUEFENDE, jobBean.getFormatPruefung().anzahlFehler));
+    if (!this.jobBean.getFormatPruefung().fehlerfrei)
+    {
+      String fehlerText;
+      if (this.jobBean.getFormatPruefung().anzahlFehler == 1)
+      {
+        fehlerText = this.jobBean.getFormatPruefung().getSortedErrors().get(0).toString();
+      } else
+      {
+        fehlerText = "Es sind " + jobBean.getFormatPruefung().anzahlFehler + " vorhanden; Details siehe Protokoll";
+      }
+      this.jobBean.setStatusAndInfo(JobStatus.FEHLER, fehlerText);
+      return null;
+    }
+
+
+    if (this.jobBean.getSimulation().importSimulieren)
+    {
+      LoeschUtil util = new LoeschUtil(sqlUtil);
+      util.loescheStandardWerte(this.jobBean.amt, this.jobBean.statistikId, this.jobBean.sachbearbeiterId);
+      util.speichereStandardwerte(this.jobBean
+        .getImportdatei().originalDateiname, this.jobBean.amt, this.jobBean.statistikId, this.jobBean.jobId, this.jobBean.sachbearbeiterId, this.jobBean.zeitpunktEintrag);
+      return new AuswirkungenJob(this.jobBean);
+    }
+    if (this.jobBean.loescheDaten)
+    {
+      return new AuswirkungenJob(this.jobBean);
+    }
+    return jobAfterValidation();
   }
+
 
   /**
    * Validate.
@@ -100,6 +135,8 @@ public abstract class AbstractPruefeImport<T>
    * @throws JobException the job exception
    */
   protected abstract void validate(ArrayList<T> rows, int offset) throws JobException;
+
+  protected abstract AbstractJob jobAfterValidation();
 
   /**
    * Validate before file load boolean.
@@ -111,4 +148,5 @@ public abstract class AbstractPruefeImport<T>
   {
     return true;
   }
+
 }
