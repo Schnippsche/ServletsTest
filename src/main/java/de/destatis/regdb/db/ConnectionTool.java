@@ -20,14 +20,22 @@ import de.werum.sis.idev.res.log.LoggerIfc;
 public class ConnectionTool
 {
 
-  /** The instance. */
+  /**
+   * The instance.
+   */
   private static ConnectionTool instance = null;
 
-  /** The broker. */
-  private final DbConnectionBroker broker;
+  /**
+   * The broker.
+   */
+  private DbConnectionBroker broker;
 
-  /** The log. */
+  /**
+   * The log.
+   */
   private final LoggerIfc log;
+
+  private Connection testConnection = null;
 
   /**
    * Instantiates a new connection tool.
@@ -35,8 +43,7 @@ public class ConnectionTool
   private ConnectionTool()
   {
     this.log = Logger.getInstance()
-        .getLogger(this.getClass());
-    this.broker = ConnectionManager.getConnectionBroker(DBConfig.INT_DBNAME, ConnectionManager.TYP_DEFAULT);
+      .getLogger(this.getClass());
   }
 
   /**
@@ -60,9 +67,15 @@ public class ConnectionTool
    */
   public Connection getConnection()
   {
+    if (testConnection != null)
+      return testConnection;
+
     Connection conn = null;
     try
     {
+      if (broker == null)
+        this.broker = ConnectionManager.getConnectionBroker(DBConfig.INT_DBNAME, ConnectionManager.TYP_DEFAULT);
+
       conn = this.broker.getConnection();
       if (conn == null || !conn.isValid(5))
       {
@@ -70,8 +83,7 @@ public class ConnectionTool
         this.broker.freeConnection(conn);
         conn = null;
       }
-    }
-    catch (SQLException e)
+    } catch (SQLException e)
     {
       this.log.error("Fehler beim Verbinden zur Datenbank:" + e.getMessage());
     }
@@ -85,6 +97,12 @@ public class ConnectionTool
    */
   public void freeConnection(Connection conn)
   {
-    this.broker.freeConnection(conn);
+    if (broker != null)
+      this.broker.freeConnection(conn);
+  }
+
+  public void setTestConnection(Connection conn)
+  {
+    this.testConnection = conn;
   }
 }

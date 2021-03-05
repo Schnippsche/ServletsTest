@@ -1,46 +1,20 @@
-USE authdb;
 TRUNCATE TABLE adressen;
-TRUNCATE TABLE adressen_daten;
-TRUNCATE TABLE ansprechpartner;
-TRUNCATE TABLE ansprechpartner_daten;
-TRUNCATE TABLE firmen;
-TRUNCATE TABLE firmen_adressen;
-TRUNCATE TABLE melder;
-TRUNCATE TABLE melder_daten;
-TRUNCATE TABLE melder_statistiken;
-TRUNCATE TABLE vorbelegung_verwaltung;
-TRUNCATE TABLE vorbelegung_verwaltung_daten;
-TRUNCATE TABLE statistiken;
-TRUNCATE TABLE quell_referenz_verwaltung;
-TRUNCATE TABLE statistiken_amt;
-
-USE regdbverwaltung;
-TRUNCATE TABLE adressen;
-TRUNCATE TABLE adressen_ch;
 TRUNCATE TABLE ansprechpartner;
 TRUNCATE TABLE adressen_melder_zp_www;
-TRUNCATE TABLE ansprechpartner_ch;
 TRUNCATE TABLE ansprechpartner_melder_zp_www;
+TRUNCATE TABLE erhebung;
 TRUNCATE TABLE firmen;
 TRUNCATE TABLE firmen_adressen;
-TRUNCATE TABLE firmen_adressen_ch;
-TRUNCATE TABLE firmen_ch;
 TRUNCATE TABLE melder;
-TRUNCATE TABLE melder_ch;
 TRUNCATE TABLE melder_statistiken;
-TRUNCATE TABLE melder_statistiken_ch;
 TRUNCATE TABLE job;
 TRUNCATE TABLE vorbelegung_verwaltung;
-TRUNCATE TABLE vorbelegung_verwaltung_ch;
 TRUNCATE TABLE vorbelegung_wert;
 TRUNCATE TABLE import_verwaltung;
 TRUNCATE TABLE import_teil;
 TRUNCATE TABLE statistiken;
-TRUNCATE TABLE statistiken_ch;
 TRUNCATE TABLE quell_referenz_verwaltung;
-TRUNCATE TABLE quell_referenz_verwaltung_ch;
 TRUNCATE TABLE statistiken_amt;
-TRUNCATE TABLE statistiken_amt_ch;
 
 # Vorbereiten von 10 Statistiken
 INSERT INTO statistiken (STATISTIK_ID, BEZEICHNUNG, KURZTEXT, ARBEITSGEBIET, EVAS, STATID, SB_FA, SB_IT, ANGEBOTSART, PERIODIZITAET, STATUS, SB_GRUPPEN_ID, ZEITPUNKT_EINTRAG) 
@@ -115,4 +89,4 @@ VALUES
 ('int_melderschluessel_threads', '4', 'INTERN', 'AKTIV', NOW());
 
 REPLACE INTO erhebung (STATISTIK_ID, AMT, BZR, AUF_BZR, ERSTER_MELDUNGSTERMIN, LETZTER_MELDUNGSTERMIN, STATSPEZ_KEY, FORMULAR_ID, SB_GRUPPEN_ID, URL_PFAD, SERVLET_PFAD, JSP_PFAD, MELDEDATEN_PFAD, PASSWD_PFAD, VBDATEN_PFAD, VORBELEGUNGSABHAENGIG, SENDEN, ZURUECKSETZEN, PRUEFUNG, LOKALSICHERUNG, SERVERSICHERUNG, ARCHIVIERUNG, WEITERE_MELDUNG, EXPORT_CSV, UMFRAGE_URL, UMFRAGE_FELD_NAME_AMT, UMFRAGE_FELD_NAME_BZR, UMFRAGE_FELD_NAME_ERHEBUNGS_ID, UMFRAGE_FELD_NAME_QUELLREFERENZ_OF, BERICHTSPFLICHTIGE, STATUS, ZEITPUNKT_EINTRAG) 
-VALUES (6, '00', '201501', '', '', '', '', 'formBXSAAAKBH', 0, '', '', '', '', '', '', 'N', 'J', 'J', 'J', 'J', 'J', 'J', 'J', 'N', NULL, NULL, NULL, NULL, NULL, 0, 'AKTIV', NOW());
+VALUES (1, '00', '201501', '', '', '', '', 'formBXSAAAKBH', 1, '', '', '', '', '', '', 'N', 'J', 'J', 'J', 'J', 'J', 'J', 'J', 'N', NULL, NULL, NULL, NULL, NULL, 0, 'AKTIV', NOW());

@@ -38,7 +38,7 @@ public class MainTest
   @Test
   public void testConnection()
   {
-    assertNotNull(getConnection(), "Connection failed");
+    assertNotNull(Tool.getConnection(), "Connection failed");
   }
 
   @DisplayName("Teste PruefUtil Methoden")
@@ -46,7 +46,7 @@ public class MainTest
   public void testPruefUtil()
   {
 
-    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 1000;
     PruefUtil util = new PruefUtil(bean, sqlUtil);
@@ -125,11 +125,11 @@ public class MainTest
   @DisplayName("pruefe fehlerhaften Registerimport")
   public void pruefeFehlerhaftenRegisterImport()
   {
-    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.REGISTERIMPORT;
-    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("registerimport").toString();
+    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("registerimport").toString();
     bean.getImportdatei().dateiName = "fehlerhaft.txt";
     bean.importBlockGroesse = 6;
     bean.jobId = 1;
@@ -151,11 +151,11 @@ public class MainTest
   @Test
   public void pruefeKorrektenRegisterImport()
   {
-    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.REGISTERIMPORT;
-    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("registerimport").toString();
+    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("registerimport").toString();
     bean.getImportdatei().dateiName = "10_saetze_korrekt.txt";
     bean.importBlockGroesse = 6;
     bean.jobId = 1;
@@ -179,12 +179,12 @@ public class MainTest
   @Test
   public void pruefeFehlerhaftenIdevImport()
   {
-    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.IMPORTMITZUSATZFELDER;
 
-    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importmitzusatzfelder").toString();
+    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("importmitzusatzfelder").toString();
     bean.getImportdatei().dateiName = "fehlerhaft.csv";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 6;
@@ -209,11 +209,11 @@ public class MainTest
   @Test
   public void pruefeKorrektenIdevImport()
   {
-    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.IMPORTMITZUSATZFELDER;
-    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importmitzusatzfelder").toString();
+    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("importmitzusatzfelder").toString();
     bean.getImportdatei().dateiName = "adressen_100.csv";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 9;
@@ -238,11 +238,11 @@ public class MainTest
   @Test
   public void pruefeFehlerhaftenVorbelegungsImport()
   {
-    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.VORBELEGUNGSIMPORT;
-    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importvorbelegungen").toString();
+    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("importvorbelegungen").toString();
     bean.getImportdatei().dateiName = "fehlerhaft.csv";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 6;
@@ -267,11 +267,11 @@ public class MainTest
   @Test
   public void pruefeKorrektenVorbelegungsImport()
   {
-    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.VORBELEGUNGSIMPORT;
-    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importvorbelegungen").toString();
+    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("importvorbelegungen").toString();
     bean.getImportdatei().dateiName = "vorbelegungen.csv";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 6;
@@ -296,11 +296,11 @@ public class MainTest
   @Test
   public void pruefeFehlerhaftenXmlImport()
   {
-    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.XMLIMPORT;
-    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importxml").toString();
+    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("importxml").toString();
     bean.getImportdatei().dateiName = "fehlerhaft.xml";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 50;
@@ -325,11 +325,11 @@ public class MainTest
   @Test
   public void pruefeKorrektenXmlImport()
   {
-    SqlUtil sqlUtil = new SqlUtil(getConnection());
+    SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.XMLIMPORT;
-    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importxml").toString();    bean.getImportdatei().dateiName = "korrekt.xml";
+    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("importxml").toString();    bean.getImportdatei().dateiName = "korrekt.xml";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 50;
     bean.quellReferenzNumerisch = true;
@@ -357,33 +357,5 @@ public class MainTest
       log.debug(bean.getFormatPruefung().getSortedErrors().get(i).toString());
     }
   }
-
-  public Connection getConnection()
-  {
-    try
-    {
-      Class.forName("com.mysql.jdbc.Driver");
-      return DriverManager
-        .getConnection("jdbc:mysql://localhost:3306/regdbtest171?zeroDateTimeBehavior=convertToNull&jdbcCompliantTruncation=false&useCursorFetch=true&useSSL=false", "root", "root");
-    } catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-  public Path getTestpath()
-  {
-    try
-    {
-      URL resource = MainTest.class.getClassLoader().getResource("testfiles");
-      assert resource != null;
-      File file = new File(resource.toURI());
-      return file.toPath();
-    } catch (Exception e)
-    {
-      log.error(e.getMessage(), e);
-    }
-    return null;
-  }
+  
 }
