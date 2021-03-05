@@ -9,7 +9,6 @@ import de.destatis.regdb.db.SqlUtil;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.job.LogLevel;
 import de.werum.sis.idev.res.log.Logger;
-import de.werum.sis.idev.res.log.LoggerIfc;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,9 +16,8 @@ import java.sql.Connection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class IdevImportTest
+public class IdevImportMitZusatzfelderTest
 {
-  private static LoggerIfc log;
 
   @BeforeAll
   public static void init()
