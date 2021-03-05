@@ -490,7 +490,7 @@ public class MelderBean extends AbstractBean
     ps.addValue(this.notNull(this.ansprechpartner.getFax())); //
     ps.addValue(this.notNull(this.ansprechpartner.getEmail())); //
     ps.addValue(this.ansprechpartner.getSachbearbeiterId()); // SB_ID
-    ps.addValue(this.ansprechpartner.getZeitpunktAenderung());
+    ps.addValue(this.getZeitpunktAenderung());
   }
 
   private void updateZeiten(PreparedUpdate ps)

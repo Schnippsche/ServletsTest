@@ -13,11 +13,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.net.URL;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.HashMap;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -112,7 +112,7 @@ public class MainTest
 
     } catch (JobException e)
     {
-      log.error(e.getMessage());
+     log.error(e.getMessage(), e);
       fail();
     }
 
@@ -129,8 +129,7 @@ public class MainTest
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.REGISTERIMPORT;
-    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
-    bean.getImportdatei().importVerzeichnis = Paths.get(file.toString(), "registerimport").toString();
+    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("registerimport").toString();
     bean.getImportdatei().dateiName = "fehlerhaft.txt";
     bean.importBlockGroesse = 6;
     bean.jobId = 1;
@@ -143,7 +142,7 @@ public class MainTest
       assertEquals(14, bean.getImportdatei().anzahlDatensaetze);
     } catch (JobException e)
     {
-      log.error(e.getMessage());
+     log.error(e.getMessage(), e);
       fail();
     }
   }
@@ -156,8 +155,7 @@ public class MainTest
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.REGISTERIMPORT;
-    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
-    bean.getImportdatei().importVerzeichnis = Paths.get(file.toString(), "registerimport").toString();
+    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("registerimport").toString();
     bean.getImportdatei().dateiName = "10_saetze_korrekt.txt";
     bean.importBlockGroesse = 6;
     bean.jobId = 1;
@@ -171,7 +169,7 @@ public class MainTest
       assertEquals(10, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
-      log.error(e.getMessage());
+     log.error(e.getMessage(), e);
       fail();
     }
 
@@ -185,8 +183,8 @@ public class MainTest
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.IMPORTMITZUSATZFELDER;
-    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
-    bean.getImportdatei().importVerzeichnis = Paths.get(file.toString(), "importmitzusatzfelder").toString();
+
+    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importmitzusatzfelder").toString();
     bean.getImportdatei().dateiName = "fehlerhaft.csv";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 6;
@@ -202,7 +200,7 @@ public class MainTest
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
-      log.error(e.getMessage());
+     log.error(e.getMessage(), e);
       fail();
     }
   }
@@ -215,8 +213,7 @@ public class MainTest
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.IMPORTMITZUSATZFELDER;
-    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
-    bean.getImportdatei().importVerzeichnis = Paths.get(file.toString(), "importmitzusatzfelder").toString();
+    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importmitzusatzfelder").toString();
     bean.getImportdatei().dateiName = "adressen_100.csv";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 9;
@@ -232,7 +229,7 @@ public class MainTest
       assertEquals(100, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
-      log.error(e.getMessage());
+     log.error(e.getMessage(), e);
       fail();
     }
   }
@@ -245,8 +242,7 @@ public class MainTest
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.VORBELEGUNGSIMPORT;
-    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
-    bean.getImportdatei().importVerzeichnis = Paths.get(file.toString(), "importvorbelegungen").toString();
+    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importvorbelegungen").toString();
     bean.getImportdatei().dateiName = "fehlerhaft.csv";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 6;
@@ -262,7 +258,7 @@ public class MainTest
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
-      log.error(e.getMessage());
+     log.error(e.getMessage(), e);
       fail();
     }
   }
@@ -275,8 +271,7 @@ public class MainTest
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.VORBELEGUNGSIMPORT;
-    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
-    bean.getImportdatei().importVerzeichnis = Paths.get(file.toString(), "importvorbelegungen").toString();
+    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importvorbelegungen").toString();
     bean.getImportdatei().dateiName = "vorbelegungen.csv";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 6;
@@ -292,7 +287,7 @@ public class MainTest
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
-      log.error(e.getMessage());
+     log.error(e.getMessage(), e);
       fail();
     }
   }
@@ -305,8 +300,7 @@ public class MainTest
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.XMLIMPORT;
-    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
-    bean.getImportdatei().importVerzeichnis = Paths.get(file.toString(), "importxml").toString();
+    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importxml").toString();
     bean.getImportdatei().dateiName = "fehlerhaft.xml";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 50;
@@ -335,9 +329,7 @@ public class MainTest
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.XMLIMPORT;
-    File file = new File(Objects.requireNonNull(MainTest.class.getClassLoader().getResource("testfiles")).getPath());
-    bean.getImportdatei().importVerzeichnis = Paths.get(file.toString(), "importxml").toString();
-    bean.getImportdatei().dateiName = "korrekt.xml";
+    bean.getImportdatei().importVerzeichnis = getTestpath().resolve("importxml").toString();    bean.getImportdatei().dateiName = "korrekt.xml";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 50;
     bean.quellReferenzNumerisch = true;
@@ -380,4 +372,18 @@ public class MainTest
     return null;
   }
 
+  public Path getTestpath()
+  {
+    try
+    {
+      URL resource = MainTest.class.getClassLoader().getResource("testfiles");
+      assert resource != null;
+      File file = new File(resource.toURI());
+      return file.toPath();
+    } catch (Exception e)
+    {
+      log.error(e.getMessage(), e);
+    }
+    return null;
+  }
 }
