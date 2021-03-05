@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="regdbservlets" default="deploy" basedir=".">
+    <property name="destDir" value="C:/idev47/idev"/>
+
+    <target name="deploy" depends="clean">
+        <copy file="${basedir}/target/regdbservlets.war" toDir="${destDir}/programme/tomcat/internalwebapps"
+              overwrite="yes"/>
+        <tstamp>
+            <format property="TODAY" pattern="HH:mm:ss:sss zzz" locale="de,DE"/>
+        </tstamp>
+        <echo>Fertig um ${TODAY}</echo>
+    </target>
+
+    <target name="clean">
+        <delete dir="${destDir}/programme/tomcat/internalwebapps/regdbservlets"/>
+        <delete failonerror="false">
+            <fileset dir="${destDir}/logs/" includes="**/*.*"/>
+            <fileset dir="${destDir}/programme/tomcat/logs/" includes="**/*.*"/>
+            <fileset dir="${destDir}/work_ext/" includes="**/*.*"/>
+        </delete>
+        <delete dir="${destDir}/work/dateiimport/"/>
+    </target>
+
+</project>

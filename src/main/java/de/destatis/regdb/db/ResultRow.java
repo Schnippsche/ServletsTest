@@ -29,7 +29,7 @@ public class ResultRow
       ResultSetMetaData meta = rs.getMetaData();
       for (int c = 1; c <= meta.getColumnCount(); c++)
       {
-        columnNames.add(meta.getColumnName(c));
+        columnNames.add(meta.getColumnLabel(c));
         values.add(rs.getObject(c));
       }
     }
@@ -64,12 +64,12 @@ public class ResultRow
    * @param columnIndex the column index
    * @return the int
    */
-  public Integer getInt(int columnIndex)
+  public int getInt(int columnIndex)
   {
     Object o = this.values.get(convertColumn(columnIndex));
     if (o == null)
     {
-      return null;
+      return 0;
     }
     if (o instanceof java.lang.Integer)
     {
@@ -85,7 +85,7 @@ public class ResultRow
    * @param columnLabel the column label
    * @return the int
    */
-  public Integer getInt(String columnLabel)
+  public int getInt(String columnLabel)
   {
     return getInt(getColumnIndex(columnLabel));
   }
@@ -96,12 +96,12 @@ public class ResultRow
    * @param columnIndex the column index
    * @return the long
    */
-  public Long getLong(int columnIndex)
+  public long getLong(int columnIndex)
   {
     Object o = this.values.get(convertColumn(columnIndex));
     if (o == null)
     {
-      return null;
+      return 0;
     }
     if (o instanceof java.lang.Long)
     {
@@ -117,7 +117,7 @@ public class ResultRow
    * @param columnLabel the column label
    * @return the long
    */
-  public Long getLong(String columnLabel)
+  public long getLong(String columnLabel)
   {
     return getLong(getColumnIndex(columnLabel));
   }
@@ -128,19 +128,20 @@ public class ResultRow
    * @param columnIndex the column index
    * @return the boolean
    */
-  public Boolean getBoolean(int columnIndex)
+  public boolean getBoolean(int columnIndex)
   {
+    //If the designated column has a datatype of CHAR or VARCHAR and contains a "0" or has a datatype of BIT, TINYINT, SMALLINT, INTEGER or BIGINTand contains a 0, a value of false is returned.
+    // If the designated column has a datatypeof CHAR or VARCHAR and contains a "1" or has a datatype of BIT, TINYINT, SMALLINT, INTEGER or BIGINTand contains a 1, a value of true is returned
     Object o = this.values.get(convertColumn(columnIndex));
     if (o == null)
     {
-      return null;
+      return false;
     }
     if (o instanceof java.lang.Boolean)
     {
       return (Boolean) o;
     }
-
-    return Boolean.parseBoolean(o.toString());
+    return o.toString().equals("1");
   }
 
   /**
@@ -149,7 +150,7 @@ public class ResultRow
    * @param columnLabel the column label
    * @return the boolean
    */
-  public Boolean getBoolean(String columnLabel)
+  public boolean getBoolean(String columnLabel)
   {
     return getBoolean(getColumnIndex(columnLabel));
   }
@@ -181,13 +182,13 @@ public class ResultRow
     for (int c = 0; c < columnNames.size(); c++)
     {
       if (columnNames.get(c)
-          .toUpperCase()
-          .equals(uc))
+        .toUpperCase()
+        .equals(uc))
       {
         return c + 1;
       }
     }
-    throw new IllegalArgumentException("Spalte " + columnLabel + " + nicht gefunden!");
+    throw new IllegalArgumentException("Spalte " + columnLabel + " nicht gefunden!" + StringUtil.join(columnNames, ","));
   }
 
   @Override
