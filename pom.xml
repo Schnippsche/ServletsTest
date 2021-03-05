@@ -9,7 +9,7 @@
     <version>1.0</version>
     <packaging>war</packaging>
 
-    <name>ServletsTest Maven Webapp</name>
+    <name>regdbservlets</name>
     <url>http://localhost:8080/idev</url>
 
     <properties>
@@ -23,7 +23,7 @@
     <dependencies>
         <dependency>
             <groupId>de.werum.idev</groupId>
-            <artifactId>de.werum.idev.sisutil</artifactId>
+            <artifactId>sisutil</artifactId>
             <scope>system</scope>
             <version>1</version>
             <systemPath>${pom.basedir}/dependencies/sis_util.jar</systemPath>
@@ -31,11 +31,12 @@
 
         <dependency>
             <groupId>de.werum.idev</groupId>
-            <artifactId>de.werum.idev.idevresourcen</artifactId>
+            <artifactId>idevresourcen</artifactId>
             <scope>system</scope>
             <version>1</version>
             <systemPath>${pom.basedir}/dependencies/idev_ressourcen.jar</systemPath>
         </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -44,10 +45,9 @@
             <systemPath>${pom.basedir}/dependencies/mysql-connector.jar</systemPath>
         </dependency>
 
-
         <dependency>
             <groupId>de.werum.idev</groupId>
-            <artifactId>de.werum.idev.freigabe</artifactId>
+            <artifactId>freigabe</artifactId>
             <scope>system</scope>
             <version>1</version>
             <systemPath>${pom.basedir}/dependencies/idev_freigabe.jar</systemPath>
@@ -165,8 +165,10 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-deploy-plugin</artifactId>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
                     <version>3.0.0-M1</version>
+
                 </plugin>
             </plugins>
         </pluginManagement>
