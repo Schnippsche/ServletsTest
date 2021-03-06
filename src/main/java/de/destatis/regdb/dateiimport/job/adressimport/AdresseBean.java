@@ -17,9 +17,12 @@ import de.werum.sis.idev.res.job.JobException;
 public class AdresseBean extends AbstractBean
 {
 
-  /** The Constant serialVersionUID. */
+  /**
+   * The Constant serialVersionUID.
+   */
   private static final long serialVersionUID = 1L;
 
+  private static final String QUELL_REFERENZ_TYP = "IMPORT";
   /**
    * The Constant SQL_INSERT_ADRESSEN.
    */
@@ -30,95 +33,153 @@ public class AdresseBean extends AbstractBean
    */
   public static final String SQL_UPDATE_ADRESSEN = "UPDATE adressen SET SACHBEARBEITER_ID=?, AMT=?, QUELL_REFERENZ_ID=?, QUELL_REFERENZ_OF=?, QUELL_REFERENZ_TYP=?, ROLLE=?, ANREDE=?, NAME=?, NAME_ERGAENZUNG=?, KURZTEXT=?,ABTEILUNG=?, STRASSE=?, HAUSNUMMER=?, POSTLEITZAHL=?, ORT=?, POSTFACH=?, POSTFACH_PLZ=?, POSTFACH_ORT=?, LAND=?, TELEFON=?, FAX=?, EMAIL=?, ZUSATZ1=?, ZUSATZ2=?, ZUSATZ3=?, ZUSATZ4=?, ZUSATZ5=?, ZUSATZ6=?, ZUSATZ7=?, ZUSATZ8=?, ZUSATZ9=?, ZUSATZ10=?,URS1=?,URS2=?,URS3=?,URS4=?,URS5=?,URS6=?,URS7=?,MELDER_AENDERBAR=?,STATUS='AEND',ZEITPUNKT_AENDERUNG=? WHERE ADRESSEN_ID=?";
 
-  /** The adressen id. */
+  /**
+   * The adressen id.
+   */
   private Integer adressenId;
 
-  /** The sachbearbeiter id. */
+  /**
+   * The sachbearbeiter id.
+   */
   private Integer sachbearbeiterId;
 
-  /** The amt. */
+  /**
+   * The amt.
+   */
   private String amt;
 
-  /** The quell referenz id. */
+  /**
+   * The quell referenz id.
+   */
   private Integer quellReferenzId;
 
-  /** The quell referenz of. */
+  /**
+   * The quell referenz of.
+   */
   private String quellReferenzOf;
 
   private String quellReferenzTyp;
 
-  /** The rolle. */
+  /**
+   * The rolle.
+   */
   private String rolle;
 
-  /** The anrede. */
+  /**
+   * The anrede.
+   */
   private String anrede;
 
-  /** The name. */
+  /**
+   * The name.
+   */
   private String name;
 
-  /** The name ergaenzung. */
+  /**
+   * The name ergaenzung.
+   */
   private String nameErgaenzung;
 
-  /** The kurztext. */
+  /**
+   * The kurztext.
+   */
   private String kurztext;
 
-  /** The abteilung. */
+  /**
+   * The abteilung.
+   */
   private String abteilung;
 
-  /** The strasse. */
+  /**
+   * The strasse.
+   */
   private String strasse;
 
-  /** The hausnummer. */
+  /**
+   * The hausnummer.
+   */
   private String hausnummer;
 
-  /** The postleitzahl. */
+  /**
+   * The postleitzahl.
+   */
   private String postleitzahl;
 
-  /** The ort. */
+  /**
+   * The ort.
+   */
   private String ort;
 
-  /** The postfach. */
+  /**
+   * The postfach.
+   */
   private String postfach;
 
-  /** The postfach plz. */
+  /**
+   * The postfach plz.
+   */
   private String postfachPlz;
 
-  /** The postfach ort. */
+  /**
+   * The postfach ort.
+   */
   private String postfachOrt;
 
-  /** The land. */
+  /**
+   * The land.
+   */
   private String land;
 
-  /** The telefon. */
+  /**
+   * The telefon.
+   */
   private String telefon;
 
-  /** The fax. */
+  /**
+   * The fax.
+   */
   private String fax;
 
-  /** The email. */
+  /**
+   * The email.
+   */
   private String email;
 
-  /** The zusatz. */
+  /**
+   * The zusatz.
+   */
   private final String[] zusatz;
 
-  /** The urs. */
+  /**
+   * The urs.
+   */
   private final String[] urs;
 
-  /** The melder aenderbar. */
+  /**
+   * The melder aenderbar.
+   */
   private boolean melderAenderbar;
 
   private String status;
 
-  /** The zeitpunkt eintrag. */
+  /**
+   * The zeitpunkt eintrag.
+   */
   private String zeitpunktEintrag;
 
-  /** The zeitpunkt aenderung. */
+  /**
+   * The zeitpunkt aenderung.
+   */
   private String zeitpunktAenderung;
 
-  /** The neu. */
+  /**
+   * The neu.
+   */
   private boolean neu;
 
-  /** The manuelle adresse. */
+  /**
+   * The manuelle adresse.
+   */
   private boolean manuelleAdresse;
 
   /**
@@ -132,7 +193,7 @@ public class AdresseBean extends AbstractBean
     this.setNeu(true);
     this.setManuelleAdresse(false);
     this.setMelderAenderbar(true);
-    this.setQuellReferenzTyp("IMPORT");
+    this.setQuellReferenzTyp(QUELL_REFERENZ_TYP);
   }
 
   /**
@@ -773,7 +834,7 @@ public class AdresseBean extends AbstractBean
     pi.addValue(this.notNull(this.getAmt()));
     pi.addValue(this.getQuellReferenzId());
     pi.addValue(this.getQuellReferenzOf());
-    pi.addValue(this.notNull("IMPORT")); // QUELL_REF_TYP
+    pi.addValue(this.notNull(QUELL_REFERENZ_TYP)); // QUELL_REF_TYP
     pi.addValue(this.notNull(this.getRolle())); //
     pi.addValue(this.notNull(this.getAnrede())); //
     pi.addValue(this.notNull(this.getName())); //
@@ -820,7 +881,7 @@ public class AdresseBean extends AbstractBean
     pu.addValue(this.notNull(this.getAmt()));
     pu.addValue(this.getQuellReferenzId());
     pu.addValue(this.getQuellReferenzOf());
-    pu.addValue(this.notNull("IMPORT")); // QUELL_REF_TYP
+    pu.addValue(this.notNull(QUELL_REFERENZ_TYP)); // QUELL_REF_TYP
     pu.addValue(this.notNull(this.getRolle())); //
     pu.addValue(this.notNull(this.getAnrede())); //
     pu.addValue(this.notNull(this.getName())); //

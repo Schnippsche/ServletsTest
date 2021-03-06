@@ -18,7 +18,6 @@ import java.text.MessageFormat;
 public class PruefenJob extends AbstractJob
 {
 
-
   /**
    * The Constant MSG_PRUEFUNG_GESTARTET.
    */
@@ -46,31 +45,30 @@ public class PruefenJob extends AbstractJob
     this.jobBean.setStatusAndInfo(JobStatus.AKTIV, "Prüfung der Importdatei gestartet...");
     AbstractPruefeImport<?> pruefKlasse;
     this.jobBean.getImportdatei().anzahlDatensaetze = 0;
+    switch (this.jobBean.getImportdatei().importFormat)
     {
-      switch (this.jobBean.getImportdatei().importFormat)
-      {
-        case IMPORTOHNEZUSATZFELDER:
-        case IMPORTMITZUSATZFELDER:
-        case IMPORTMITANSPRECHPARTNER:
-          pruefKlasse = new PruefeIdevImport(jobBean, sqlUtil);
-          break;
-        case REGISTERIMPORT:
-          pruefKlasse = new PruefeRegisterImport(jobBean, sqlUtil);
-          break;
-        case VORBELEGUNGSIMPORT:
-        case VORBELEGUNGDOWNLOADIMPORT:
-          pruefKlasse = new PruefeVorbelegungenImport(jobBean, sqlUtil);
-          break;
-        case XMLIMPORT:
-          pruefKlasse = new PruefeXmlImport(jobBean, sqlUtil);
-          break;
-        case MELDERKONTOIMPORT:
-          pruefKlasse = new PruefeMelderkontoImport(jobBean, sqlUtil);
-          break;
-        default:
-          throw new JobException("Ungueltiges Format:" + this.jobBean.getImportdatei().importFormat.toString());
-      }
+      case IMPORTOHNEZUSATZFELDER:
+      case IMPORTMITZUSATZFELDER:
+      case IMPORTMITANSPRECHPARTNER:
+        pruefKlasse = new PruefeIdevImport(jobBean, sqlUtil);
+        break;
+      case REGISTERIMPORT:
+        pruefKlasse = new PruefeRegisterImport(jobBean, sqlUtil);
+        break;
+      case VORBELEGUNGSIMPORT:
+      case VORBELEGUNGDOWNLOADIMPORT:
+        pruefKlasse = new PruefeVorbelegungenImport(jobBean, sqlUtil);
+        break;
+      case XMLIMPORT:
+        pruefKlasse = new PruefeXmlImport(jobBean, sqlUtil);
+        break;
+      case MELDERKONTOIMPORT:
+        pruefKlasse = new PruefeMelderkontoImport(jobBean, sqlUtil);
+        break;
+      default:
+        throw new JobException("Ungueltiges Format:" + this.jobBean.getImportdatei().importFormat.toString());
     }
+
     return pruefKlasse.checkFile();
   }
 

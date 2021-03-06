@@ -20,7 +20,6 @@ import java.util.HashSet;
 public class PruefeRegisterImport extends AbstractPruefeImport<String>
 {
 
-  private final PruefUtil pruefUtil;
   private final HashMap<String, Integer> amtStatOnlineKeys;
   private final HashSet<String> amtStatistikBzr;
 
@@ -35,7 +34,6 @@ public class PruefeRegisterImport extends AbstractPruefeImport<String>
   public PruefeRegisterImport(JobBean jobBean, SqlUtil sqlUtil)
   {
     super(new SegmentedStringFileReader(), jobBean, sqlUtil);
-    this.pruefUtil = new PruefUtil(jobBean, sqlUtil);
     this.amtStatOnlineKeys = new HashMap<>();
     this.amtStatistikBzr = new HashSet<>();
     this.quellReferenzId = null;
@@ -82,6 +80,7 @@ public class PruefeRegisterImport extends AbstractPruefeImport<String>
           {
             quellReferenzId = quellRefId;
             this.jobBean.quellReferenzId = quellRefId;
+            pruefUtil.checkAdressbestand(quellRefId);
           } else if (!quellReferenzId.equals(quellRefId))
           {
             pruefUtil.addError(null, "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");

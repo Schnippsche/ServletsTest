@@ -12,21 +12,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MainTest
+class MainTest
 {
   private static LoggerIfc log;
 
   @BeforeAll
-  public static void init()
+  static void init()
   {
     Logger.getInstance().setLogLevel(LogLevel.DEBUG);
     log = Logger.getInstance()
@@ -36,17 +32,18 @@ public class MainTest
 
   @DisplayName("Teste Datenbank-Conenction")
   @Test
-  public void testConnection()
+  void testConnection()
   {
     assertNotNull(Tool.getConnection(), "Connection failed");
   }
 
   @DisplayName("Teste PruefUtil Methoden")
   @Test
-  public void testPruefUtil()
+  void testPruefUtil()
   {
-
-    SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
+    Connection conn = Tool.getConnection();
+    SqlUtil sqlUtil = new SqlUtil(conn);
+    Tool.initDatabase(conn);
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 1000;
     PruefUtil util = new PruefUtil(bean, sqlUtil);
@@ -90,13 +87,12 @@ public class MainTest
     assertFalse(util.checkIstZahl("", 8));
     assertFalse(util.checkIstZahl(null, 8));
     //
-
     try
     {
       assertFalse(util.checkAdressbestand(0));
       assertTrue(util.checkAdressbestand(1));
       assertEquals(1, bean.quellReferenzId);
-      assertEquals("Test", bean.quellReferenzName);
+      assertEquals("Bestand1", bean.quellReferenzName);
       assertEquals("NUM", bean.getAdressen().ordnungsfeldTyp);
       assertTrue(bean.quellReferenzNumerisch);
       //
@@ -112,7 +108,7 @@ public class MainTest
 
     } catch (JobException e)
     {
-     log.error(e.getMessage(), e);
+      log.error(e.getMessage(), e);
       fail();
     }
 
@@ -123,7 +119,7 @@ public class MainTest
 
   @Test
   @DisplayName("pruefe fehlerhaften Registerimport")
-  public void pruefeFehlerhaftenRegisterImport()
+  void pruefeFehlerhaftenRegisterImport()
   {
     SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
@@ -142,14 +138,14 @@ public class MainTest
       assertEquals(14, bean.getImportdatei().anzahlDatensaetze);
     } catch (JobException e)
     {
-     log.error(e.getMessage(), e);
+      log.error(e.getMessage(), e);
       fail();
     }
   }
 
   @DisplayName("pruefe korrekten Registerimport")
   @Test
-  public void pruefeKorrektenRegisterImport()
+  void pruefeKorrektenRegisterImport()
   {
     SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
@@ -169,7 +165,7 @@ public class MainTest
       assertEquals(10, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
-     log.error(e.getMessage(), e);
+      log.error(e.getMessage(), e);
       fail();
     }
 
@@ -177,7 +173,7 @@ public class MainTest
 
   @DisplayName("pruefe fehlerhaften Idevimport")
   @Test
-  public void pruefeFehlerhaftenIdevImport()
+  void pruefeFehlerhaftenIdevImport()
   {
     SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
@@ -200,14 +196,14 @@ public class MainTest
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
-     log.error(e.getMessage(), e);
+      log.error(e.getMessage(), e);
       fail();
     }
   }
 
   @DisplayName("pruefe korrekten Idevimport")
   @Test
-  public void pruefeKorrektenIdevImport()
+  void pruefeKorrektenIdevImport()
   {
     SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
@@ -229,14 +225,14 @@ public class MainTest
       assertEquals(100, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
-     log.error(e.getMessage(), e);
+      log.error(e.getMessage(), e);
       fail();
     }
   }
 
   @DisplayName("pruefe fehlerhaften Vorbelegungsimport")
   @Test
-  public void pruefeFehlerhaftenVorbelegungsImport()
+  void pruefeFehlerhaftenVorbelegungsImport()
   {
     SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
@@ -258,14 +254,14 @@ public class MainTest
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
-     log.error(e.getMessage(), e);
+      log.error(e.getMessage(), e);
       fail();
     }
   }
 
   @DisplayName("pruefe korrekten Vorbelegungsimport")
   @Test
-  public void pruefeKorrektenVorbelegungsImport()
+  void pruefeKorrektenVorbelegungsImport()
   {
     SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
@@ -282,19 +278,19 @@ public class MainTest
     {
       imp.checkFile();
       showLogErrors(bean);
-      assertTrue(bean.getFormatPruefung().anzahlFehler > 7);
+      assertTrue(bean.getFormatPruefung().anzahlFehler >= 7);
       assertEquals(8, bean.getImportdatei().anzahlDatensaetze);
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
     } catch (JobException e)
     {
-     log.error(e.getMessage(), e);
+      log.error(e.getMessage(), e);
       fail();
     }
   }
 
   @DisplayName("pruefe fehlerhaften Xmlimport")
   @Test
-  public void pruefeFehlerhaftenXmlImport()
+  void pruefeFehlerhaftenXmlImport()
   {
     SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
@@ -323,13 +319,14 @@ public class MainTest
 
   @DisplayName("pruefe korrekten Xmlimport")
   @Test
-  public void pruefeKorrektenXmlImport()
+  void pruefeKorrektenXmlImport()
   {
     SqlUtil sqlUtil = new SqlUtil(Tool.getConnection());
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.XMLIMPORT;
-    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("importxml").toString();    bean.getImportdatei().dateiName = "korrekt.xml";
+    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("importxml").toString();
+    bean.getImportdatei().dateiName = "korrekt.xml";
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 50;
     bean.quellReferenzNumerisch = true;
@@ -349,7 +346,7 @@ public class MainTest
     }
   }
 
-  public void showLogErrors(JobBean bean)
+  void showLogErrors(JobBean bean)
   {
     log.debug("Anzahl Fehler:" + bean.getFormatPruefung().anzahlFehler);
     for (int i = 0; i < bean.getFormatPruefung().anzahlFehler; i++)
@@ -357,5 +354,5 @@ public class MainTest
       log.debug(bean.getFormatPruefung().getSortedErrors().get(i).toString());
     }
   }
-  
+
 }

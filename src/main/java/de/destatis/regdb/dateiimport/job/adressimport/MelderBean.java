@@ -457,7 +457,11 @@ public class MelderBean extends AbstractBean
     ps.addValue(this.isPasswortAenderbar() ? "J" : "N"); // PASSWORT_AENDERBAR
     ps.addValue(this.isPasswortAenderung() ? "J" : "N"); // PASSWORT_AENDERUNG
     ps.addValue(this.isZusammenfuehrbar() ? "J" : "N"); // ZUSAMMENFUEHRBAR
-    updateZeiten(ps);
+    ps.addValue(this.notNull(this.sachbearbeiterId)); // SB_ID
+    ps.addValue(this.getZeitpunktAenderung());
+    ps.addValue(this.firmenId);
+    ps.addValue(this.getMelderId());
+    ps.addValue(this.ansprechpartner.getAnsprechpartnerId());
 
     return ps.update();
   }
@@ -474,8 +478,13 @@ public class MelderBean extends AbstractBean
     ps.addValue(this.notNull(this.ansprechpartner.getAnrede())); //
     ps.addValue(this.notNull(this.ansprechpartner.getName())); //
     ps.addValue(this.notNull(this.ansprechpartner.getVorname())); //
-    updateZeiten(ps);
-
+    ps.addValue(this.notNull(this.sachbearbeiterId)); // SB_ID
+    ps.addValue(this.getZeitpunktAenderung());
+    ps.addValue(this.notNull(this.sachbearbeiterId)); // SB_ID
+    ps.addValue(this.getZeitpunktAenderung());
+    ps.addValue(this.firmenId);
+    ps.addValue(this.getMelderId());
+    ps.addValue(this.ansprechpartner.getAnsprechpartnerId());
     return ps.update();
   }
 

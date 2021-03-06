@@ -70,7 +70,7 @@ public class PruefeXmlImport extends AbstractPruefeImport<XmlBean>
     // Pruefe auf passenden STAT-ONLINE-KEY und ermittle dabei die StatistikId und quellReferenzId
     String key = bean.getAmt() + "|" + bean.getStatOnlineKey();
     Integer statistId = this.amtStatOnlineKeys.get(key);
-    Integer quellRefId;
+    int quellRefId;
     // Neu aufnehmen?
     if (statistId == null)
     {

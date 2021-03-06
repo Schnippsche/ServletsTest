@@ -14,6 +14,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 import de.destatis.regdb.db.ConnectionTool;
+import de.destatis.regdb.db.StringUtil;
 import de.destatis.regdb.servlets.RegDBImportServlet;
 import de.werum.sis.idev.intern.actions.util.MelderDaten;
 import de.werum.sis.idev.res.conf.db.DBConfig;
@@ -26,18 +27,26 @@ import de.werum.sis.idev.res.log.LoggerIfc;
 public class MelderDatenService
 {
 
-  /** The Constant KONFIGURATION_DATEIIMPORT_DIRECTORY. */
+  /**
+   * The Constant KONFIGURATION_DATEIIMPORT_DIRECTORY.
+   */
   public static final String KONFIGURATION_DATEIIMPORT_DIRECTORY = "int_dateiimport_directory";
 
-  /** The Constant KONFIGURATION_MELDERDATEN_POOLSIZE. */
+  /**
+   * The Constant KONFIGURATION_MELDERDATEN_POOLSIZE.
+   */
   public static final String KONFIGURATION_MELDERDATEN_POOLSIZE = "int_melderschluessel_poolsize";
 
-  /** The Constant KONFIGURATION_MELDERDATEN_THREADS. */
+  /**
+   * The Constant KONFIGURATION_MELDERDATEN_THREADS.
+   */
   public static final String KONFIGURATION_MELDERDATEN_THREADS = "int_melderschluessel_threads";
 
-  /** The Constant log. */
+  /**
+   * The Constant log.
+   */
   protected static final LoggerIfc log = Logger.getInstance()
-      .getLogger(MelderDatenService.class);
+    .getLogger(MelderDatenService.class);
   private static MelderDatenService instance;
   private BlockingQueue<MelderDaten> blockingQueue;
   private String dateiImportDir;
@@ -65,7 +74,7 @@ public class MelderDatenService
   {
     DBConfig config = new DBConfig();
     Connection conn = ConnectionTool.getInstance()
-        .getConnection();
+      .getConnection();
     String poolSize = "2000";
     String poolThreads = "4";
     String strTmpDir = System.getProperty("java.io.tmpdir");
@@ -96,44 +105,28 @@ public class MelderDatenService
       {
         config.setParameter(conn, KONFIGURATION_DATEIIMPORT_DIRECTORY, this.dateiImportDir, RegDBImportServlet.INTERN);
       }
-    }
-    else
+    } else
     {
       File importDir = new File(this.dateiImportDir);
-      if (!importDir.exists())
+      if (!importDir.exists() && importDir.mkdir())
       {
-        importDir.mkdir();
+        log.info("Directory '" + importDir + " wurde angelegt");
       }
     }
     log.debug("Verwende Verzeichnis " + this.dateiImportDir + " fuer Serverimporte");
     ConnectionTool.getInstance()
-        .freeConnection(conn);
+      .freeConnection(conn);
     int maximumMelderDaten;
     int maximumThreads;
-
-    try
-    {
-      maximumMelderDaten = Integer.parseInt(poolSize);
-      if (maximumMelderDaten < 100 || maximumMelderDaten > 500000)
-      {
-        throw new NumberFormatException();
-      }
-    }
-    catch (NumberFormatException e)
+    maximumMelderDaten = StringUtil.getInt(poolSize);
+    if (maximumMelderDaten < 100 || maximumMelderDaten > 500000)
     {
       log.error("Wert fuer " + KONFIGURATION_MELDERDATEN_POOLSIZE + " ist ungueltig:" + poolSize + " muss zwischen 100 und 500000 liegen!");
       maximumMelderDaten = 2000;
     }
 
-    try
-    {
-      maximumThreads = Integer.parseInt(poolThreads);
-      if (maximumThreads < 1 || maximumThreads > 256)
-      {
-        throw new NumberFormatException();
-      }
-    }
-    catch (NumberFormatException e)
+    maximumThreads = StringUtil.getInt(poolThreads);
+    if (maximumThreads < 1 || maximumThreads > 256)
     {
       log.error("Wert fuer " + KONFIGURATION_MELDERDATEN_THREADS + " ist ungueltig:" + poolThreads + " muss zwischen 1 und 256 liegen!");
       maximumThreads = 4;
@@ -146,7 +139,7 @@ public class MelderDatenService
     for (int i = 0; i < maximumThreads; i++)
     {
       this.executor.execute(new MelderDatenProducer(this.blockingQueue));
-    }    
+    }
   }
 
   /**
@@ -159,12 +152,11 @@ public class MelderDatenService
     try
     {
       return this.blockingQueue.poll(60, TimeUnit.SECONDS);
-    }
-    catch (InterruptedException e)
+    } catch (InterruptedException e)
     {
       log.error("MelderDaten abholen wegen Timeout abgebrochen!");
       Thread.currentThread()
-          .interrupt();
+        .interrupt();
     }
     return null;
   }

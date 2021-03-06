@@ -32,7 +32,7 @@ public class KennungTool
     .getLogger(this.getClass());
   private final SecureRandom secureRandom;
   private final SqlUtil sqlUtil;
-  private final int size = 500;
+  private static final int MAX_SIZE = 500;
   private String sbLand;
 
   /**
@@ -60,10 +60,10 @@ public class KennungTool
     long start = System.currentTimeMillis();
     this.sbLand = StringUtil.substring(sbLand + "XX", 0, 2);
     HashSet<String> result = new HashSet<>(anzahl);
-    int grenze = Math.min(anzahl, size);
+    int grenze = Math.min(anzahl, MAX_SIZE);
     do
     {
-      HashSet<String> pruefKennungen = new HashSet<>(this.size);
+      HashSet<String> pruefKennungen = new HashSet<>(MAX_SIZE);
       for (int i = 0; i < grenze; i++)
       {
         pruefKennungen.add(this.erzeugeIdevKennung());

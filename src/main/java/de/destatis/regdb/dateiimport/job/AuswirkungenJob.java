@@ -144,31 +144,29 @@ public class AuswirkungenJob extends AbstractJob
     String sql = MessageFormat.format(SQL_SELECT_LOESCHKANDIDATEN, "" + this.jobBean.quellReferenzId, "" + this.jobBean.getSimulation().lastAdressenId, "" + this.jobBean.loeschBlockGroesse);
     HashSet<Integer> loeschAdressen = new HashSet<>(bestehendeOfs.size());
     List<ResultRow> rows = sqlUtil.fetchMany(sql);
+    for (ResultRow row : rows)
     {
-      for (ResultRow row : rows)
+      int adressenId = row.getInt(1);
+      this.jobBean.getSimulation().lastAdressenId = adressenId;
+      String of = row.getString(2); // QUELL_REFERENZ_OF
+      // OF aus Datenbank ist in Import enthalten
+      if (bestehendeOfs.contains(of))
       {
-        int adressenId = row.getInt(1);
-        this.jobBean.getSimulation().lastAdressenId = adressenId;
-        String of = row.getString(2); // QUELL_REFERENZ_OF
-        // OF aus Datenbank ist in Import enthalten
-        if (bestehendeOfs.contains(of))
-        {
-          this.jobBean.getSimulation()
-            .getAdressIdentifikatoren()
-            .getAenderung()
-            .getValues()
-            .add(adressenId);
-        } else if (this.jobBean.loescheDaten)
-        {
-          // Ordnungsfeld ist nicht in Importdatei und wird daher zum Löschen markiert, falls Loeschen aktiv ist
-          loeschAdressen.add(adressenId); // ADRESSEN_ID
-        }
-        anzahl++;
-      }
-      if (this.jobBean.loescheDaten)
+        this.jobBean.getSimulation()
+          .getAdressIdentifikatoren()
+          .getAenderung()
+          .getValues()
+          .add(adressenId);
+      } else if (this.jobBean.loescheDaten)
       {
-        erzeugeInfoDateien(loeschAdressen);
+        // Ordnungsfeld ist nicht in Importdatei und wird daher zum Löschen markiert, falls Loeschen aktiv ist
+        loeschAdressen.add(adressenId); // ADRESSEN_ID
       }
+      anzahl++;
+    }
+    if (this.jobBean.loescheDaten)
+    {
+      erzeugeInfoDateien(loeschAdressen);
     }
     return anzahl;
   }

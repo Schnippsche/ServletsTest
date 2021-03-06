@@ -20,7 +20,7 @@ import java.sql.Connection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class IdevImportOhneZusatzfelderTest
+class IdevRegisterImportTest
 {
 
   @BeforeAll
@@ -30,7 +30,7 @@ class IdevImportOhneZusatzfelderTest
   }
 
   @Test
-  void testeIdevImport()
+  void testeRegisterImport()
   {
     Connection conn = Tool.getConnection();
     assertNotNull(conn);
@@ -46,53 +46,56 @@ class IdevImportOhneZusatzfelderTest
       // Neuanlage
       AbstractJob importJob = pruefJob.verarbeiteJob();
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
-      assertEquals(100, bean.getImportdatei().anzahlDatensaetze);
+      assertEquals(10, bean.getImportdatei().anzahlDatensaetze);
       assertTrue(importJob instanceof AdressImportJob);
       importJob.setSqlUtil(sqlUtil);
       importJob.verarbeiteJob();
-      assertEquals(100, bean.getAdressen().getIdentifikatoren().getNeu().getAnzahl());
+      assertEquals(10, bean.getAdressen().getIdentifikatoren().getNeu().getAnzahl());
       assertEquals(0, bean.getAdressen().getIdentifikatoren().getAenderung().getAnzahl());
       // Pruefe Datenbank
       ResultRow row = sqlUtil.fetchOne("SELECT COUNT(*) FROM adressen WHERE STATUS='NEU'");
-      assertEquals(100, row.getInt(1));
+      assertEquals(10, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM firmen WHERE STATUS='NEU'");
-      assertEquals(100, row.getInt(1));
+      assertEquals(10, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM melder WHERE STATUS='NEU'");
-      assertEquals(100, row.getInt(1));
+      assertEquals(10, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM ansprechpartner WHERE STATUS='NEU'");
-      assertEquals(200, row.getInt(1));
+      assertEquals(20, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM melder_statistiken WHERE STATUS='NEU'");
+      assertEquals(10, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM firmen_adressen WHERE STATUS='AKTIV'");
-      assertEquals(100, row.getInt(1));
+      assertEquals(10, row.getInt(1));
+
       // Update
       bean = createBean();
       pruefJob = new PruefenJob(bean);
       pruefJob.setSqlUtil(sqlUtil);
       importJob = pruefJob.verarbeiteJob();
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
-      assertEquals(100, bean.getImportdatei().anzahlDatensaetze);
+      assertEquals(10, bean.getImportdatei().anzahlDatensaetze);
       assertTrue(importJob instanceof AdressImportJob);
       importJob.setSqlUtil(sqlUtil);
       importJob.verarbeiteJob();
       assertEquals(0, bean.getAdressen().getIdentifikatoren().getNeu().getAnzahl());
-      assertEquals(100, bean.getAdressen().getIdentifikatoren().getAenderung().getAnzahl());
+      assertEquals(10, bean.getAdressen().getIdentifikatoren().getAenderung().getAnzahl());
       // Pruefe Datenbank
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM adressen WHERE STATUS='AEND'");
-      assertEquals(100, row.getInt(1));
+      assertEquals(10, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM firmen WHERE STATUS='AEND'");
-      assertEquals(100, row.getInt(1));
+      assertEquals(10, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM melder WHERE STATUS='AEND'");
-      assertEquals(100, row.getInt(1));
+      assertEquals(10, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM ansprechpartner WHERE STATUS='AEND'");
-      assertEquals(200, row.getInt(1));
+      assertEquals(20, row.getInt(1));
       // Löschung
       bean = createBean();
-      bean.getImportdatei().dateiName = "adressen_1.csv";
-      bean.getImportdatei().originalDateiname = "adressen_1.csv";
+      bean.getImportdatei().dateiName = "1_satz.txt";
+      bean.getImportdatei().originalDateiname = bean.getImportdatei().dateiName;
       bean.loescheDaten = true;
       pruefJob = new PruefenJob(bean);
       pruefJob.setSqlUtil(sqlUtil);
       AbstractJob auswirkungenJob = pruefJob.verarbeiteJob();
-      // Nächster Job beim Loeschen msus Auswirkungen sein!
+      // Nächster Job beim Loeschen muss Auswirkungen sein!
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
       assertEquals(1, bean.getImportdatei().anzahlDatensaetze);
       assertTrue(auswirkungenJob instanceof AuswirkungenJob);
@@ -100,10 +103,10 @@ class IdevImportOhneZusatzfelderTest
       auswirkungenJob.setSqlUtil(sqlUtil);
       importJob = auswirkungenJob.verarbeiteJob();
       assertTrue(bean.getSimulation().bestandErmittelt);
-      assertEquals(100, bean.getSimulation().anzahlAdressenImBestand);
-      assertEquals(99, bean.getSimulation().getAdressIdentifikatoren().getLoeschung().getAnzahl());
-      assertEquals(99, bean.getSimulation().getFirmenIdentifikatoren().getLoeschung().getAnzahl());
-      assertEquals(99, bean.getSimulation().getMelderIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(10, bean.getSimulation().anzahlAdressenImBestand);
+      assertEquals(9, bean.getSimulation().getAdressIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(9, bean.getSimulation().getFirmenIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(9, bean.getSimulation().getMelderIdentifikatoren().getLoeschung().getAnzahl());
       assertTrue(importJob instanceof AdressImportJob);
       importJob.setSqlUtil(sqlUtil);
       AbstractJob loeschJob = importJob.verarbeiteJob();
@@ -118,23 +121,24 @@ class IdevImportOhneZusatzfelderTest
       assertEquals(0, bean.getMelder().getIdentifikatoren().getLoeschung().getAnzahl());
       assertTrue(loeschJob instanceof LoeschenJob);
       // Eigentliches Löschen
-
       loeschJob.setSqlUtil(sqlUtil);
       loeschJob.verarbeiteJob();
-      assertEquals(99, bean.getAdressen().getIdentifikatoren().getLoeschung().getAnzahl());
-      assertEquals(99, bean.getFirmen().getIdentifikatoren().getLoeschung().getAnzahl());
-      assertEquals(99, bean.getMelder().getIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(9, bean.getAdressen().getIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(9, bean.getFirmen().getIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(9, bean.getMelder().getIdentifikatoren().getLoeschung().getAnzahl());
       // Pruefe Datenbank
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM adressen WHERE STATUS='LOESCH'");
-      assertEquals(99, row.getInt(1));
+      assertEquals(9, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM firmen WHERE STATUS='LOESCH'");
-      assertEquals(99, row.getInt(1));
+      assertEquals(9, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM melder WHERE STATUS='LOESCH'");
-      assertEquals(99, row.getInt(1));
+      assertEquals(9, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM ansprechpartner WHERE STATUS='LOESCH'");
-      assertEquals(198, row.getInt(1));
+      assertEquals(18, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM firmen_adressen WHERE STATUS='LOESCH'");
-      assertEquals(99, row.getInt(1));
+      assertEquals(9, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM melder_statistiken WHERE STATUS='LOESCH'");
+      assertEquals(9, row.getInt(1));
 
     } catch (JobException e)
     {
@@ -150,10 +154,10 @@ class IdevImportOhneZusatzfelderTest
   {
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
-    bean.getImportdatei().importFormat = ImportFormat.IMPORTMITZUSATZFELDER;
-    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("importmitzusatzfelder").toString();
-    bean.getImportdatei().dateiName = "adressen_100.csv";
-    bean.getImportdatei().originalDateiname = "adressen_100.csv";
+    bean.getImportdatei().importFormat = ImportFormat.REGISTERIMPORT;
+    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("registerimport").toString();
+    bean.getImportdatei().dateiName = "10_saetze_korrekt.txt";
+    bean.getImportdatei().originalDateiname = bean.getImportdatei().dateiName;
     bean.quellReferenzId = 1;
     bean.importBlockGroesse = 1000;
     bean.quellReferenzNumerisch = true;

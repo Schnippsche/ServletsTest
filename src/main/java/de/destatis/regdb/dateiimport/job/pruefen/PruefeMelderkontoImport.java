@@ -52,36 +52,30 @@ public class PruefeMelderkontoImport extends AbstractPruefeImport<String[]>
       {
         rowNumber++;
         pruefUtil.checkFixSpaltenLaenge(cols.length, 18, rowNumber);
-        if (cols.length > 3)
+        if (cols.length > 3 && pruefUtil.checkIstZahl(cols[3], rowNumber))
         {
-          if (pruefUtil.checkIstZahl(cols[3], rowNumber))
+          int quellId = StringUtil.getInt(cols[3]);
+          if (quellRefId == 0)
           {
-            int quellId = StringUtil.getInt(cols[3]);
-            if (quellRefId == 0)
+            quellRefId = quellId;
+            pruefUtil.checkAdressbestand(quellRefId);
+          } else if (quellId != quellRefId)
+          {
+            pruefUtil.addError(null, "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
+          }
+          int meldungsId = 0;
+          if (cols[0].trim().isEmpty() && pruefUtil.checkIstZahl(cols[0], rowNumber))
+          {
+            meldungsId = StringUtil.getInt(cols[0]);
+          }
+          if (meldungsId > 0)
+          {
+            ps.addValue(meldungsId); // MeldungsId
+            ps.addValue(cols[2]); // AMT
+            ps.addValue(cols[1]); // StatistikId
+            if (ps.fetchOne() == null)
             {
-              quellRefId = quellId;
-              pruefUtil.checkAdressbestand(quellRefId);
-            } else if (quellId != quellRefId)
-            {
-              pruefUtil.addError(null, "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
-            }
-            int meldungsId = 0;
-            if (cols[0].trim().isEmpty())
-            {
-              if (pruefUtil.checkIstZahl(cols[0], rowNumber))
-              {
-                meldungsId = StringUtil.getInt(cols[0]);
-              }
-            }
-            if (meldungsId > 0)
-            {
-              ps.addValue(meldungsId); // MeldungsId
-              ps.addValue(cols[2]); // AMT
-              ps.addValue(cols[1]); // StatistikId
-              if (ps.fetchOne() == null)
-              {
-                pruefUtil.addError(rowNumber, MessageFormat.format("Kombination aus MeldungsID {0}, Amt {1} und StatistikId {2} existiert nicht!", meldungsId, cols[2], cols[1]));
-              }
+              pruefUtil.addError(rowNumber, MessageFormat.format("Kombination aus MeldungsID {0}, Amt {1} und StatistikId {2} existiert nicht!", meldungsId, cols[2], cols[1]));
             }
           }
         }

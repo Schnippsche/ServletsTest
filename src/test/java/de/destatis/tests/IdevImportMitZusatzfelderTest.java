@@ -20,17 +20,17 @@ import java.sql.Connection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class IdevImportMitZusatzfelderTest
+class IdevImportMitZusatzfelderTest
 {
 
   @BeforeAll
-  public static void init()
+  static void init()
   {
     Logger.getInstance().setLogLevel(LogLevel.DEBUG);
   }
 
   @Test
-  public void testeIdevImport()
+  void testeIdevImport()
   {
     Connection conn = Tool.getConnection();
     assertNotNull(conn);
@@ -61,7 +61,8 @@ public class IdevImportMitZusatzfelderTest
       assertEquals(100, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM ansprechpartner WHERE STATUS='NEU'");
       assertEquals(200, row.getInt(1));
-
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM firmen_adressen WHERE STATUS='AKTIV'");
+      assertEquals(100, row.getInt(1));
       // Update
       bean = createBean();
       pruefJob = new PruefenJob(bean);
@@ -131,7 +132,8 @@ public class IdevImportMitZusatzfelderTest
       assertEquals(99, row.getInt(1));
       row = sqlUtil.fetchOne("SELECT COUNT(*) FROM ansprechpartner WHERE STATUS='LOESCH'");
       assertEquals(198, row.getInt(1));
-
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM firmen_adressen WHERE STATUS='LOESCH'");
+      assertEquals(99, row.getInt(1));
     } catch (JobException e)
     {
       e.printStackTrace();
@@ -142,7 +144,7 @@ public class IdevImportMitZusatzfelderTest
     }
   }
 
-  public JobBean createBean()
+  JobBean createBean()
   {
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
