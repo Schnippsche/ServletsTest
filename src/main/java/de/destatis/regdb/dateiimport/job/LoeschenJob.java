@@ -27,7 +27,7 @@ public class LoeschenJob extends AbstractJob
   private HashSet<Integer> loeschFirmen;
   private HashSet<Integer> loeschMelder;
 
-  private final LoeschUtil loeschUtil;
+  private LoeschUtil loeschUtil;
 
   /**
    * Instantiates a new loeschen job.
@@ -38,7 +38,7 @@ public class LoeschenJob extends AbstractJob
   {
     super("LoeschenJob", jobBean);
     // Anzahl der Loeschungen ist einstellbar
-    this.loeschUtil = new LoeschUtil(sqlUtil);
+
   }
 
   /**
@@ -50,7 +50,7 @@ public class LoeschenJob extends AbstractJob
   public AbstractJob verarbeiteJob() throws JobException
   {
     // TODO; Testen!
-
+    this.loeschUtil = new LoeschUtil(sqlUtil);
     int maximumSegment = Math.max(this.jobBean.getSimulation()
         .getAdressIdentifikatoren()
         .getLoeschung()

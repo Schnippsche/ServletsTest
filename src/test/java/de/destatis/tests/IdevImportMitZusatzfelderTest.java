@@ -2,9 +2,13 @@ package de.destatis.tests;
 
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.dateiimport.ImportFormat;
+import de.destatis.regdb.dateiimport.job.AbstractJob;
+import de.destatis.regdb.dateiimport.job.AuswirkungenJob;
+import de.destatis.regdb.dateiimport.job.LoeschenJob;
 import de.destatis.regdb.dateiimport.job.PruefenJob;
 import de.destatis.regdb.dateiimport.job.adressimport.AdressImportJob;
 import de.destatis.regdb.db.ConnectionTool;
+import de.destatis.regdb.db.ResultRow;
 import de.destatis.regdb.db.SqlUtil;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.job.LogLevel;
@@ -39,27 +43,94 @@ public class IdevImportMitZusatzfelderTest
       JobBean bean = createBean();
       PruefenJob pruefJob = new PruefenJob(bean);
       pruefJob.setSqlUtil(sqlUtil);
-      AdressImportJob importJob = new AdressImportJob(bean);
-      importJob.setSqlUtil(sqlUtil);
       // Neuanlage
-      pruefJob.verarbeiteJob();
+      AbstractJob importJob = pruefJob.verarbeiteJob();
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
       assertEquals(100, bean.getImportdatei().anzahlDatensaetze);
+      assertTrue(importJob instanceof AdressImportJob);
+      importJob.setSqlUtil(sqlUtil);
       importJob.verarbeiteJob();
       assertEquals(100, bean.getAdressen().getIdentifikatoren().getNeu().getAnzahl());
       assertEquals(0, bean.getAdressen().getIdentifikatoren().getAenderung().getAnzahl());
+      // Pruefe Datenbank
+      ResultRow row = sqlUtil.fetchOne("SELECT COUNT(*) FROM adressen WHERE STATUS='NEU'");
+      assertEquals(100, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM firmen WHERE STATUS='NEU'");
+      assertEquals(100, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM melder WHERE STATUS='NEU'");
+      assertEquals(100, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM ansprechpartner WHERE STATUS='NEU'");
+      assertEquals(200, row.getInt(1));
+
       // Update
       bean = createBean();
       pruefJob = new PruefenJob(bean);
       pruefJob.setSqlUtil(sqlUtil);
-      importJob = new AdressImportJob(bean);
-      importJob.setSqlUtil(sqlUtil);
-      pruefJob.verarbeiteJob();
+      importJob = pruefJob.verarbeiteJob();
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
       assertEquals(100, bean.getImportdatei().anzahlDatensaetze);
+      assertTrue(importJob instanceof AdressImportJob);
+      importJob.setSqlUtil(sqlUtil);
       importJob.verarbeiteJob();
       assertEquals(0, bean.getAdressen().getIdentifikatoren().getNeu().getAnzahl());
       assertEquals(100, bean.getAdressen().getIdentifikatoren().getAenderung().getAnzahl());
+      // Pruefe Datenbank
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM adressen WHERE STATUS='AEND'");
+      assertEquals(100, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM firmen WHERE STATUS='AEND'");
+      assertEquals(100, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM melder WHERE STATUS='AEND'");
+      assertEquals(100, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM ansprechpartner WHERE STATUS='AEND'");
+      assertEquals(200, row.getInt(1));
+      // Löschung
+      bean = createBean();
+      bean.getImportdatei().dateiName = "adressen_1.csv";
+      bean.getImportdatei().originalDateiname = "adressen_1.csv";
+      bean.loescheDaten = true;
+      pruefJob = new PruefenJob(bean);
+      pruefJob.setSqlUtil(sqlUtil);
+      AbstractJob auswirkungenJob = pruefJob.verarbeiteJob();
+      // Nächster Job beim Loeschen msus Auswirkungen sein!
+      assertEquals(0, bean.getFormatPruefung().anzahlFehler);
+      assertEquals(1, bean.getImportdatei().anzahlDatensaetze);
+      assertTrue(auswirkungenJob instanceof AuswirkungenJob);
+      // Auswirkungen ausführen! Nächster Job muss Adressimport sein
+      auswirkungenJob.setSqlUtil(sqlUtil);
+      importJob = auswirkungenJob.verarbeiteJob();
+      assertTrue(bean.getSimulation().bestandErmittelt);
+      assertEquals(100, bean.getSimulation().anzahlAdressenImBestand);
+      assertEquals(99, bean.getSimulation().getAdressIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(99, bean.getSimulation().getFirmenIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(99, bean.getSimulation().getMelderIdentifikatoren().getLoeschung().getAnzahl());
+      assertTrue(importJob instanceof AdressImportJob);
+      importJob.setSqlUtil(sqlUtil);
+      AbstractJob loeschJob = importJob.verarbeiteJob();
+      assertEquals(0, bean.getAdressen().getIdentifikatoren().getNeu().getAnzahl());
+      assertEquals(1, bean.getAdressen().getIdentifikatoren().getAenderung().getAnzahl());
+      assertEquals(0, bean.getAdressen().getIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(0, bean.getFirmen().getIdentifikatoren().getNeu().getAnzahl());
+      assertEquals(1, bean.getFirmen().getIdentifikatoren().getAenderung().getAnzahl());
+      assertEquals(0, bean.getFirmen().getIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(0, bean.getMelder().getIdentifikatoren().getNeu().getAnzahl());
+      assertEquals(1, bean.getMelder().getIdentifikatoren().getAenderung().getAnzahl());
+      assertEquals(0, bean.getMelder().getIdentifikatoren().getLoeschung().getAnzahl());
+      assertTrue(loeschJob instanceof LoeschenJob);
+      // Eigentliches Löschen
+      loeschJob.setSqlUtil(sqlUtil);
+      loeschJob.verarbeiteJob();
+      assertEquals(99, bean.getAdressen().getIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(99, bean.getFirmen().getIdentifikatoren().getLoeschung().getAnzahl());
+      assertEquals(99, bean.getMelder().getIdentifikatoren().getLoeschung().getAnzahl());
+      // Pruefe Datenbank
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM adressen WHERE STATUS='LOESCH'");
+      assertEquals(99, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM firmen WHERE STATUS='LOESCH'");
+      assertEquals(99, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM melder WHERE STATUS='LOESCH'");
+      assertEquals(99, row.getInt(1));
+      row = sqlUtil.fetchOne("SELECT COUNT(*) FROM ansprechpartner WHERE STATUS='LOESCH'");
+      assertEquals(198, row.getInt(1));
 
     } catch (JobException e)
     {
