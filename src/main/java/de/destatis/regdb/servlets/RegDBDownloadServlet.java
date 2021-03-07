@@ -5,17 +5,16 @@
  */
 package de.destatis.regdb.servlets;
 
+import de.destatis.regdb.dateiimport.MelderDatenService;
+import de.destatis.regdb.db.AufraeumUtil;
+import de.destatis.regdb.session.RegDBSession;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import de.destatis.regdb.dateiimport.MelderDatenService;
-import de.destatis.regdb.db.AufraeumUtil;
-import de.destatis.regdb.session.RegDBSession;
 
 public class RegDBDownloadServlet extends RegDBGeneralHttpServlet
 {
@@ -44,9 +43,9 @@ public class RegDBDownloadServlet extends RegDBGeneralHttpServlet
   /**
    * Do service.
    *
-   * @param req the req
-   * @param res the res
-   * @param conn the conn
+   * @param req     the req
+   * @param res     the res
+   * @param conn    the conn
    * @param session the session
    * @throws Exception the exception
    */
@@ -59,10 +58,8 @@ public class RegDBDownloadServlet extends RegDBGeneralHttpServlet
   public void doService(HttpServletRequest req, HttpServletResponse res, Connection conn, RegDBSession session) throws Exception
   {
     String mainJobId = req.getParameter("mainJobId");
-    String dateiImportDir = MelderDatenService.getInstance()
-        .getDateiImportDir();
-    File logFile = Paths.get(dateiImportDir, mainJobId, AufraeumUtil.PROKOLL_DATEINAME)
-        .toFile();
+    String dateiImportDir = MelderDatenService.getInstance().getDateiImportDir();
+    File logFile = Paths.get(dateiImportDir, mainJobId, AufraeumUtil.PROKOLL_DATEINAME).toFile();
 
     if (!logFile.exists())
     {

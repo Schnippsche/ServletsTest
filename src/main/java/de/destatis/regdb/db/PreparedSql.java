@@ -16,8 +16,7 @@ import java.util.List;
  */
 public abstract class PreparedSql implements AutoCloseable
 {
-  private static final LoggerIfc log = Logger.getInstance()
-    .getLogger(PreparedSql.class);
+  private static final LoggerIfc log = Logger.getInstance().getLogger(PreparedSql.class);
   protected final List<Object> values;
   /**
    * The Ps.
@@ -60,13 +59,13 @@ public abstract class PreparedSql implements AutoCloseable
   protected void setPsValues() throws SQLException
   {
     int row = 0;
-    for (Object o : values)
+    for (Object o : this.values)
     {
-      ps.setObject(++row, o);
+      this.ps.setObject(++row, o);
     }
     if (log.getLogLevel() >= LogLevel.DEBUG)
     {
-      log.debug(ps.toString());
+      log.debug(this.ps.toString());
     }
     this.values.clear();
   }
@@ -79,9 +78,12 @@ public abstract class PreparedSql implements AutoCloseable
     log.debug("Autoclose PreparedStatement");
     try
     {
-      if (ps != null)
-        ps.close();
-    } catch (SQLException e)
+      if (this.ps != null)
+      {
+        this.ps.close();
+      }
+    }
+    catch (SQLException e)
     {
       log.debug("Fehler beim Schliessen:" + e.getMessage());
     }

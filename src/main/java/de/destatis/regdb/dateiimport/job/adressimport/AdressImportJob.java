@@ -13,7 +13,10 @@ import de.destatis.regdb.dateiimport.job.AbstractImportJob;
 import de.destatis.regdb.dateiimport.job.AbstractJob;
 import de.destatis.regdb.dateiimport.job.LoeschenJob;
 import de.destatis.regdb.dateiimport.reader.SegmentedCsvFileReader;
-import de.destatis.regdb.db.*;
+import de.destatis.regdb.db.AufraeumUtil;
+import de.destatis.regdb.db.PreparedInsert;
+import de.destatis.regdb.db.PreparedUpdate;
+import de.destatis.regdb.db.ResultRow;
 import de.werum.sis.idev.intern.actions.util.MelderDaten;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.secure.PasswordAlgorithm;
@@ -37,13 +40,7 @@ public class AdressImportJob extends AbstractImportJob
   /**
    * The Constant SQL_SELECT_BESTAND.
    */
-  public static final String SQL_SELECT_BESTAND = "SELECT adressen.QUELL_REFERENZ_OF, IF(adressen.QUELL_REFERENZ_TYP=\"MANUELL\",1,0) AS MANUELLE_ADRESSE,"
-    + "adressen.ADRESSEN_ID, firmen.FIRMEN_ID, firmen.ANSPRECHPARTNER_ID AS FIRMA_PARTNER_ID, melder.MELDER_ID, melder.ANSPRECHPARTNER_ID AS MELDER_PARTNER_ID, melder.KENNUNG,"
-    + "IF(firmen_adressen.STATUS IS NULL,1,0) AS FIRMEN_ADRESSEN_STATUS FROM adressen"
-    + " LEFT JOIN firmen_adressen ON(firmen_adressen.ADRESSEN_ID = adressen.ADRESSEN_ID AND firmen_adressen.firmen_id > 0 AND firmen_adressen.STATUS = \"AKTIV\")"
-    + " LEFT JOIN firmen ON(firmen_adressen.FIRMEN_ID = firmen.FIRMEN_ID AND firmen_adressen.STATUS = \"AKTIV\" AND firmen.STATUS != \"LOESCH\")"
-    + " LEFT JOIN melder ON(melder.ADRESSEN_ID = adressen.ADRESSEN_ID AND firmen_adressen.FIRMEN_ID = melder.FIRMEN_ID AND melder.STATUS != \"LOESCH\")"
-    + " WHERE adressen.STATUS != \"LOESCH\" AND adressen.QUELL_REFERENZ_ID = {0} AND adressen.QUELL_REFERENZ_OF IN({1})";
+  public static final String SQL_SELECT_BESTAND = "SELECT adressen.QUELL_REFERENZ_OF, IF(adressen.QUELL_REFERENZ_TYP=\"MANUELL\",1,0) AS MANUELLE_ADRESSE," + "adressen.ADRESSEN_ID, firmen.FIRMEN_ID, firmen.ANSPRECHPARTNER_ID AS FIRMA_PARTNER_ID, melder.MELDER_ID, melder.ANSPRECHPARTNER_ID AS MELDER_PARTNER_ID, melder.KENNUNG," + "IF(firmen_adressen.STATUS IS NULL,1,0) AS FIRMEN_ADRESSEN_STATUS FROM adressen" + " LEFT JOIN firmen_adressen ON(firmen_adressen.ADRESSEN_ID = adressen.ADRESSEN_ID AND firmen_adressen.firmen_id > 0 AND firmen_adressen.STATUS = \"AKTIV\")" + " LEFT JOIN firmen ON(firmen_adressen.FIRMEN_ID = firmen.FIRMEN_ID AND firmen_adressen.STATUS = \"AKTIV\" AND firmen.STATUS != \"LOESCH\")" + " LEFT JOIN melder ON(melder.ADRESSEN_ID = adressen.ADRESSEN_ID AND firmen_adressen.FIRMEN_ID = melder.FIRMEN_ID AND melder.STATUS != \"LOESCH\")" + " WHERE adressen.STATUS != \"LOESCH\" AND adressen.QUELL_REFERENZ_ID = {0} AND adressen.QUELL_REFERENZ_OF IN({1})";
 
   /**
    * The adress import beans.
@@ -99,8 +96,7 @@ public class AdressImportJob extends AbstractImportJob
   @Override
   protected void doNormalImport() throws JobException
   {
-    Path path = this.jobBean.getImportdatei()
-      .getPath();
+    Path path = this.jobBean.getImportdatei().getPath();
     this.leseTeilbereich(path);
     if (this.sortedAdressImportBeans.isEmpty())
     {
@@ -119,7 +115,7 @@ public class AdressImportJob extends AbstractImportJob
   @Override
   protected AbstractJob nextImportJob()
   {
-    jobBean.setStatusAndInfo(JobStatus.AKTIV, "Import aktiv");
+    this.jobBean.setStatusAndInfo(JobStatus.AKTIV, "Import aktiv");
     return new AdressImportJob(this.jobBean);
   }
 
@@ -180,12 +176,9 @@ public class AdressImportJob extends AbstractImportJob
     this.anzahlBestandsadressen = 0;
     this.anzahlNeuadressen = 0;
 
-    String ofs = sqlUtil.convertStringList(sortedAdressImportBeans.stream()
-      .map(b -> b.getAdresse()
-        .getQuellReferenzOf())
-      .collect(Collectors.toSet()));
+    String ofs = this.sqlUtil.convertStringList(this.sortedAdressImportBeans.stream().map(b -> b.getAdresse().getQuellReferenzOf()).collect(Collectors.toSet()));
     String sql = MessageFormat.format(SQL_SELECT_BESTAND, "" + this.jobBean.quellReferenzId, ofs);
-    List<ResultRow> rows = sqlUtil.fetchMany(sql);
+    List<ResultRow> rows = this.sqlUtil.fetchMany(sql);
     for (ResultRow row : rows)
     {
       AdressImportBean bean = this.adressImportBeans.get(row.getString("QUELL_REFERENZ_OF"));
@@ -207,18 +200,14 @@ public class AdressImportJob extends AbstractImportJob
       mb.setFirmenId(firmenId);
       mb.setMelderId(melderId);
       mb.setNeu(melderId == 0);
-      mb.getAnsprechpartner()
-        .setAnsprechpartnerId(melderPartnerId);
-      mb.getAnsprechpartner()
-        .setNeu(melderPartnerId == 0);
+      mb.getAnsprechpartner().setAnsprechpartnerId(melderPartnerId);
+      mb.getAnsprechpartner().setNeu(melderPartnerId == 0);
       mb.setKennung(row.getString("KENNUNG"));
       // Firmendaten
       fb.setFirmenId(firmenId);
       fb.setNeu(firmenId == 0);
-      fb.getAnsprechpartner()
-        .setAnsprechpartnerId(firmaPartnerId);
-      fb.getAnsprechpartner()
-        .setNeu(firmaPartnerId == 0);
+      fb.getAnsprechpartner().setAnsprechpartnerId(firmaPartnerId);
+      fb.getAnsprechpartner().setNeu(firmaPartnerId == 0);
       bean.setFirmenAdressenNeu(row.getInt("FIRMEN_ADRESSEN_STATUS") == 1);
     }
     this.anzahlNeuadressen = this.sortedAdressImportBeans.size() - this.anzahlBestandsadressen;
@@ -243,14 +232,14 @@ public class AdressImportJob extends AbstractImportJob
       if (ImportFormat.IMPORTMITANSPRECHPARTNER.equals(this.jobBean.getImportdatei().importFormat))
       {
         bean = this.doParseZeileW3StatFormat(cols);
-      } else
+      }
+      else
       {
         bean = this.doParseZeileIdevFormat(cols);
       }
       if (bean != null)
       {
-        this.adressImportBeans.put(bean.getAdresse()
-          .getQuellReferenzOf(), bean);
+        this.adressImportBeans.put(bean.getAdresse().getQuellReferenzOf(), bean);
       }
     }
     this.sortedAdressImportBeans = new ArrayList<>(this.adressImportBeans.values());
@@ -307,8 +296,7 @@ public class AdressImportJob extends AbstractImportJob
     ab.setSachbearbeiterId(this.jobBean.sachbearbeiterId);
     ab.setMelderAenderbar(!this.jobBean.getAdressen().nichtAenderbar);
     // Ansprechpartner Firma befuellen
-    AnsprechpartnerBean firmenAnsprechpartnerBean = bean.getFirma()
-      .getAnsprechpartner();
+    AnsprechpartnerBean firmenAnsprechpartnerBean = bean.getFirma().getAnsprechpartner();
     firmenAnsprechpartnerBean.setSachbearbeiterId(this.jobBean.sachbearbeiterId);
     if (!this.jobBean.getMelder().erzeugeLeereAnsprechpartner)
     {
@@ -376,8 +364,7 @@ public class AdressImportJob extends AbstractImportJob
     ab.setSachbearbeiterId(this.jobBean.sachbearbeiterId);
     ab.setMelderAenderbar(!this.jobBean.getAdressen().nichtAenderbar);
     // Ansprechpartner Firma befuellen
-    AnsprechpartnerBean firmenAnsprechpartnerBean = bean.getFirma()
-      .getAnsprechpartner();
+    AnsprechpartnerBean firmenAnsprechpartnerBean = bean.getFirma().getAnsprechpartner();
     firmenAnsprechpartnerBean.setName(cols[11]);
     firmenAnsprechpartnerBean.setVorname(cols[12]);
     firmenAnsprechpartnerBean.setTelefon(cols[13]);
@@ -420,7 +407,7 @@ public class AdressImportJob extends AbstractImportJob
     this.log.info("Erzeuge Neue Adresse...");
     this.beginStopWatch();
     int anzahl = 0;
-    try (PreparedInsert pi = sqlUtil.createPreparedInsert(AdresseBean.SQL_INSERT_ADRESSEN))
+    try (PreparedInsert pi = this.sqlUtil.createPreparedInsert(AdresseBean.SQL_INSERT_ADRESSEN))
     {
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
@@ -430,13 +417,8 @@ public class AdressImportJob extends AbstractImportJob
           anzahl++;
           ab.setZeitpunktEintrag(this.jobBean.zeitpunktEintrag);
           ab.insert(pi);
-          bean.getMelder()
-            .setAdressenId(ab.getAdressenId());
-          this.jobBean.getAdressen()
-            .getIdentifikatoren()
-            .getNeu()
-            .getValues()
-            .add(ab.getAdressenId());
+          bean.getMelder().setAdressenId(ab.getAdressenId());
+          this.jobBean.getAdressen().getIdentifikatoren().getNeu().getValues().add(ab.getAdressenId());
         }
       }
     }
@@ -458,24 +440,18 @@ public class AdressImportJob extends AbstractImportJob
     this.log.info("Erzeuge Neue Firmen...");
     this.beginStopWatch();
     int anzahl = 0;
-    try (PreparedInsert pi = sqlUtil.createPreparedInsert(FirmenBean.SQL_INSERT_FIRMEN))
+    try (PreparedInsert pi = this.sqlUtil.createPreparedInsert(FirmenBean.SQL_INSERT_FIRMEN))
     {
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
         FirmenBean fb = bean.getFirma();
-        if (bean.getAdresse()
-          .isNotManuelleAdresse() && fb.isNeu())
+        if (bean.getAdresse().isNotManuelleAdresse() && fb.isNeu())
         {
           anzahl++;
           fb.setZeitpunktEintrag(this.jobBean.zeitpunktEintrag);
           fb.insert(pi);
-          bean.getMelder()
-            .setFirmenId(fb.getFirmenId());
-          this.jobBean.getFirmen()
-            .getIdentifikatoren()
-            .getNeu()
-            .getValues()
-            .add(fb.getFirmenId());
+          bean.getMelder().setFirmenId(fb.getFirmenId());
+          this.jobBean.getFirmen().getIdentifikatoren().getNeu().getValues().add(fb.getFirmenId());
         }
       }
     }
@@ -497,14 +473,12 @@ public class AdressImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Erzeuge Neue Melder-Ansprechpartner...");
     int anzahl = 0;
-    try (PreparedInsert pi = sqlUtil.createPreparedInsert(AnsprechpartnerBean.SQL_INSERT_ANSPRECHPARTNER))
+    try (PreparedInsert pi = this.sqlUtil.createPreparedInsert(AnsprechpartnerBean.SQL_INSERT_ANSPRECHPARTNER))
     {
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
-        AnsprechpartnerBean asp = bean.getMelder()
-          .getAnsprechpartner();
-        if (bean.getAdresse()
-          .isNotManuelleAdresse() && asp.isNeu())
+        AnsprechpartnerBean asp = bean.getMelder().getAnsprechpartner();
+        if (bean.getAdresse().isNotManuelleAdresse() && asp.isNeu())
         {
           anzahl++;
           asp.setZeitpunktEintrag(this.jobBean.zeitpunktEintrag);
@@ -530,14 +504,12 @@ public class AdressImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Erzeuge Neue Firmen-Ansprechpartner...");
     int anzahl = 0;
-    try (PreparedInsert ps = sqlUtil.createPreparedInsert(AnsprechpartnerBean.SQL_INSERT_ANSPRECHPARTNER))
+    try (PreparedInsert ps = this.sqlUtil.createPreparedInsert(AnsprechpartnerBean.SQL_INSERT_ANSPRECHPARTNER))
     {
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
-        AnsprechpartnerBean asp = bean.getFirma()
-          .getAnsprechpartner();
-        if (bean.getAdresse()
-          .isNotManuelleAdresse() && asp.isNeu())
+        AnsprechpartnerBean asp = bean.getFirma().getAnsprechpartner();
+        if (bean.getAdresse().isNotManuelleAdresse() && asp.isNeu())
         {
           anzahl++;
           asp.setZeitpunktEintrag(this.jobBean.zeitpunktEintrag);
@@ -563,19 +535,16 @@ public class AdressImportJob extends AbstractImportJob
     this.log.info("Erzeuge Neue Firmen-Adressen...");
     int anzahl = 0;
     this.beginStopWatch();
-    try (PreparedUpdate ps = sqlUtil.createPreparedUpdate(FirmenAdressenBean.SQL_INSERT_FIRMEN_ADRESSEN))
+    try (PreparedUpdate ps = this.sqlUtil.createPreparedUpdate(FirmenAdressenBean.SQL_INSERT_FIRMEN_ADRESSEN))
     {
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
-        if (bean.getAdresse()
-          .isNotManuelleAdresse() && bean.isFirmenAdressenNeu())
+        if (bean.getAdresse().isNotManuelleAdresse() && bean.isFirmenAdressenNeu())
         {
 
           FirmenAdressenBean fab = new FirmenAdressenBean();
-          fab.setAdressenId(bean.getAdresse()
-            .getAdressenId());
-          fab.setFirmenId(bean.getFirma()
-            .getFirmenId());
+          fab.setAdressenId(bean.getAdresse().getAdressenId());
+          fab.setFirmenId(bean.getFirma().getFirmenId());
           fab.setSachbearbeiterId(this.jobBean.sachbearbeiterId);
           fab.setZeitpunktEintrag(this.jobBean.zeitpunktEintrag);
           if (fab.getAdressenId() != null && fab.getFirmenId() != null && fab.getAdressenId() > 0 && fab.getFirmenId() > 0)
@@ -606,9 +575,7 @@ public class AdressImportJob extends AbstractImportJob
       int anzahl = 0;
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
-        if (bean.getAdresse()
-          .isNotManuelleAdresse() && bean.getMelder()
-          .isNeu())
+        if (bean.getAdresse().isNotManuelleAdresse() && bean.getMelder().isNeu())
         {
           anzahl++;
         }
@@ -616,7 +583,7 @@ public class AdressImportJob extends AbstractImportJob
       if (anzahl > 0)
       {
         this.log.info(MessageFormat.format("Erzeuge {0} eindeutige Melderkennungen...", anzahl));
-        KennungTool kennungTool = new KennungTool(sqlUtil);
+        KennungTool kennungTool = new KennungTool(this.sqlUtil);
         result = kennungTool.erzeugeEindeutigeKennungen(anzahl, this.jobBean.sachbearbeiterLand);
         this.log.info(MessageFormat.format("{0} Kennungen erzeugt in {1}", anzahl, this.getElapsedTime()));
       }
@@ -643,9 +610,7 @@ public class AdressImportJob extends AbstractImportJob
     ArrayList<AdressImportBean> neueMelder = new ArrayList<>();
     for (AdressImportBean bean : this.sortedAdressImportBeans)
     {
-      if (bean.getAdresse()
-        .isNotManuelleAdresse() && bean.getMelder()
-        .isNeu())
+      if (bean.getAdresse().isNotManuelleAdresse() && bean.getMelder().isNeu())
       {
         neueMelder.add(bean);
       }
@@ -656,23 +621,18 @@ public class AdressImportJob extends AbstractImportJob
       {
         throw new JobException("Es sind nicht genügend freie Kennungen vorhanden!");
       }
-      try (PreparedInsert ps = sqlUtil.createPreparedInsert(MelderBean.SQL_INSERT_MELDER))
+      try (PreparedInsert ps = this.sqlUtil.createPreparedInsert(MelderBean.SQL_INSERT_MELDER))
       {
         for (AdressImportBean bean : neueMelder)
         {
           MelderBean mb = bean.getMelder();
           mb.setKennung(this.neueKennungen.get(anzahl));
           anzahl++;
-          MelderDaten melderDaten = MelderDatenService.getInstance()
-            .getMelderDaten();
+          MelderDaten melderDaten = MelderDatenService.getInstance().getMelderDaten();
           mb.setMelderDaten(melderDaten);
           mb.setZeitpunktRegistrierung(this.jobBean.zeitpunktEintrag);
           mb.insert(ps);
-          this.jobBean.getMelder()
-            .getIdentifikatoren()
-            .getNeu()
-            .getValues()
-            .add(mb.getMelderId());
+          this.jobBean.getMelder().getIdentifikatoren().getNeu().getValues().add(mb.getMelderId());
         }
       }
     }
@@ -689,7 +649,7 @@ public class AdressImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Aktualisierung Adressen...");
     int anzahl = 0;
-    try (PreparedUpdate pu = sqlUtil.createPreparedUpdate(AdresseBean.SQL_UPDATE_ADRESSEN))
+    try (PreparedUpdate pu = this.sqlUtil.createPreparedUpdate(AdresseBean.SQL_UPDATE_ADRESSEN))
     {
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
@@ -699,11 +659,7 @@ public class AdressImportJob extends AbstractImportJob
           anzahl++;
           ab.setZeitpunktAenderung(this.jobBean.zeitpunktEintrag);
           ab.update(pu);
-          this.jobBean.getAdressen()
-            .getIdentifikatoren()
-            .getAenderung()
-            .getValues()
-            .add(ab.getAdressenId());
+          this.jobBean.getAdressen().getIdentifikatoren().getAenderung().getValues().add(ab.getAdressenId());
         }
       }
     }
@@ -725,22 +681,17 @@ public class AdressImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Aktualisierung Firmen...");
     int anzahl = 0;
-    try (PreparedUpdate pu = sqlUtil.createPreparedUpdate(FirmenBean.SQL_UPDATE_FIRMEN))
+    try (PreparedUpdate pu = this.sqlUtil.createPreparedUpdate(FirmenBean.SQL_UPDATE_FIRMEN))
     {
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
         FirmenBean fb = bean.getFirma();
-        if (bean.getAdresse()
-          .isNotManuelleAdresse() && !fb.isNeu())
+        if (bean.getAdresse().isNotManuelleAdresse() && !fb.isNeu())
         {
           anzahl++;
           fb.setZeitpunktAenderung(this.jobBean.zeitpunktEintrag);
           fb.update(pu);
-          this.jobBean.getFirmen()
-            .getIdentifikatoren()
-            .getAenderung()
-            .getValues()
-            .add(fb.getFirmenId());
+          this.jobBean.getFirmen().getIdentifikatoren().getAenderung().getValues().add(fb.getFirmenId());
         }
       }
     }
@@ -763,22 +714,17 @@ public class AdressImportJob extends AbstractImportJob
     this.log.info("Aktualisierung Melder...");
     int anzahl = 0;
     String sql = MelderBean.SQL_UPDATE_MELDER;
-    try (PreparedUpdate pu = sqlUtil.createPreparedUpdate(sql))
+    try (PreparedUpdate pu = this.sqlUtil.createPreparedUpdate(sql))
     {
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
         MelderBean mb = bean.getMelder();
-        if (bean.getAdresse()
-          .isNotManuelleAdresse() && !mb.isNeu())
+        if (bean.getAdresse().isNotManuelleAdresse() && !mb.isNeu())
         {
           anzahl++;
           mb.setZeitpunktAenderung(this.jobBean.zeitpunktEintrag);
           mb.update(pu);
-          this.jobBean.getMelder()
-            .getIdentifikatoren()
-            .getAenderung()
-            .getValues()
-            .add(mb.getMelderId());
+          this.jobBean.getMelder().getIdentifikatoren().getAenderung().getValues().add(mb.getMelderId());
         }
       }
     }
@@ -803,10 +749,9 @@ public class AdressImportJob extends AbstractImportJob
     Set<Integer> mids = this.sortedAdressImportBeans.stream().filter(b -> b.getMelder() != null).filter(b -> b.getMelder().isNeu() && b.getMelder().getMelderId() > 0).map(b -> b.getMelder().getMelderId()).collect(Collectors.toSet());
     if (!mids.isEmpty())
     {
-      String ids = sqlUtil.convertNumberList(mids);
+      String ids = this.sqlUtil.convertNumberList(mids);
       String sql = MessageFormat.format(MelderBean.SQL_SELECT_FUER_PASSWOERTER, ids);
-      try (ResultSet rs = this.connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE)
-        .executeQuery(sql))
+      try (ResultSet rs = this.connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).executeQuery(sql))
       {
         while (rs.next())
         {
@@ -825,7 +770,8 @@ public class AdressImportJob extends AbstractImportJob
             rs.updateString("STATUS", "AEND");
             rs.updateRow();
             anzahl++;
-          } else
+          }
+          else
           {
             this.log.error("Konnte keine MelderDaten erzeugen");
           }
@@ -853,7 +799,8 @@ public class AdressImportJob extends AbstractImportJob
       byte[] privaterSchluesselGeschuetzt = UserKeyEncryptionAlgorithm.encryptUserKey(privaterSchluessel, systemPasswort);
       byte[] oeffentlicherSchluesselGeschuetzt = UserKeyEncryptionAlgorithm.encryptUserKey(oeffentlicherSchluessel, systemPasswort);
       return new MelderDaten(systemPasswort, passwort, privaterSchluessel, oeffentlicherSchluessel, privaterSchluesselGeschuetzt, oeffentlicherSchluesselGeschuetzt);
-    } catch (GeneralSecurityException e)
+    }
+    catch (GeneralSecurityException e)
     {
       this.log.error("datenVerschluesseln schlug fehl:" + e.getMessage());
     }

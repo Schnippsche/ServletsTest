@@ -38,32 +38,33 @@ public class PruefeXmlImport extends AbstractPruefeImport<XmlBean>
   @Override
   protected void validate(ArrayList<XmlBean> rows, int offset) throws JobException
   {
-     String amt;
+    String amt;
     for (XmlBean bean : rows)
     {
       amt = "";
       String statOnlineKey = "";
-      if (pruefUtil.checkNichtLeer(bean.getAmt(), "'Amt'", bean.getRowNumber()))
+      if (this.pruefUtil.checkNichtLeer(bean.getAmt(), "'Amt'", bean.getRowNumber()))
       {
         amt = bean.getAmt();
       }
-      if (pruefUtil.checkNichtLeer(bean.getStatOnlineKey(), "'Stat-Online-Key'", bean.getRowNumber()))
+      if (this.pruefUtil.checkNichtLeer(bean.getStatOnlineKey(), "'Stat-Online-Key'", bean.getRowNumber()))
       {
         statOnlineKey = bean.getStatOnlineKey();
       }
-      if (pruefUtil.checkNichtLeer(bean.getAktion(), "'Aktion'", bean.getRowNumber()))
+      if (this.pruefUtil.checkNichtLeer(bean.getAktion(), "'Aktion'", bean.getRowNumber()))
       {
         String aktion = bean.getAktion();
         if (!bean.isAktionValid())
         {
-          pruefUtil.addError(bean.getRowNumber(), "Ungültige Aktion '" + aktion + "'");
+          this.pruefUtil.addError(bean.getRowNumber(), "Ungültige Aktion '" + aktion + "'");
         }
       }
       if (!amt.isEmpty() && !statOnlineKey.isEmpty())
+      {
         pruefeStatOnlineKey(bean);
+      }
     }
   }
-
 
   private void pruefeStatOnlineKey(XmlBean bean) throws JobException
   {
@@ -75,25 +76,27 @@ public class PruefeXmlImport extends AbstractPruefeImport<XmlBean>
     if (statistId == null)
     {
       String sql = MessageFormat.format(RegisterImportJob.SQL_SELECT_STATONLINEKEY, StringUtil.escapeSqlString(bean.getAmt()), StringUtil.escapeSqlString(bean.getStatOnlineKey()));
-      ResultRow row = sqlUtil.fetchOne(sql);
+      ResultRow row = this.sqlUtil.fetchOne(sql);
       if (row != null)
       {
         Integer statistikId = row.getInt(1);
         this.amtStatOnlineKeys.put(key, statistikId);
         bean.setStatistikId(statistikId);
-        jobBean.statistikId = statistikId;
+        this.jobBean.statistikId = statistikId;
         quellRefId = row.getInt(2);
         if (this.quellReferenzId == null)
         {
           this.quellReferenzId = quellRefId;
-          jobBean.quellReferenzId = quellRefId;
-        } else if (!this.quellReferenzId.equals(quellRefId))
-        {
-          pruefUtil.addError(bean.getRowNumber(), "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
+          this.jobBean.quellReferenzId = quellRefId;
         }
-      } else
+        else if (!this.quellReferenzId.equals(quellRefId))
+        {
+          this.pruefUtil.addError(bean.getRowNumber(), "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
+        }
+      }
+      else
       {
-        pruefUtil.addError(bean.getRowNumber(), "Kombination aus Amt (" + bean.getAmt() + ") und StatOnlineKey (" + bean.getStatOnlineKey() + ") existiert nicht!");
+        this.pruefUtil.addError(bean.getRowNumber(), "Kombination aus Amt (" + bean.getAmt() + ") und StatOnlineKey (" + bean.getStatOnlineKey() + ") existiert nicht!");
       }
     }
   }

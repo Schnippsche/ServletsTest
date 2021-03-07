@@ -1,12 +1,11 @@
 package de.destatis.regdb;
 
+import de.destatis.regdb.dateiimport.ImportFormat;
+
+import javax.xml.bind.annotation.XmlAttribute;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import javax.xml.bind.annotation.XmlAttribute;
-
-import de.destatis.regdb.dateiimport.ImportFormat;
 
 /**
  * @author Stefan
@@ -36,8 +35,9 @@ public class Importdatei
   public String originalDateiname;
   @XmlAttribute
   public String zeichensatz;
+
   /**
-   * 
+   *
    */
   public Importdatei()
   {

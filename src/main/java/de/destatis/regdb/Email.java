@@ -12,7 +12,7 @@ public class Email
   private String absender;
   private String betreff;
   private String text;
-  
+
   /**
    * Instantiates a new email.
    */
@@ -20,14 +20,14 @@ public class Email
   {
     super();
   }
-  
+
   /**
    * Instantiates a new email.
    *
    * @param empfaenger the list of empfaenger
-   * @param absender the absender
-   * @param betreff the betreff
-   * @param text the text
+   * @param absender   the absender
+   * @param betreff    the betreff
+   * @param text       the text
    */
   public Email(Set<String> empfaenger, String absender, String betreff, String text)
   {
@@ -37,9 +37,7 @@ public class Email
     this.betreff = betreff;
     this.text = text;
   }
-  
-  
-  
+
   /**
    * @param absender
    * @param betreff
@@ -48,7 +46,7 @@ public class Email
   public Email(String absender, String betreff, String text)
   {
     this(null, absender, betreff, text);
-    
+
   }
 
   /**
@@ -59,10 +57,12 @@ public class Email
   public Set<String> getEmpfaenger()
   {
     if (this.empfaenger == null)
+    {
       this.empfaenger = new HashSet<>();
+    }
     return this.empfaenger;
   }
-  
+
   /**
    * Sets the empfaenger.
    *
@@ -72,11 +72,12 @@ public class Email
   {
     this.empfaenger = empfaenger;
   }
+
   public void addEmpfaenger(String empfaenger)
   {
     this.getEmpfaenger().add(empfaenger);
   }
-  
+
   /**
    * Gets the absender.
    *
@@ -86,7 +87,7 @@ public class Email
   {
     return this.absender;
   }
-  
+
   /**
    * Sets the absender.
    *
@@ -96,7 +97,7 @@ public class Email
   {
     this.absender = absender;
   }
-  
+
   /**
    * Gets the betreff.
    *
@@ -106,7 +107,7 @@ public class Email
   {
     return this.betreff;
   }
-  
+
   /**
    * Sets the betreff.
    *
@@ -116,7 +117,7 @@ public class Email
   {
     this.betreff = betreff;
   }
-  
+
   /**
    * Gets the text.
    *
@@ -126,7 +127,7 @@ public class Email
   {
     return this.text;
   }
-  
+
   /**
    * Sets the text.
    *
@@ -137,5 +138,4 @@ public class Email
     this.text = text;
   }
 
-  
 }

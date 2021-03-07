@@ -38,10 +38,8 @@ public class AufraeumUtil
    */
   public AufraeumUtil()
   {
-    this.dateiImportDir = MelderDatenService.getInstance()
-      .getDateiImportDir();
-    log = Logger.getInstance()
-      .getLogger(this.getClass());
+    this.dateiImportDir = MelderDatenService.getInstance().getDateiImportDir();
+    this.log = Logger.getInstance().getLogger(this.getClass());
   }
 
   /**
@@ -52,15 +50,15 @@ public class AufraeumUtil
    */
   public boolean entferneDateien(Integer mainJobId)
   {
-    String importVerzeichnis = Paths.get(this.dateiImportDir, "" + mainJobId)
-      .toString();
+    String importVerzeichnis = Paths.get(this.dateiImportDir, "" + mainJobId).toString();
     this.log.debug("entferneDateien aus Verzeichnis " + importVerzeichnis);
     Path importDateiPath = Paths.get(importVerzeichnis, "importdatei.txt");
     try
     {
       Files.deleteIfExists(importDateiPath);
       return true;
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       this.log.error("Fehler beim Entfernen der Importdateien:" + e.getMessage());
     }
@@ -76,8 +74,7 @@ public class AufraeumUtil
    */
   public boolean erzeugeProtokollArchiv(String mainJobId, String zielDateiName)
   {
-    String importVerzeichnis = Paths.get(this.dateiImportDir, mainJobId)
-      .toString();
+    String importVerzeichnis = Paths.get(this.dateiImportDir, mainJobId).toString();
     this.log.debug("erzeuge Protokoll Archiv " + zielDateiName + " in Verzeichnis " + importVerzeichnis);
     // LoeschProtokolle zippen
     Path protokoll = Paths.get(importVerzeichnis, zielDateiName);
@@ -113,18 +110,19 @@ public class AufraeumUtil
         if (Files.exists(path))
         {
           this.log.debug("zippe " + path);
-          ZipEntry e = new ZipEntry(path.getFileName()
-            .toString());
+          ZipEntry e = new ZipEntry(path.getFileName().toString());
           zos.putNextEntry(e);
           Files.copy(path, zos);
           zos.closeEntry();
           fileExists = true;
-        } else
+        }
+        else
         {
           this.log.debug("Datei zum Zippen existiert nicht:" + path);
         }
       }
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       this.log.error("Fehler beim Zippen:" + e.getMessage(), e);
     }
@@ -134,8 +132,7 @@ public class AufraeumUtil
   public void entferneErstenAbgelaufenenJob()
   {
     this.log.debug("ermittleAbgelaufeneJobs");
-    Connection conn = ConnectionTool.getInstance()
-      .getConnection();
+    Connection conn = ConnectionTool.getInstance().getConnection();
     DBConfig config = new DBConfig();
     SqlUtil sqlUtil = new SqlUtil(conn);
     if (this.aufraeumInterval == null)
@@ -146,7 +143,8 @@ public class AufraeumUtil
       {
         this.aufraeumInterval = "3";
         config.setParameter(conn, KONFIGURATION_LOESCH_INTERVAL, this.aufraeumInterval, RegDBImportServlet.INTERN);
-      } else
+      }
+      else
       {
         this.aufraeumInterval = newValue;
       }
@@ -164,20 +162,21 @@ public class AufraeumUtil
         LoeschUtil loeschUtil = new LoeschUtil(conn);
         loeschUtil.loescheStandardWerte(mainJobId);
         loeschUtil.loescheImport(mainJobId);
-        DateiImportDaemon.getInstance()
-          .updateStatusList(conn);
+        DateiImportDaemon.getInstance().updateStatusList(conn);
         entferneDateien(mainJobId);
-      } else
+      }
+      else
       {
         this.log.debug("keinen abgelaufenen Job ermittelt");
       }
-    } catch (Throwable e)
+    }
+    catch (Throwable e)
     {
       this.log.error("Fehler :" + e.toString(), e);
-    } finally
+    }
+    finally
     {
-      ConnectionTool.getInstance()
-        .freeConnection(conn);
+      ConnectionTool.getInstance().freeConnection(conn);
     }
   }
 }

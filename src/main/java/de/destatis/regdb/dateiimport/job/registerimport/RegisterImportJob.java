@@ -44,7 +44,7 @@ public class RegisterImportJob extends AdressImportJob
   public RegisterImportJob(JobBean jobBean)
   {
     super("RegisterImport", jobBean);
-    this.vorbelegungsJob = new VorbelegungsImportJob(jobBean, sqlUtil);
+    this.vorbelegungsJob = new VorbelegungsImportJob(jobBean, this.sqlUtil);
   }
 
   /**
@@ -58,34 +58,27 @@ public class RegisterImportJob extends AdressImportJob
   protected void leseTeilbereich(Path path) throws JobException
   {
     SegmentedStringFileReader fileReader = new SegmentedStringFileReader();
-    List<String> rows = fileReader.readSegment(path, this.jobBean.getImportdatei()
-      .getCharset(), this.jobBean.getImportdatei().datensatzOffset, this.jobBean.importBlockGroesse);
+    List<String> rows = fileReader.readSegment(path, this.jobBean.getImportdatei().getCharset(), this.jobBean.getImportdatei().datensatzOffset, this.jobBean.importBlockGroesse);
     this.adressImportBeans = new HashMap<>(rows.size());
     this.vorbelegungsJob.setVorbelegungsImportBeans(new ArrayList<>(rows.size()));
     this.amtStatOnlineKeys = new HashMap<>();
     for (String row : rows)
     {
       AdressImportBean bean = this.doParseZeile(row);
-      if (bean != null && !this.adressImportBeans.containsKey(bean.getAdresse()
-        .getQuellReferenzOf()))
+      if (bean != null && !this.adressImportBeans.containsKey(bean.getAdresse().getQuellReferenzOf()))
       {
-        this.adressImportBeans.put(bean.getAdresse()
-          .getQuellReferenzOf(), bean);
+        this.adressImportBeans.put(bean.getAdresse().getQuellReferenzOf(), bean);
         // Ermittle Statistik-Id
-        String key = bean.getAdresse()
-          .getAmt()
-          + "|" + bean.getStatOnlineKey();
+        String key = bean.getAdresse().getAmt() + "|" + bean.getStatOnlineKey();
         Integer statId = this.amtStatOnlineKeys.get(key);
         if (statId == null)
         {
-          this.jobBean.statistikId = this.getStatistikIdFromAmtStatOnlineKey(bean.getAdresse()
-            .getAmt(), bean.getStatOnlineKey());
+          this.jobBean.statistikId = this.getStatistikIdFromAmtStatOnlineKey(bean.getAdresse().getAmt(), bean.getStatOnlineKey());
           this.amtStatOnlineKeys.put(key, this.jobBean.statistikId);
         }
         if (this.jobBean.getMelder().erzeugeVorbelegungenStattAnsprechpartner)
         {
-          this.vorbelegungsJob.getVorbelegungsImportBeans()
-            .add(this.erzeugeVorbelegungsBean(bean, this.jobBean.statistikId));
+          this.vorbelegungsJob.getVorbelegungsImportBeans().add(this.erzeugeVorbelegungsBean(bean, this.jobBean.statistikId));
         }
       }
     }
@@ -111,22 +104,17 @@ public class RegisterImportJob extends AdressImportJob
     int anzahl = 0;
     String sql = MelderBean.SQL_UPDATE_MELDER_REGISTER;
     this.log.debug(sql);
-    try (PreparedUpdate ps = sqlUtil.createPreparedUpdate(sql))
+    try (PreparedUpdate ps = this.sqlUtil.createPreparedUpdate(sql))
     {
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
         MelderBean mb = bean.getMelder();
-        if (bean.getAdresse()
-          .isNotManuelleAdresse() && !mb.isNeu())
+        if (bean.getAdresse().isNotManuelleAdresse() && !mb.isNeu())
         {
           anzahl++;
           mb.setZeitpunktAenderung(this.jobBean.zeitpunktEintrag);
           mb.updateRegisterimport(ps);
-          this.jobBean.getMelder()
-            .getIdentifikatoren()
-            .getAenderung()
-            .getValues()
-            .add(mb.getMelderId());
+          this.jobBean.getMelder().getIdentifikatoren().getAenderung().getValues().add(mb.getMelderId());
         }
       }
     }
@@ -144,22 +132,16 @@ public class RegisterImportJob extends AdressImportJob
   {
     VorbelegungsImportBean vbBean = new VorbelegungsImportBean();
     vbBean.setStatistikId(statistikId);
-    vbBean.setAmt(adressImportBean.getAdresse()
-      .getAmt());
+    vbBean.setAmt(adressImportBean.getAdresse().getAmt());
     vbBean.setBzr(adressImportBean.getBzr());
     vbBean.setFormularname("");
     vbBean.setMelderId(0);
     vbBean.setQuellReferenzInt(adressImportBean.getQuellReferenzInt());
-    vbBean.setQuellReferenzOf(adressImportBean.getAdresse()
-      .getQuellReferenzOf());
-    vbBean.getWerte()
-      .put("Ansprechpartner_Name", adressImportBean.getAnsprechpartnerFachabteilungName());
-    vbBean.getWerte()
-      .put("Ansprechpartner_Telefon", adressImportBean.getAnsprechpartnerFachabteilungTelefon());
-    vbBean.getWerte()
-      .put("Ansprechpartner_Mail", adressImportBean.getAnsprechpartnerFachabteilungEmail());
-    vbBean.getWerte()
-      .put("Datenempfaenger", adressImportBean.getDddkislId());
+    vbBean.setQuellReferenzOf(adressImportBean.getAdresse().getQuellReferenzOf());
+    vbBean.getWerte().put("Ansprechpartner_Name", adressImportBean.getAnsprechpartnerFachabteilungName());
+    vbBean.getWerte().put("Ansprechpartner_Telefon", adressImportBean.getAnsprechpartnerFachabteilungTelefon());
+    vbBean.getWerte().put("Ansprechpartner_Mail", adressImportBean.getAnsprechpartnerFachabteilungEmail());
+    vbBean.getWerte().put("Datenempfaenger", adressImportBean.getDddkislId());
     return vbBean;
   }
 
@@ -192,8 +174,7 @@ public class RegisterImportJob extends AdressImportJob
    */
   private void uebertrageFirmenIds()
   {
-    HashMap<String, VorbelegungsImportBean> tmpVorbelegungen = new HashMap<>(this.vorbelegungsJob.getVorbelegungsImportBeans()
-      .size());
+    HashMap<String, VorbelegungsImportBean> tmpVorbelegungen = new HashMap<>(this.vorbelegungsJob.getVorbelegungsImportBeans().size());
     for (VorbelegungsImportBean vorbelBean : this.vorbelegungsJob.getVorbelegungsImportBeans())
     {
       String key2 = vorbelBean.getAmt() + "|" + vorbelBean.getQuellReferenzOf() + "|" + vorbelBean.getQuellReferenzInt();
@@ -201,15 +182,11 @@ public class RegisterImportJob extends AdressImportJob
     }
     for (AdressImportBean adressBean : this.sortedAdressImportBeans)
     {
-      String key1 = adressBean.getAdresse()
-        .getAmt()
-        + "|" + adressBean.getAdresse()
-        .getQuellReferenzOf() + "|" + adressBean.getQuellReferenzInt();
+      String key1 = adressBean.getAdresse().getAmt() + "|" + adressBean.getAdresse().getQuellReferenzOf() + "|" + adressBean.getQuellReferenzInt();
       VorbelegungsImportBean vorbelBean = tmpVorbelegungen.get(key1);
       if (vorbelBean != null)
       {
-        vorbelBean.setFirmenId(adressBean.getFirma()
-          .getFirmenId());
+        vorbelBean.setFirmenId(adressBean.getFirma().getFirmenId());
       }
     }
   }
@@ -260,7 +237,7 @@ public class RegisterImportJob extends AdressImportJob
   private Integer getStatistikIdFromAmtStatOnlineKey(String amt, String statOnlineKey) throws JobException
   {
     String sql = MessageFormat.format(RegisterImportJob.SQL_SELECT_STATONLINEKEY, StringUtil.escapeSqlString(amt), StringUtil.escapeSqlString(statOnlineKey));
-    ResultRow rs = sqlUtil.fetchOne(sql);
+    ResultRow rs = this.sqlUtil.fetchOne(sql);
     return (rs != null ? rs.getInt(1) : 0);
 
   }
@@ -281,40 +258,26 @@ public class RegisterImportJob extends AdressImportJob
     AdressImportBean bean = new AdressImportBean();
     AdresseBean ab = bean.getAdresse();
     ab.setQuellReferenzId(this.jobBean.quellReferenzId);
-    ab.setAmt(StringUtil.substring(row, 20, 22)
-      .trim());
-    bean.setStatOnlineKey(StringUtil.substring(row, 0, 10)
-      .trim());
-    ab.setQuellReferenzOf(StringUtil.substring(row, 10, 20)
-      .trim());
-    bean.setBzr(StringUtil.substring(row, 22, 28)
-      .trim());
-    bean.setQuellReferenzInt(StringUtil.substring(row, 28, 48)
-      .trim());
-    bean.setDddkislId(StringUtil.substring(row, 48, 50)
-      .trim());
-    ab.setUrs(0, StringUtil.substring(row, 50, 90)
-      .trim());
-    ab.setUrs(1, StringUtil.substring(row, 90, 130)
-      .trim());
-    ab.setUrs(2, StringUtil.substring(row, 130, 170)
-      .trim());
-    ab.setUrs(3, StringUtil.substring(row, 170, 210)
-      .trim());
+    ab.setAmt(StringUtil.substring(row, 20, 22).trim());
+    bean.setStatOnlineKey(StringUtil.substring(row, 0, 10).trim());
+    ab.setQuellReferenzOf(StringUtil.substring(row, 10, 20).trim());
+    bean.setBzr(StringUtil.substring(row, 22, 28).trim());
+    bean.setQuellReferenzInt(StringUtil.substring(row, 28, 48).trim());
+    bean.setDddkislId(StringUtil.substring(row, 48, 50).trim());
+    ab.setUrs(0, StringUtil.substring(row, 50, 90).trim());
+    ab.setUrs(1, StringUtil.substring(row, 90, 130).trim());
+    ab.setUrs(2, StringUtil.substring(row, 130, 170).trim());
+    ab.setUrs(3, StringUtil.substring(row, 170, 210).trim());
     bean.setAuswahlkriterium(ab.getUrs(3));
-    ab.setUrs(4, StringUtil.substring(row, 210, 250)
-      .trim());
-    ab.setUrs(5, StringUtil.substring(row, 250, 260)
-      .trim());
-    ab.setUrs(6, StringUtil.substring(row, 260, 300)
-      .trim());
+    ab.setUrs(4, StringUtil.substring(row, 210, 250).trim());
+    ab.setUrs(5, StringUtil.substring(row, 250, 260).trim());
+    ab.setUrs(6, StringUtil.substring(row, 260, 300).trim());
     ab.setName((ab.getUrs(0) + " " + ab.getUrs(1)).trim());
     ab.setNameErgaenzung((ab.getUrs(2) + " " + ab.getUrs(3)).trim());
     ab.setSachbearbeiterId(this.jobBean.sachbearbeiterId);
     ab.setMelderAenderbar(!this.jobBean.getAdressen().nichtAenderbar);
     // Wenn NAME leer ist, dann tausche NAME mit NAME_ERGAENZUNG
-    if (ab.getName()
-      .isEmpty())
+    if (ab.getName().isEmpty())
     {
       ab.setName(ab.getNameErgaenzung());
       ab.setNameErgaenzung("");
@@ -323,14 +286,10 @@ public class RegisterImportJob extends AdressImportJob
     ab.setPostleitzahl(ab.getUrs(5));
     ab.setOrt(ab.getUrs(6));
 
-    bean.setAuswahlkriterium(StringUtil.substring(row, 300, 320)
-      .trim()); // AUSWAHLKRITERIUM
-    bean.setAnsprechpartnerFachabteilungName(StringUtil.substring(row, 320, 360)
-      .trim()); // VORBEL_AN_NAME
-    bean.setAnsprechpartnerFachabteilungTelefon(StringUtil.substring(row, 360, 380)
-      .trim()); // VORBEL_AN_TELEFON
-    bean.setAnsprechpartnerFachabteilungEmail(StringUtil.substring(row, 380, 430)
-      .trim()); // VORBEL_AN_EMAIL
+    bean.setAuswahlkriterium(StringUtil.substring(row, 300, 320).trim()); // AUSWAHLKRITERIUM
+    bean.setAnsprechpartnerFachabteilungName(StringUtil.substring(row, 320, 360).trim()); // VORBEL_AN_NAME
+    bean.setAnsprechpartnerFachabteilungTelefon(StringUtil.substring(row, 360, 380).trim()); // VORBEL_AN_TELEFON
+    bean.setAnsprechpartnerFachabteilungEmail(StringUtil.substring(row, 380, 430).trim()); // VORBEL_AN_EMAIL
     for (int x = 0; x < 10; x++)
     {
       ab.setZusatz(x, "");
@@ -344,8 +303,7 @@ public class RegisterImportJob extends AdressImportJob
       ab.setZusatz(3, bean.getDddkislId());
       ab.setZusatz(4, bean.getAuswahlkriterium());
     }
-    AnsprechpartnerBean firmenAnsprechpartnerBean = bean.getFirma()
-      .getAnsprechpartner();
+    AnsprechpartnerBean firmenAnsprechpartnerBean = bean.getFirma().getAnsprechpartner();
     firmenAnsprechpartnerBean.setSachbearbeiterId(this.jobBean.sachbearbeiterId);
     // Firma befuellen
     FirmenBean firmenBean = bean.getFirma();
@@ -353,8 +311,7 @@ public class RegisterImportJob extends AdressImportJob
     firmenBean.setNameErgaenzung(ab.getNameErgaenzung());
     firmenBean.setSachbearbeiterId(this.jobBean.sachbearbeiterId);
     // Ansprechpartner Melder befuellen
-    AnsprechpartnerBean melderAnsprechpartnerBean = bean.getMelder()
-      .getAnsprechpartner();
+    AnsprechpartnerBean melderAnsprechpartnerBean = bean.getMelder().getAnsprechpartner();
     melderAnsprechpartnerBean.setName(ab.getName());
     melderAnsprechpartnerBean.setVorname(ab.getNameErgaenzung());
     melderAnsprechpartnerBean.setSachbearbeiterId(this.jobBean.sachbearbeiterId);
@@ -376,27 +333,21 @@ public class RegisterImportJob extends AdressImportJob
     this.log.info("Erzeuge Neue Melder-Statistik-Eintraege...");
     int anzahl = 0;
     this.beginStopWatch();
-    try (PreparedInsert pi = sqlUtil.createPreparedInsert(SQL_INSERT_MELDER_STATISTIKEN))
+    try (PreparedInsert pi = this.sqlUtil.createPreparedInsert(SQL_INSERT_MELDER_STATISTIKEN))
     {
       for (AdressImportBean bean : this.sortedAdressImportBeans)
       {
-        String key = bean.getAdresse()
-          .getAmt()
-          + "|" + bean.getStatOnlineKey();
+        String key = bean.getAdresse().getAmt() + "|" + bean.getStatOnlineKey();
         this.jobBean.statistikId = this.amtStatOnlineKeys.get(key);
-        pi.addValue(bean.getMelder()
-          .getMelderId()); //
+        pi.addValue(bean.getMelder().getMelderId()); //
         pi.addValue(this.jobBean.statistikId); // STATISTIK_ID
-        pi.addValue(bean.getAdresse()
-          .getAmt()); //
-        pi.addValue(bean.getFirma()
-          .getFirmenId()); //
+        pi.addValue(bean.getAdresse().getAmt()); //
+        pi.addValue(bean.getFirma().getFirmenId()); //
         pi.addValue("MELDER"); //
         pi.addValue(bean.getBzr()); //
         pi.addValue((this.jobBean.getMelder().gesperrt ? "SPERRE" : "NEU")); // STATUS
         pi.addValue("J"); // ERINNERUNGSSERVICE
-        pi.addValue(bean.getAdresse()
-          .getAdressenId()); // IS_ADRESSEN_ID
+        pi.addValue(bean.getAdresse().getAdressenId()); // IS_ADRESSEN_ID
         pi.addValue(this.jobBean.sachbearbeiterId); //
         pi.addValue(this.jobBean.zeitpunktEintrag);
         anzahl += pi.insert();

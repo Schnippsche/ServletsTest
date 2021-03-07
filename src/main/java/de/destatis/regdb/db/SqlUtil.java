@@ -1,5 +1,9 @@
 package de.destatis.regdb.db;
 
+import de.werum.sis.idev.res.job.JobException;
+import de.werum.sis.idev.res.log.Logger;
+import de.werum.sis.idev.res.log.LoggerIfc;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,10 +13,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.werum.sis.idev.res.job.JobException;
-import de.werum.sis.idev.res.log.Logger;
-import de.werum.sis.idev.res.log.LoggerIfc;
-
 /**
  * The type Sql util.
  */
@@ -21,8 +21,7 @@ public class SqlUtil
   /**
    * The constant log.
    */
-  protected static final LoggerIfc log = Logger.getInstance()
-      .getLogger(SqlUtil.class);
+  protected static final LoggerIfc log = Logger.getInstance().getLogger(SqlUtil.class);
 
   private final Connection connection;
 
@@ -46,7 +45,7 @@ public class SqlUtil
   public int update(String sql) throws JobException
   {
     log.debug(sql);
-    try (Statement stmt = connection.createStatement())
+    try (Statement stmt = this.connection.createStatement())
     {
       return stmt.executeUpdate(sql);
     }
@@ -66,9 +65,9 @@ public class SqlUtil
   public void execute(String sql) throws JobException
   {
     log.debug(sql);
-    try (Statement stmt = connection.createStatement())
+    try (Statement stmt = this.connection.createStatement())
     {
-       stmt.execute(sql);
+      stmt.execute(sql);
     }
     catch (SQLException e)
     {
@@ -87,7 +86,7 @@ public class SqlUtil
   public ResultRow fetchOne(String sql) throws JobException
   {
     log.debug(sql);
-    try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql))
+    try (Statement stmt = this.connection.createStatement(); ResultSet rs = stmt.executeQuery(sql))
     {
       if (rs.next())
       {
@@ -113,7 +112,7 @@ public class SqlUtil
   {
     log.debug(sql);
     List<ResultRow> rows = new ArrayList<>();
-    try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql))
+    try (Statement stmt = this.connection.createStatement(); ResultSet rs = stmt.executeQuery(sql))
     {
       while (rs.next())
       {
@@ -137,7 +136,7 @@ public class SqlUtil
    */
   public PreparedSelect createPreparedSelect(String sql) throws JobException
   {
-    return new PreparedSelect(connection, sql);
+    return new PreparedSelect(this.connection, sql);
   }
 
   /**
@@ -149,7 +148,7 @@ public class SqlUtil
    */
   public PreparedUpdate createPreparedUpdate(String sql) throws JobException
   {
-    return new PreparedUpdate(connection, sql);
+    return new PreparedUpdate(this.connection, sql);
   }
 
   /**
@@ -161,7 +160,7 @@ public class SqlUtil
    */
   public PreparedInsert createPreparedInsert(String sql) throws JobException
   {
-    return new PreparedInsert(connection, sql);
+    return new PreparedInsert(this.connection, sql);
   }
 
   /**
@@ -247,11 +246,11 @@ public class SqlUtil
   public String convertStringList(Collection<String> elements)
   {
     if (elements == null || elements.isEmpty())
+    {
       return "''";
+    }
 
-    return elements.stream()
-        .map(StringUtil::escapeSqlString)
-        .collect(Collectors.joining("','", "'", "'"));
+    return elements.stream().map(StringUtil::escapeSqlString).collect(Collectors.joining("','", "'", "'"));
   }
 
   /**
@@ -263,11 +262,11 @@ public class SqlUtil
   public String convertNumberList(Collection<? extends Number> elements)
   {
     if (elements == null || elements.isEmpty())
+    {
       return "0";
+    }
 
-    return elements.stream()
-        .map(String::valueOf)
-        .collect(Collectors.joining(","));
+    return elements.stream().map(String::valueOf).collect(Collectors.joining(","));
 
   }
 
@@ -279,5 +278,11 @@ public class SqlUtil
   public Connection getConnection()
   {
     return this.connection;
+  }
+
+  public boolean dbIsLocked() throws JobException
+  {
+    ResultRow row = this.fetchOne("SELECT STATUS FROM version");
+    return row != null && ("SPERRE".equalsIgnoreCase(row.getString(1)));
   }
 }

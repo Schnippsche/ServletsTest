@@ -5,6 +5,9 @@
  */
 package de.destatis.regdb.db;
 
+import de.werum.sis.idev.res.log.Logger;
+import de.werum.sis.idev.res.log.LoggerIfc;
+
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -14,16 +17,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import de.werum.sis.idev.res.log.Logger;
-import de.werum.sis.idev.res.log.LoggerIfc;
-
 public class Result implements Serializable
 {
 
   private static final long serialVersionUID = 2679626230655573191L;
   private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-  private static final LoggerIfc log = Logger.getInstance()
-      .getLogger(Result.class);
+  private static final LoggerIfc log = Logger.getInstance().getLogger(Result.class);
   int _currentRow;
   private Vector<Vector<Object>> _tableData;
   private Vector<Object> _rowData;
@@ -45,8 +44,8 @@ public class Result implements Serializable
   /**
    * Instantiates a new result.
    *
-   * @param tableData the table data
-   * @param columns the columns
+   * @param tableData   the table data
+   * @param columns     the columns
    * @param columnTypes the column types
    */
   public Result(Vector<Vector<Object>> tableData, Vector<String> columns, int[] columnTypes)

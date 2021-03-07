@@ -1,11 +1,11 @@
 package de.destatis.regdb;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Properties;
+import de.destatis.regdb.dateiimport.ImportFormat;
+import de.destatis.regdb.dateiimport.MelderDatenService;
+import de.destatis.regdb.dateiimport.PropertyValues;
+import de.destatis.regdb.db.StringUtil;
+import de.werum.sis.idev.res.log.Logger;
+import de.werum.sis.idev.res.log.LoggerIfc;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -13,13 +13,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
-import de.destatis.regdb.dateiimport.ImportFormat;
-import de.destatis.regdb.dateiimport.MelderDatenService;
-import de.destatis.regdb.dateiimport.PropertyValues;
-import de.destatis.regdb.db.StringUtil;
-import de.werum.sis.idev.res.log.Logger;
-import de.werum.sis.idev.res.log.LoggerIfc;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Properties;
 
 /**
  * The Class JobBean.
@@ -29,8 +28,7 @@ import de.werum.sis.idev.res.log.LoggerIfc;
 public class JobBean
 {
 
-  protected final LoggerIfc log = Logger.getInstance()
-      .getLogger(JobBean.class);
+  protected final LoggerIfc log = Logger.getInstance().getLogger(JobBean.class);
   private Adressen adressen;
   @XmlAttribute
   public String amt;
@@ -150,8 +148,7 @@ public class JobBean
       String format = getString(prop, PropertyValues.IMPORTFORMAT);
       for (ImportFormat enumFmt : ImportFormat.values())
       {
-        if (enumFmt.name()
-            .equals(format))
+        if (enumFmt.name().equals(format))
         {
           getImportdatei().importFormat = enumFmt;
         }
@@ -238,7 +235,9 @@ public class JobBean
       this.versendeMails = getBoolean(prop, PropertyValues.MAILVERSAND);
     }
     if (isSet(prop, PropertyValues.SBKENNUNG))
+    {
       this.sachbearbeiterKennung = getString(prop, PropertyValues.SBKENNUNG);
+    }
     if (isSet(prop, PropertyValues.SBPASSWORT))
     {
       this.sachbearbeiterPasswort = getString(prop, PropertyValues.SBPASSWORT);
@@ -330,11 +329,12 @@ public class JobBean
     }
     return this.melderkonto;
   }
+
   public void setMelderkonto(Melderkonto melderkonto)
   {
     this.melderkonto = melderkonto;
   }
-  
+
   @XmlElement
   public Simulation getSimulation()
   {
@@ -394,18 +394,14 @@ public class JobBean
     this.log.debug("SaveBean, Dir=" + verzeichnis);
     if (verzeichnis == null)
     {
-      verzeichnis = MelderDatenService.getInstance()
-          .getDateiImportDir();
+      verzeichnis = MelderDatenService.getInstance().getDateiImportDir();
     }
 
     String dateiname = this.jobId + ".xml";
-    Path destination = Paths.get(verzeichnis)
-        .resolve(dateiname);
+    Path destination = Paths.get(verzeichnis).resolve(dateiname);
     File file = destination.toFile();
     this.zeitpunktAenderung = this.getCurrentZeitpunkt();
-    if (destination.getParent()
-        .toFile()
-        .exists())
+    if (destination.getParent().toFile().exists())
     {
       try
       {
@@ -428,18 +424,13 @@ public class JobBean
 
   public String getCurrentZeitpunkt()
   {
-    return LocalDateTime.now()
-        .format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
+    return LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
   }
 
   @Override
   public String toString()
   {
-    return "JobBean [amt="
-        + this.amt + ", berichtszeitraum=" + this.berichtszeitraum + ", importdatei=" + this.importdatei + ", loescheDaten=" + this.loescheDaten + ", jobId=" + this.jobId + ", importBlockGroesse="
-        + this.importBlockGroesse + ", loeschBlockGroesse=" + this.loeschBlockGroesse + ", loeschOffset=" + this.loeschOffset + ", quellReferenzId=" + this.quellReferenzId + ", sachbearbeiterId="
-        + this.sachbearbeiterId + ", sachbearbeiterLand=" + this.sachbearbeiterLand + ", statistikId=" + this.statistikId + ", info=" + this.info + ", zeitpunktAenderung=" + this.zeitpunktAenderung
-        + ", zeitpunktEintrag=" + this.zeitpunktEintrag + "]";
+    return "JobBean [amt=" + this.amt + ", berichtszeitraum=" + this.berichtszeitraum + ", importdatei=" + this.importdatei + ", loescheDaten=" + this.loescheDaten + ", jobId=" + this.jobId + ", importBlockGroesse=" + this.importBlockGroesse + ", loeschBlockGroesse=" + this.loeschBlockGroesse + ", loeschOffset=" + this.loeschOffset + ", quellReferenzId=" + this.quellReferenzId + ", sachbearbeiterId=" + this.sachbearbeiterId + ", sachbearbeiterLand=" + this.sachbearbeiterLand + ", statistikId=" + this.statistikId + ", info=" + this.info + ", zeitpunktAenderung=" + this.zeitpunktAenderung + ", zeitpunktEintrag=" + this.zeitpunktEintrag + "]";
   }
 
 }

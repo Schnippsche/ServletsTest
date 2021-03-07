@@ -4,23 +4,6 @@
  */
 package de.destatis.regdb.servlets;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXB;
-
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.dateiimport.MelderDatenService;
 import de.destatis.regdb.dateiimport.job.FortsetzenJob;
@@ -30,6 +13,18 @@ import de.destatis.regdb.db.StringUtil;
 import de.destatis.regdb.session.RegDBSession;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.secure.ObfuscationAlgorithm;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXB;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Paths;
+import java.sql.*;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Properties;
 
 /**
  * The Class RegDBToolsServlet.
@@ -73,9 +68,9 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
   /**
    * Do service.
    *
-   * @param req the req
-   * @param res the res
-   * @param conn the conn
+   * @param req     the req
+   * @param res     the res
+   * @param conn    the conn
    * @param session the session
    * @throws Exception the exception
    */
@@ -97,8 +92,7 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
       switch (aktion)
       {
         case "obfuscate":
-          returnMessage = ObfuscationAlgorithm.obfuscate(prop.getProperty("value")
-              .toCharArray());
+          returnMessage = ObfuscationAlgorithm.obfuscate(prop.getProperty("value").toCharArray());
           break;
         case "deobfuscate":
           returnMessage = new String(ObfuscationAlgorithm.deobfuscate(prop.getProperty("value")));
@@ -130,18 +124,15 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
   private Object jobFortsetzen(Properties prop, Connection conn, RegDBSession session)
   {
     int jobId = StringUtil.getInt(prop.getProperty("jobId", "0"));
-    String dateiImportDir = MelderDatenService.getInstance()
-        .getDateiImportDir();
-    File jobFile = Paths.get(dateiImportDir, "" + jobId, "" + jobId + ".xml")
-        .toFile();
+    String dateiImportDir = MelderDatenService.getInstance().getDateiImportDir();
+    File jobFile = Paths.get(dateiImportDir, "" + jobId, "" + jobId + ".xml").toFile();
     this.log.info("Fortsetzung von Job " + jobFile.toString());
     if (jobFile.exists())
     {
       JobBean jobBean = JAXB.unmarshal(jobFile, JobBean.class);
       jobBean.zeitpunktEintrag = jobBean.getCurrentZeitpunkt();
       jobBean.getSimulation().importSimulieren = false;
-      DateiImportDaemon.getInstance()
-          .addJob(new FortsetzenJob(jobBean));
+      DateiImportDaemon.getInstance().addJob(new FortsetzenJob(jobBean));
       return "";
     }
     return new FileNotFoundException("JobDaten nicht gefunden:" + jobFile.toString());
@@ -150,8 +141,8 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
   /**
    * Erzeuge main import job.
    *
-   * @param prop the properties
-   * @param conn the connection
+   * @param prop    the properties
+   * @param conn    the connection
    * @param session the session
    * @return the object (main Job Id or error)
    */
@@ -185,8 +176,7 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
         }
       }
 
-      DateiImportDaemon.getInstance()
-          .updateStatusList(conn);
+      DateiImportDaemon.getInstance().updateStatusList(conn);
       throw new SQLException("insert lieferte keinen Key!");
     }
     catch (SQLException e)
@@ -206,16 +196,13 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
   private Object loescheMainJob(Properties prop, Connection conn) throws JobException
   {
     Integer jobId = StringUtil.getInt(prop.getProperty("jobId", "0"));
-    String dateiImportDir = MelderDatenService.getInstance()
-        .getDateiImportDir();
-    File jobDirectory = Paths.get(dateiImportDir, "" + jobId)
-        .toFile();
+    String dateiImportDir = MelderDatenService.getInstance().getDateiImportDir();
+    File jobDirectory = Paths.get(dateiImportDir, "" + jobId).toFile();
     this.deleteDirectory(jobDirectory);
     LoeschUtil util = new LoeschUtil(conn);
     util.loescheStandardWerte(jobId);
     util.loescheImport(jobId);
-    DateiImportDaemon.getInstance()
-        .updateStatusList(conn);
+    DateiImportDaemon.getInstance().updateStatusList(conn);
     return "";
   }
 
@@ -232,10 +219,8 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
     try (Statement stmt = conn.createStatement())
     {
       stmt.executeUpdate(MessageFormat.format(SQL_ABBRUCH_MAINJOB, jobId));
-      DateiImportDaemon.getInstance()
-          .abortJob(jobId);
-      DateiImportDaemon.getInstance()
-          .updateStatusList(conn);
+      DateiImportDaemon.getInstance().abortJob(jobId);
+      DateiImportDaemon.getInstance().updateStatusList(conn);
 
     }
     catch (SQLException e)
@@ -285,7 +270,6 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
   public void destroy()
   {
     super.destroy();
-    MelderDatenService.getInstance()
-        .destroy();
+    MelderDatenService.getInstance().destroy();
   }
 }

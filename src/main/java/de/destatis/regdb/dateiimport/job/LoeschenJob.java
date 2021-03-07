@@ -5,16 +5,16 @@
  */
 package de.destatis.regdb.dateiimport.job;
 
-import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.JobStatus;
 import de.destatis.regdb.db.AufraeumUtil;
 import de.destatis.regdb.db.LoeschUtil;
 import de.werum.sis.idev.res.job.JobException;
+
+import java.text.MessageFormat;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * The Class LoeschenJob.
@@ -51,53 +51,23 @@ public class LoeschenJob extends AbstractJob
   @Override
   public AbstractJob verarbeiteJob() throws JobException
   {
-    this.loeschUtil = new LoeschUtil(sqlUtil);
-    int maximumSegment = Math.max(this.jobBean.getSimulation()
-      .getAdressIdentifikatoren()
-      .getLoeschung()
-      .getAnzahl(), this.jobBean.getSimulation()
-      .getFirmenIdentifikatoren()
-      .getLoeschung()
-      .getAnzahl());
-    maximumSegment = Math.max(maximumSegment, this.jobBean.getSimulation()
-      .getMelderIdentifikatoren()
-      .getLoeschung()
-      .getAnzahl());
+    this.loeschUtil = new LoeschUtil(this.sqlUtil);
+    int maximumSegment = Math.max(this.jobBean.getSimulation().getAdressIdentifikatoren().getLoeschung().getAnzahl(), this.jobBean.getSimulation().getFirmenIdentifikatoren().getLoeschung().getAnzahl());
+    maximumSegment = Math.max(maximumSegment, this.jobBean.getSimulation().getMelderIdentifikatoren().getLoeschung().getAnzahl());
     this.log.debug("maximumSegment:" + maximumSegment);
     if (this.jobBean.loescheDaten && maximumSegment > 0)
     {
       this.jobBean.setStatusAndInfo(JobStatus.AKTIV, MessageFormat.format("Lösche {0} bis {1} von {2} Einträgen...", this.jobBean.loeschOffset, this.jobBean.loeschOffset + this.jobBean.loeschBlockGroesse, maximumSegment));
 
       // Adressen
-      this.loeschAdressen = this.holeTeilBereich(this.jobBean.loeschOffset, this.jobBean.getSimulation()
-        .getAdressIdentifikatoren()
-        .getLoeschung()
-        .getValues());
-      this.jobBean.getAdressen()
-        .getIdentifikatoren()
-        .getLoeschung()
-        .getValues()
-        .addAll(this.loeschAdressen);
+      this.loeschAdressen = this.holeTeilBereich(this.jobBean.loeschOffset, this.jobBean.getSimulation().getAdressIdentifikatoren().getLoeschung().getValues());
+      this.jobBean.getAdressen().getIdentifikatoren().getLoeschung().getValues().addAll(this.loeschAdressen);
       // Firmen
-      this.loeschFirmen = this.holeTeilBereich(this.jobBean.loeschOffset, this.jobBean.getSimulation()
-        .getFirmenIdentifikatoren()
-        .getLoeschung()
-        .getValues());
-      this.jobBean.getFirmen()
-        .getIdentifikatoren()
-        .getLoeschung()
-        .getValues()
-        .addAll(this.loeschFirmen);
+      this.loeschFirmen = this.holeTeilBereich(this.jobBean.loeschOffset, this.jobBean.getSimulation().getFirmenIdentifikatoren().getLoeschung().getValues());
+      this.jobBean.getFirmen().getIdentifikatoren().getLoeschung().getValues().addAll(this.loeschFirmen);
       // Melder
-      this.loeschMelder = this.holeTeilBereich(this.jobBean.loeschOffset, this.jobBean.getSimulation()
-        .getMelderIdentifikatoren()
-        .getLoeschung()
-        .getValues());
-      this.jobBean.getMelder()
-        .getIdentifikatoren()
-        .getLoeschung()
-        .getValues()
-        .addAll(this.loeschMelder);
+      this.loeschMelder = this.holeTeilBereich(this.jobBean.loeschOffset, this.jobBean.getSimulation().getMelderIdentifikatoren().getLoeschung().getValues());
+      this.jobBean.getMelder().getIdentifikatoren().getLoeschung().getValues().addAll(this.loeschMelder);
       this.doLoeschung();
     }
     this.jobBean.loeschOffset += this.jobBean.loeschBlockGroesse;

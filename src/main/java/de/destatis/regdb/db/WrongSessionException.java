@@ -25,7 +25,7 @@ public class WrongSessionException extends Exception
    * Instantiates a new wrong session exception.
    *
    * @param message the message
-   * @param cause the cause
+   * @param cause   the cause
    */
   public WrongSessionException(String message, Throwable cause)
   {

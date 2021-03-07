@@ -5,23 +5,23 @@
  */
 package de.destatis.regdb.meldungen;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-
 /**
  * Die Klasse <code>InhaltsverzeichnisXMLParser</code> parst
  * das Inhaltsverzeichnis im Kontext Meldungen holen
  * <p>
  *
- * @version 1 vom 15.04.2003 18:07
  * @author Schindler
+ * @version 1 vom 15.04.2003 18:07
  **/
 public class InhaltsverzeichnisXMLParser
 {
@@ -59,8 +59,7 @@ public class InhaltsverzeichnisXMLParser
       Document doc = builder.build(xmldatei);
       Element root = doc.getRootElement();
 
-      List listMeldung = root.getChild("meldungen")
-          .getChildren("meldung");
+      List listMeldung = root.getChild("meldungen").getChildren("meldung");
       this.mapFormularDateien = new HashMap<>();
       this.mapUploadDateien = new HashMap<>();
       /* Schleife ueber alle Elemente <meldung> */

@@ -1,10 +1,9 @@
 package de.destatis.regdb;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Stefan
@@ -19,6 +18,7 @@ public class Vorbelegungen
   public boolean eintragInfoschreiben;
   @XmlList
   private Set<Integer> firmenIdsFuerMailVersand;
+
   /**
    *
    */

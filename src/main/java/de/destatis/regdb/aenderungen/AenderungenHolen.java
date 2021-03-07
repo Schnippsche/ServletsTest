@@ -5,30 +5,20 @@
  */
 package de.destatis.regdb.aenderungen;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import de.destatis.regdb.db.RegDBSecurity;
 import de.destatis.regdb.db.StringUtil;
 import de.werum.sis.idev.res.conf.db.DBConfig;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class AenderungenHolen
 {
@@ -68,18 +58,17 @@ public class AenderungenHolen
   /**
    * Instantiates a new aenderungen holen.
    *
-   * @param sbId the sb id
-   * @param kennung the kennung
-   * @param amt the amt
-   * @param statistik the statistik
+   * @param sbId          the sb id
+   * @param kennung       the kennung
+   * @param amt           the amt
+   * @param statistik     the statistik
    * @param aenderungsart the aenderungsart
-   * @param typ the typ
-   * @param conn the conn
+   * @param typ           the typ
+   * @param conn          the conn
    */
   public AenderungenHolen(String sbId, String kennung, String amt, String statistik, int aenderungsart, String typ, Connection conn)
   {
-    this.log = Logger.getInstance()
-        .getLogger(this.getClass());
+    this.log = Logger.getInstance().getLogger(this.getClass());
     this.mySbId = Integer.parseInt(sbId);
     this.myKennung = kennung;
     this.myAmt = amt;
@@ -106,7 +95,7 @@ public class AenderungenHolen
   /**
    * Starte verarbeitung.
    *
-   * @param spalten the spalten
+   * @param spalten         the spalten
    * @param mitUeberschrift the mit ueberschrift
    * @return the file
    * @throws AenderungenHolenException the aenderungen holen exception
@@ -119,8 +108,7 @@ public class AenderungenHolen
       StringBuilder error = new StringBuilder();
       for (int i = 0; i < spalten.length; i++)
       {
-        String col = spalten[i].trim()
-            .toUpperCase();
+        String col = spalten[i].trim().toUpperCase();
         if (!_adressenMap.contains(col) && !_firmenMap.contains(col) && !_partnerMap.contains(col) && !_aenderungTabelleMap.contains(col))
         {
           if (error.length() > 0)
@@ -132,8 +120,7 @@ public class AenderungenHolen
       }
       if (error.length() > 0)
       {
-        throw new AenderungenHolenException("Die folgenden angegebenen Spalten existieren nicht:"
-            + error.toString() + ".Pruefen Sie das Schema oder die Angaben im Feld AENDERUNGS_EXPORT_SPALTEN der Tabelle transferziel!");
+        throw new AenderungenHolenException("Die folgenden angegebenen Spalten existieren nicht:" + error.toString() + ".Pruefen Sie das Schema oder die Angaben im Feld AENDERUNGS_EXPORT_SPALTEN der Tabelle transferziel!");
       }
     }
     if (this.holeAenderungsDaten(spalten, mitUeberschrift))
@@ -146,7 +133,7 @@ public class AenderungenHolen
   /**
    * Starte verarbeitung.
    *
-   * @param spalten the spalten
+   * @param spalten           the spalten
    * @param mitUeberschriften the mit ueberschriften
    * @return the file
    * @throws AenderungenHolenException the aenderungen holen exception
@@ -193,8 +180,7 @@ public class AenderungenHolen
       StringBuilder error = new StringBuilder();
       for (int i = 0; i < spalten.length; i++)
       {
-        String col = spalten[i].trim()
-            .toUpperCase();
+        String col = spalten[i].trim().toUpperCase();
         if (!_adressenMap.contains(col) && !_firmenMap.contains(col) && !_partnerMap.contains(col) && !_aenderungTabelleMap.contains(col))
         {
           if (error.length() > 0)
@@ -206,8 +192,7 @@ public class AenderungenHolen
       }
       if (error.length() > 0)
       {
-        throw new AenderungenHolenException("Die folgenden angegebenen Spalten existieren nicht:"
-            + error.toString() + ".Pruefen Sie die das Schema oder die Angaben im Feld AENDERUNGS_EXPORT_SPALTEN der Tabelle transferziel!");
+        throw new AenderungenHolenException("Die folgenden angegebenen Spalten existieren nicht:" + error.toString() + ".Pruefen Sie die das Schema oder die Angaben im Feld AENDERUNGS_EXPORT_SPALTEN der Tabelle transferziel!");
       }
     }
     int counter = 0;
@@ -263,13 +248,11 @@ public class AenderungenHolen
           {
             if (spalten == null || spalten.length == 0)
             {
-              int anzColumn = rs.getMetaData()
-                  .getColumnCount();
+              int anzColumn = rs.getMetaData().getColumnCount();
               cols = new String[anzColumn];
               for (int x = 0; x < anzColumn; x++)
               {
-                cols[x] = rs.getMetaData()
-                    .getColumnName(x + 1);
+                cols[x] = rs.getMetaData().getColumnName(x + 1);
               }
             }
             else
@@ -337,11 +320,9 @@ public class AenderungenHolen
       throw new AenderungenHolenException("Keine gueltige Connection zur Datenbank");
     }
     // Hat der SB Rechte an Amt / Statistik ?
-    if (!RegDBSecurity.getInstance()
-        .sbHasGrantforAmtStatistik(this.mySbId, this.myAmt, this.myStatistik, RegDBSecurity.SADMIN_RECHT_INT, this.myConn))
+    if (!RegDBSecurity.getInstance().sbHasGrantforAmtStatistik(this.mySbId, this.myAmt, this.myStatistik, RegDBSecurity.SADMIN_RECHT_INT, this.myConn))
     {
-      throw new AenderungenHolenException("Dem Sachbearbeiter "
-          + this.mySbId + " mit Kennung '" + this.myKennung + "' fehlen die erforderlichen Rechte an Amt " + this.myAmt + " / Statistik " + this.myStatistik);
+      throw new AenderungenHolenException("Dem Sachbearbeiter " + this.mySbId + " mit Kennung '" + this.myKennung + "' fehlen die erforderlichen Rechte an Amt " + this.myAmt + " / Statistik " + this.myStatistik);
     }
   }
 
@@ -372,18 +353,16 @@ public class AenderungenHolen
       throw new AenderungenHolenException("Keine gueltige Connection zur Datenbank");
     }
     // Hat der SB Rechte an Amt / Statistik ?
-    if (!RegDBSecurity.getInstance()
-        .sbHasGrantforAmtStatistik(this.mySbId, this.myAmt, this.myStatistik, RegDBSecurity.SADMIN_RECHT_INT, this.myConn))
+    if (!RegDBSecurity.getInstance().sbHasGrantforAmtStatistik(this.mySbId, this.myAmt, this.myStatistik, RegDBSecurity.SADMIN_RECHT_INT, this.myConn))
     {
-      throw new AenderungenHolenException("Dem Sachbearbeiter "
-          + this.mySbId + " mit Kennung '" + this.myKennung + "' fehlen die erforderlichen Rechte an Amt " + this.myAmt + " / Statistik " + this.myStatistik);
+      throw new AenderungenHolenException("Dem Sachbearbeiter " + this.mySbId + " mit Kennung '" + this.myKennung + "' fehlen die erforderlichen Rechte an Amt " + this.myAmt + " / Statistik " + this.myStatistik);
     }
   }
 
   /**
    * Hole aenderungs daten.
    *
-   * @param spalten the spalten
+   * @param spalten         the spalten
    * @param mitUeberschrift the mit ueberschrift
    * @return true, if successful
    * @throws AenderungenHolenException the aenderungen holen exception
@@ -449,13 +428,11 @@ public class AenderungenHolen
           {
             if (spalten == null || spalten.length == 0)
             {
-              int anzColumn = rs.getMetaData()
-                  .getColumnCount();
+              int anzColumn = rs.getMetaData().getColumnCount();
               cols = new String[anzColumn];
               for (int x = 0; x < anzColumn; x++)
               {
-                cols[x] = rs.getMetaData()
-                    .getColumnName(x + 1);
+                cols[x] = rs.getMetaData().getColumnName(x + 1);
               }
             }
             else
@@ -580,8 +557,8 @@ public class AenderungenHolen
   /**
    * Initialisiert direkteintrag.
    *
-   * @param adressenId the adressen id
-   * @param firmenId the firmen id
+   * @param adressenId        the adressen id
+   * @param firmenId          the firmen id
    * @param ansprechpartnerId the ansprechpartner id
    */
   public void initDirekteintrag(String adressenId, String firmenId, String ansprechpartnerId)
@@ -613,11 +590,8 @@ public class AenderungenHolen
   {
     if (this.adressenUpdate.length() > 0)
     {
-      this.adressenUpdate.append(",SACHBEARBEITER_ID='")
-          .append(this.mySbId);
-      this.adressenUpdate.append("',STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW()  WHERE adressen_id = '")
-          .append(this.adressenId)
-          .append("'");
+      this.adressenUpdate.append(",SACHBEARBEITER_ID='").append(this.mySbId);
+      this.adressenUpdate.append("',STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW()  WHERE adressen_id = '").append(this.adressenId).append("'");
       try (Statement stmt = this.myConn.createStatement())
       {
         stmt.execute(this.adressenUpdate.toString());
@@ -629,11 +603,8 @@ public class AenderungenHolen
     }
     if (this.firmenUpdate.length() > 0)
     {
-      this.firmenUpdate.append(",SACHBEARBEITER_ID='")
-          .append(this.mySbId);
-      this.firmenUpdate.append("',STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW() WHERE firmen_id = '")
-          .append(this.firmenId)
-          .append("'");
+      this.firmenUpdate.append(",SACHBEARBEITER_ID='").append(this.mySbId);
+      this.firmenUpdate.append("',STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW() WHERE firmen_id = '").append(this.firmenId).append("'");
       try (Statement stmt = this.myConn.createStatement())
       {
         stmt.execute(this.firmenUpdate.toString());
@@ -645,11 +616,8 @@ public class AenderungenHolen
     }
     if (this.partnerUpdate.length() > 0)
     {
-      this.partnerUpdate.append(",SACHBEARBEITER_ID='")
-          .append(this.mySbId);
-      this.partnerUpdate.append("',STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW() WHERE ansprechpartner_id = '")
-          .append(this.partnerId)
-          .append("'");
+      this.partnerUpdate.append(",SACHBEARBEITER_ID='").append(this.mySbId);
+      this.partnerUpdate.append("',STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW() WHERE ansprechpartner_id = '").append(this.partnerId).append("'");
       try (Statement stmt = this.myConn.createStatement())
       {
         stmt.execute(this.partnerUpdate.toString());
@@ -664,7 +632,7 @@ public class AenderungenHolen
   /**
    * Adds the column value.
    *
-   * @param col the col
+   * @param col   the col
    * @param value the value
    */
   public void addColumnValue(String col, String value)
@@ -800,8 +768,8 @@ public class AenderungenHolen
   /**
    * Liefert mail text.
    *
-   * @param ids the ids
-   * @param typ the typ
+   * @param ids     the ids
+   * @param typ     the typ
    * @param counter the counter
    * @return mail text
    */
@@ -868,8 +836,7 @@ public class AenderungenHolen
 
   private void addMailtextForErweiterung(String ids, StringBuilder info, String statistikName, String amtName, Statement stmt) throws SQLException
   {
-    String sql = "SELECT aenderung_id, DATE_FORMAT(aenderung.datum, '%d.%m.%Y %T') AS datum, kennung, TRIM(CONCAT(ansprechpartner.vorname,' ',ansprechpartner.name)) as meldername, quell_referenz_of, firmen.name as firmenname from aenderung LEFT JOIN melder ON (aenderung.melder_id = melder.melder_id) LEFT JOIN ansprechpartner ON (ansprechpartner.ansprechpartner_id = melder.ansprechpartner_id) LEFT JOIN firmen ON (aenderung.firmen_id = firmen.firmen_id) WHERE aenderung_id in("
-        + ids + ") ORDER BY aenderung_id LIMIT 1000";
+    String sql = "SELECT aenderung_id, DATE_FORMAT(aenderung.datum, '%d.%m.%Y %T') AS datum, kennung, TRIM(CONCAT(ansprechpartner.vorname,' ',ansprechpartner.name)) as meldername, quell_referenz_of, firmen.name as firmenname from aenderung LEFT JOIN melder ON (aenderung.melder_id = melder.melder_id) LEFT JOIN ansprechpartner ON (ansprechpartner.ansprechpartner_id = melder.ansprechpartner_id) LEFT JOIN firmen ON (aenderung.firmen_id = firmen.firmen_id) WHERE aenderung_id in(" + ids + ") ORDER BY aenderung_id LIMIT 1000";
     try (ResultSet rs = stmt.executeQuery(sql))
     {
       while (rs.next())
@@ -898,8 +865,7 @@ public class AenderungenHolen
 
   private void addMailtextForRegistrierung(String ids, StringBuilder info, String statistikName, Statement stmt) throws SQLException
   {
-    String sql = "SELECT aenderung_id, DATE_FORMAT(aenderung.datum, '%d.%m.%Y %T') AS datum, NAME, STRASSE, HAUSNUMMER, POSTLEITZAHL, ORT FROM aenderung WHERE aenderung_id IN("
-        + ids + ") ORDER BY aenderung_id limit 1000";
+    String sql = "SELECT aenderung_id, DATE_FORMAT(aenderung.datum, '%d.%m.%Y %T') AS datum, NAME, STRASSE, HAUSNUMMER, POSTLEITZAHL, ORT FROM aenderung WHERE aenderung_id IN(" + ids + ") ORDER BY aenderung_id limit 1000";
     try (ResultSet rs = stmt.executeQuery(sql))
     {
       while (rs.next())
@@ -927,8 +893,7 @@ public class AenderungenHolen
 
   private void addMailtextForAenderung(String ids, StringBuilder info, String statistikName, String amtName, Statement stmt) throws SQLException
   {
-    String sql = "SELECT aenderung_id, DATE_FORMAT(aenderung.datum, '%d.%m.%Y %T') AS datum, kennung, TRIM(CONCAT(ansprechpartner.vorname,' ',ansprechpartner.name)) AS meldername, quell_referenz_of, firmen.name AS firmenname FROM aenderung LEFT JOIN melder ON (aenderung.melder_id = melder.melder_id) LEFT JOIN ansprechpartner ON (ansprechpartner.ansprechpartner_id = melder.ansprechpartner_id) LEFT JOIN firmen ON (aenderung.firmen_id = firmen.firmen_id) WHERE aenderung_id in("
-        + ids + ") ORDER BY aenderung_id limit 1000";
+    String sql = "SELECT aenderung_id, DATE_FORMAT(aenderung.datum, '%d.%m.%Y %T') AS datum, kennung, TRIM(CONCAT(ansprechpartner.vorname,' ',ansprechpartner.name)) AS meldername, quell_referenz_of, firmen.name AS firmenname FROM aenderung LEFT JOIN melder ON (aenderung.melder_id = melder.melder_id) LEFT JOIN ansprechpartner ON (ansprechpartner.ansprechpartner_id = melder.ansprechpartner_id) LEFT JOIN firmen ON (aenderung.firmen_id = firmen.firmen_id) WHERE aenderung_id in(" + ids + ") ORDER BY aenderung_id limit 1000";
     try (ResultSet rs = stmt.executeQuery(sql))
     {
       while (rs.next())

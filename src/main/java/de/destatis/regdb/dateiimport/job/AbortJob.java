@@ -6,7 +6,7 @@ import de.werum.sis.idev.res.job.JobException;
 
 /**
  * @author Stefan Töngi
- *         Hilfsklasse zum Abbrechen von Jobs, die nicht in der Verarbeitungsschlange stehen sondern nur in der Datenbank
+ * Hilfsklasse zum Abbrechen von Jobs, die nicht in der Verarbeitungsschlange stehen sondern nur in der Datenbank
  */
 public class AbortJob extends AbstractJob
 {
@@ -30,7 +30,7 @@ public class AbortJob extends AbstractJob
 
     try
     {
-      new LoeschUtil(sqlUtil).loescheStandardWerte(this.jobBean.jobId);
+      new LoeschUtil(this.sqlUtil).loescheStandardWerte(this.jobBean.jobId);
     }
     catch (JobException e)
     {

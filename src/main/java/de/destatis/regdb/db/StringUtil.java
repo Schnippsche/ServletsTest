@@ -10,13 +10,14 @@ public class StringUtil
 
   /**
    * The empty String {@code ""}.
-   * 
+   *
    * @since 2.0
    */
   public static final String EMPTY = "";
 
   // Left/Right/Mid
   // -----------------------------------------------------------------------
+
   /**
    * <p>
    * Gets the leftmost {@code len} characters of a String.
@@ -59,7 +60,7 @@ public class StringUtil
 
   /**
    * liefert den linken Teil eines getrimmten Strings
-   * 
+   *
    * @param str the String to get the leftmost characters from, may be null
    * @param len the length of the required String
    * @return the leftmost characters, {@code null} if null String input
@@ -160,6 +161,7 @@ public class StringUtil
 
   // Substring
   // -----------------------------------------------------------------------
+
   /**
    * <p>
    * Gets a substring from the specified String avoiding exceptions.
@@ -183,9 +185,9 @@ public class StringUtil
    * StringUtils.substring("abc", -4) = "abc"
    * </pre>
    *
-   * @param str the String to get the substring from, may be null
+   * @param str   the String to get the substring from, may be null
    * @param start the position to start from, negative means
-   *          count back from the end of the String by this many characters
+   *              count back from the end of the String by this many characters
    * @return substring from start position, {@code null} if null String input
    */
   public static String substring(final String str, int start)
@@ -245,13 +247,13 @@ public class StringUtil
    * StringUtils.substring("abc", -4, 2)  = "ab"
    * </pre>
    *
-   * @param str the String to get the substring from, may be null
+   * @param str   the String to get the substring from, may be null
    * @param start the position to start from, negative means
-   *          count back from the end of the String by this many characters
-   * @param end the position to end at (exclusive), negative means
-   *          count back from the end of the String by this many characters
+   *              count back from the end of the String by this many characters
+   * @param end   the position to end at (exclusive), negative means
+   *              count back from the end of the String by this many characters
    * @return substring from start position to end position,
-   *         {@code null} if null String input
+   * {@code null} if null String input
    */
   public static String substring(final String str, int start, int end)
   {
@@ -301,8 +303,7 @@ public class StringUtil
 
   public static int getInt(Object obj, int defaultValue)
   {
-    if (obj == null || obj.toString()
-        .isEmpty())
+    if (obj == null || obj.toString().isEmpty())
     {
       return defaultValue;
     }
@@ -339,7 +340,7 @@ public class StringUtil
 
   /**
    * escapeSqlString liefert einen sicheren String für Datenbank-Operationen
-   * 
+   *
    * @param str der zu pruefende String
    * @return sicheren String für Datenbank
    */
@@ -415,8 +416,7 @@ public class StringUtil
     {
       if (obj != null)
       {
-        buf.append(buf.length() == 0 ? "" : delimiter)
-            .append(String.valueOf(obj));
+        buf.append(buf.length() == 0 ? "" : delimiter).append(obj);
       }
     }
     return buf.toString();

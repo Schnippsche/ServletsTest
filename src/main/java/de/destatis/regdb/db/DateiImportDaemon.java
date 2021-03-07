@@ -5,6 +5,13 @@
  */
 package de.destatis.regdb.db;
 
+import de.destatis.regdb.JobBean;
+import de.destatis.regdb.ServerimportStatusBean;
+import de.destatis.regdb.dateiimport.job.AbortJob;
+import de.destatis.regdb.dateiimport.job.AbstractJob;
+import de.werum.sis.idev.res.log.Logger;
+import de.werum.sis.idev.res.log.LoggerIfc;
+
 import java.lang.Thread.State;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,13 +19,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
-
-import de.destatis.regdb.JobBean;
-import de.destatis.regdb.ServerimportStatusBean;
-import de.destatis.regdb.dateiimport.job.AbortJob;
-import de.destatis.regdb.dateiimport.job.AbstractJob;
-import de.werum.sis.idev.res.log.Logger;
-import de.werum.sis.idev.res.log.LoggerIfc;
 
 public class DateiImportDaemon
 {
@@ -32,7 +32,7 @@ public class DateiImportDaemon
   private static DateiImportDaemon instance = null;
   private Thread thread;
   private final ArrayList<ServerimportStatusBean> serverimportStatusBeans;
-  private final HashSet<Integer> abortedJobs;  
+  private final HashSet<Integer> abortedJobs;
 
   /**
    * Gets the single instance of DateiImportDaemon.
@@ -56,9 +56,8 @@ public class DateiImportDaemon
     super();
     this.jobs = new LinkedList<>();
     this.serverimportStatusBeans = new ArrayList<>();
-    this.abortedJobs = new HashSet<>();   
-    this.log = Logger.getInstance()
-        .getLogger(this.getClass());
+    this.abortedJobs = new HashSet<>();
+    this.log = Logger.getInstance().getLogger(this.getClass());
     this.log.info("initing " + this.getClass());
   }
 
@@ -81,9 +80,7 @@ public class DateiImportDaemon
           AbstractJob job = this.jobs.poll();
           if (job != null)
           {
-            this.log.info("Bearbeite Job "
-                + job.getClass()
-                    .getCanonicalName());
+            this.log.info("Bearbeite Job " + job.getClass().getCanonicalName());
             this.thread = new Thread(job);
             this.thread.start();
           }
@@ -153,8 +150,7 @@ public class DateiImportDaemon
   {
     this.log.debug("update ServerStatus Infos");
     this.serverimportStatusBeans.clear();
-    try (ResultSet rs = conn.createStatement()
-        .executeQuery(ServerimportStatusBean.SQL_SERVERIMPORTSTATUS_SELECT))
+    try (ResultSet rs = conn.createStatement().executeQuery(ServerimportStatusBean.SQL_SERVERIMPORTSTATUS_SELECT))
     {
       while (rs.next())
       {
@@ -179,8 +175,7 @@ public class DateiImportDaemon
     ArrayList<ServerimportStatusBean> result = new ArrayList<>();
     for (ServerimportStatusBean bean : this.serverimportStatusBeans)
     {
-      if (String.valueOf(bean.getSachbearbeiterId())
-          .equals(sbId))
+      if (String.valueOf(bean.getSachbearbeiterId()).equals(sbId))
       {
         result.add(bean);
       }

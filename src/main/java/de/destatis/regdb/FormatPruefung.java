@@ -1,6 +1,7 @@
 package de.destatis.regdb;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +28,7 @@ public class FormatPruefung
   @XmlAttribute
   public int maximaleAnzahlFehler;
 
-  private List<FormatError> error;
+  private List<FormatError> errors;
 
   /**
    * Instantiates a new Format pruefung.
@@ -39,6 +40,12 @@ public class FormatPruefung
     this.maximaleAnzahlFehler = 1000;
   }
 
+  @XmlElement
+  public List<FormatError> getErrors()
+  {
+    return this.errors;
+  }
+
   /**
    * Gets error.
    *
@@ -46,11 +53,13 @@ public class FormatPruefung
    */
   public List<FormatError> getSortedErrors()
   {
-    if (this.error == null)
+    if (this.errors == null)
+    {
       return Collections.emptyList();
+    }
 
-    Collections.sort(error);
-    return this.error;
+    Collections.sort(this.errors);
+    return this.errors;
   }
 
   /**
@@ -61,14 +70,14 @@ public class FormatPruefung
    */
   public boolean addFehler(FormatError fehler)
   {
-    if (this.error == null)
+    if (this.errors == null)
     {
-      this.error = new ArrayList<>(this.maximaleAnzahlFehler);
+      this.errors = new ArrayList<>(this.maximaleAnzahlFehler);
     }
     this.fehlerfrei = false;
-    if (this.error.size() < this.maximaleAnzahlFehler)
+    if (this.errors.size() < this.maximaleAnzahlFehler)
     {
-      this.error.add(fehler);
+      this.errors.add(fehler);
       this.anzahlFehler++;
       return true;
     }

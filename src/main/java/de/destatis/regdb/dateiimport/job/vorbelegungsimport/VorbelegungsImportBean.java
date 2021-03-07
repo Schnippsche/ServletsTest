@@ -5,11 +5,11 @@
  */
 package de.destatis.regdb.dateiimport.job.vorbelegungsimport;
 
+import de.destatis.regdb.db.StringUtil;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import de.destatis.regdb.db.StringUtil;
 
 public class VorbelegungsImportBean implements Serializable, Comparable<VorbelegungsImportBean>
 {
@@ -68,7 +68,7 @@ public class VorbelegungsImportBean implements Serializable, Comparable<Vorbeleg
       }
     }
   }
-  
+
   /**
    * Liefert vorbelegung id.
    *
@@ -307,7 +307,7 @@ public class VorbelegungsImportBean implements Serializable, Comparable<Vorbeleg
    */
   public String getIdentifier()
   {
-    return String.valueOf(this.quellReferenzOf) + "|" + String.valueOf(this.quellReferenzInt) + "|" + String.valueOf(this.melderId);
+    return this.quellReferenzOf + "|" + this.quellReferenzInt + "|" + this.melderId;
   }
 
   /**
@@ -319,8 +319,7 @@ public class VorbelegungsImportBean implements Serializable, Comparable<Vorbeleg
   @Override
   public int compareTo(VorbelegungsImportBean other)
   {
-    return this.getIdentifier()
-        .compareTo(other.getIdentifier());
+    return this.getIdentifier().compareTo(other.getIdentifier());
   }
 
   /**
@@ -405,10 +404,7 @@ public class VorbelegungsImportBean implements Serializable, Comparable<Vorbeleg
   @Override
   public String toString()
   {
-    return "VorbelegungsImportBean [vorbelegungId="
-        + this.vorbelegungId + ", amt=" + this.amt + ", firmenId=" + this.firmenId + ", melderId=" + this.melderId + ", statistikId=" + this.statistikId + ", quellReferenzOf=" + this.quellReferenzOf
-        + ", quellReferenzInt=" + this.quellReferenzInt + ", bzr=" + this.bzr + ", formularname=" + this.formularname + ", vbWerteIndex=" + this.vbWerteIndex + ", isNeueVorbelegung="
-        + this.isNeueVorbelegung + ", werteanzahl=" + this.werte.size() + "]";
+    return "VorbelegungsImportBean [vorbelegungId=" + this.vorbelegungId + ", amt=" + this.amt + ", firmenId=" + this.firmenId + ", melderId=" + this.melderId + ", statistikId=" + this.statistikId + ", quellReferenzOf=" + this.quellReferenzOf + ", quellReferenzInt=" + this.quellReferenzInt + ", bzr=" + this.bzr + ", formularname=" + this.formularname + ", vbWerteIndex=" + this.vbWerteIndex + ", isNeueVorbelegung=" + this.isNeueVorbelegung + ", werteanzahl=" + this.werte.size() + "]";
   }
 
 }

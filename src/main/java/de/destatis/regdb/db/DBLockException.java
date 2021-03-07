@@ -25,7 +25,7 @@ public class DBLockException extends Exception
    * Instantiates a new DB lock exception.
    *
    * @param message the message
-   * @param cause the cause
+   * @param cause   the cause
    */
   public DBLockException(String message, Throwable cause)
   {

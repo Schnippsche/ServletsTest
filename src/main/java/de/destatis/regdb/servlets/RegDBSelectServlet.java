@@ -5,18 +5,13 @@
  */
 package de.destatis.regdb.servlets;
 
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Types;
-import java.util.Vector;
+import de.destatis.regdb.db.Result;
+import de.destatis.regdb.session.RegDBSession;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import de.destatis.regdb.db.Result;
-import de.destatis.regdb.session.RegDBSession;
+import java.sql.*;
+import java.util.Vector;
 
 public class RegDBSelectServlet extends RegDBGeneralHttpServlet
 {
@@ -45,9 +40,9 @@ public class RegDBSelectServlet extends RegDBGeneralHttpServlet
   /**
    * Do service.
    *
-   * @param req the req
-   * @param res the res
-   * @param conn the conn
+   * @param req     the req
+   * @param res     the res
+   * @param conn    the conn
    * @param session the session
    * @throws Exception the exception
    */
@@ -60,8 +55,7 @@ public class RegDBSelectServlet extends RegDBGeneralHttpServlet
   public void doService(HttpServletRequest req, HttpServletResponse res, Connection conn, RegDBSession session) throws Exception
   {
     Object command = this.readCommand(req);
-    try (ResultSet rs = conn.createStatement()
-        .executeQuery(String.valueOf(command)))
+    try (ResultSet rs = conn.createStatement().executeQuery(String.valueOf(command)))
     {
       ResultSetMetaData meta = rs.getMetaData();
       Vector<Vector<Object>> tableData;

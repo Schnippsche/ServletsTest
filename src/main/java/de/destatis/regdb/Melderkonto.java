@@ -6,11 +6,12 @@ package de.destatis.regdb;
 public class Melderkonto
 {
   private Identifikatoren identifikatoren;
-  
+
   public Melderkonto()
   {
     super();
   }
+
   /**
    * @return liefert identifikatoren
    */

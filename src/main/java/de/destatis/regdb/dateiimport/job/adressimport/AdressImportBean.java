@@ -5,9 +5,9 @@
  */
 package de.destatis.regdb.dateiimport.job.adressimport;
 
-import java.io.Serializable;
-
 import de.destatis.regdb.db.StringUtil;
+
+import java.io.Serializable;
 
 /**
  * The Class AdressImportBean.
@@ -15,42 +15,66 @@ import de.destatis.regdb.db.StringUtil;
 public class AdressImportBean implements Serializable, Comparable<AdressImportBean>
 {
 
-  /** The Constant serialVersionUID. */
+  /**
+   * The Constant serialVersionUID.
+   */
   private static final long serialVersionUID = 1L;
 
-  /** The quell referenz int. */
+  /**
+   * The quell referenz int.
+   */
   private String quellReferenzInt;
 
-  /** The dddkisl id. */
+  /**
+   * The dddkisl id.
+   */
   private String dddkislId;
 
-  /** The bzr. */
+  /**
+   * The bzr.
+   */
   private String bzr;
 
-  /** The stat online key. */
+  /**
+   * The stat online key.
+   */
   private String statOnlineKey;
 
-  /** The auswahlkriterium. */
+  /**
+   * The auswahlkriterium.
+   */
   private String auswahlkriterium;
 
   private boolean firmenAdressenNeu;
 
-  /** The adresse. */
+  /**
+   * The adresse.
+   */
   private final AdresseBean adresse;
 
-  /** The firma. */
+  /**
+   * The firma.
+   */
   private final FirmenBean firma;
 
-  /** The melder. */
+  /**
+   * The melder.
+   */
   private final MelderBean melder;
 
-  /** The ansprechpartner fachabteilung name. */
+  /**
+   * The ansprechpartner fachabteilung name.
+   */
   private String ansprechpartnerFachabteilungName;
 
-  /** The ansprechpartner fachabteilung telefon. */
+  /**
+   * The ansprechpartner fachabteilung telefon.
+   */
   private String ansprechpartnerFachabteilungTelefon;
 
-  /** The ansprechpartner fachabteilung email. */
+  /**
+   * The ansprechpartner fachabteilung email.
+   */
   private String ansprechpartnerFachabteilungEmail;
 
   /**
@@ -284,8 +308,7 @@ public class AdressImportBean implements Serializable, Comparable<AdressImportBe
   {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((this.adresse.getQuellReferenzOf() == null) ? 0 : this.adresse.getQuellReferenzOf()
-        .hashCode());
+    result = prime * result + ((this.adresse.getQuellReferenzOf() == null) ? 0 : this.adresse.getQuellReferenzOf().hashCode());
     return result;
   }
 
@@ -315,8 +338,7 @@ public class AdressImportBean implements Serializable, Comparable<AdressImportBe
     {
       return other.adresse.getQuellReferenzOf() == null;
     }
-    return this.adresse.getQuellReferenzOf()
-        .equals(other.adresse.getQuellReferenzOf());
+    return this.adresse.getQuellReferenzOf().equals(other.adresse.getQuellReferenzOf());
   }
 
   /**
@@ -328,8 +350,7 @@ public class AdressImportBean implements Serializable, Comparable<AdressImportBe
   @Override
   public int compareTo(AdressImportBean other)
   {
-    return this.adresse.getQuellReferenzOf()
-        .compareTo(other.adresse.getQuellReferenzOf());
+    return this.adresse.getQuellReferenzOf().compareTo(other.adresse.getQuellReferenzOf());
   }
 
 }

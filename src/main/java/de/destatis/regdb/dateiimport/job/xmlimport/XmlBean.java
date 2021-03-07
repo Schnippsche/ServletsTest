@@ -108,17 +108,24 @@ public class XmlBean implements Serializable, Comparable<XmlBean>
   public boolean isAktionValid()
   {
     if (this.getAktion() == null || this.getAktion().isEmpty())
+    {
       return false;
+    }
     if (isAktionAny())
+    {
       return true;
+    }
     if (isAktionLoesch())
+    {
       return true;
+    }
     if (isAktionNeu())
+    {
       return true;
-    if (isAktionUpdate())
-      return true;
-    return false;
+    }
+    return isAktionUpdate();
   }
+
   /**
    * Gets quell referenz of.
    *
@@ -249,7 +256,7 @@ public class XmlBean implements Serializable, Comparable<XmlBean>
    */
   public int getRowNumber()
   {
-    return rowNumber;
+    return this.rowNumber;
   }
 
   /**
@@ -267,8 +274,7 @@ public class XmlBean implements Serializable, Comparable<XmlBean>
   {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((this.getValue(this.sortierMerkmal) == null) ? 0 : this.getValue(this.sortierMerkmal)
-      .hashCode());
+    result = prime * result + ((this.getValue(this.sortierMerkmal) == null) ? 0 : this.getValue(this.sortierMerkmal).hashCode());
     return result;
   }
 
@@ -292,15 +298,13 @@ public class XmlBean implements Serializable, Comparable<XmlBean>
     {
       return other.getValue(this.sortierMerkmal) == null;
     }
-    return this.getValue(this.sortierMerkmal)
-      .equals(other.getValue(this.sortierMerkmal));
+    return this.getValue(this.sortierMerkmal).equals(other.getValue(this.sortierMerkmal));
   }
 
   @Override
   public int compareTo(XmlBean other)
   {
-    return this.getValue(this.sortierMerkmal)
-      .compareTo(other.getValue(this.sortierMerkmal));
+    return this.getValue(this.sortierMerkmal).compareTo(other.getValue(this.sortierMerkmal));
   }
 
   @Override

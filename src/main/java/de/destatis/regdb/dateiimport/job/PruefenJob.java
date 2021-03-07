@@ -50,20 +50,20 @@ public class PruefenJob extends AbstractJob
       case IMPORTOHNEZUSATZFELDER:
       case IMPORTMITZUSATZFELDER:
       case IMPORTMITANSPRECHPARTNER:
-        pruefKlasse = new PruefeIdevImport(jobBean, sqlUtil);
+        pruefKlasse = new PruefeIdevImport(this.jobBean, this.sqlUtil);
         break;
       case REGISTERIMPORT:
-        pruefKlasse = new PruefeRegisterImport(jobBean, sqlUtil);
+        pruefKlasse = new PruefeRegisterImport(this.jobBean, this.sqlUtil);
         break;
       case VORBELEGUNGSIMPORT:
       case VORBELEGUNGDOWNLOADIMPORT:
-        pruefKlasse = new PruefeVorbelegungenImport(jobBean, sqlUtil);
+        pruefKlasse = new PruefeVorbelegungenImport(this.jobBean, this.sqlUtil);
         break;
       case XMLIMPORT:
-        pruefKlasse = new PruefeXmlImport(jobBean, sqlUtil);
+        pruefKlasse = new PruefeXmlImport(this.jobBean, this.sqlUtil);
         break;
       case MELDERKONTOIMPORT:
-        pruefKlasse = new PruefeMelderkontoImport(jobBean, sqlUtil);
+        pruefKlasse = new PruefeMelderkontoImport(this.jobBean, this.sqlUtil);
         break;
       default:
         throw new JobException("Ungueltiges Format:" + this.jobBean.getImportdatei().importFormat.toString());

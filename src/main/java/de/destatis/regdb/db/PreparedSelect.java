@@ -1,12 +1,12 @@
 package de.destatis.regdb.db;
 
+import de.werum.sis.idev.res.job.JobException;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import de.werum.sis.idev.res.job.JobException;
 
 /**
  * The type Prepared select.
@@ -18,7 +18,7 @@ public class PreparedSelect extends PreparedSql
    * Instantiates a new Prepared select.
    *
    * @param connection the connection
-   * @param sql the sql
+   * @param sql        the sql
    * @throws JobException the job exception
    */
   public PreparedSelect(Connection connection, String sql) throws JobException
@@ -26,7 +26,7 @@ public class PreparedSelect extends PreparedSql
     super();
     try
     {
-      ps = connection.prepareStatement(sql);
+      this.ps = connection.prepareStatement(sql);
     }
     catch (SQLException e)
     {
@@ -45,7 +45,7 @@ public class PreparedSelect extends PreparedSql
     try
     {
       setPsValues();
-      ResultSet rs = ps.executeQuery();
+      ResultSet rs = this.ps.executeQuery();
       if (rs.next())
       {
         return new ResultRow(rs);
@@ -70,7 +70,7 @@ public class PreparedSelect extends PreparedSql
     {
       List<ResultRow> rows = new ArrayList<>();
       setPsValues();
-      try (ResultSet rs = ps.executeQuery())
+      try (ResultSet rs = this.ps.executeQuery())
       {
         while (rs.next())
         {

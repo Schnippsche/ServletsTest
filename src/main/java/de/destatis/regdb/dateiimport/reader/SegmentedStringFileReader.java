@@ -31,12 +31,14 @@ public class SegmentedStringFileReader implements SegmentedFileReader<String>
         {
           rows.add(row);
           anzahlZeilen++;
-        } else
+        }
+        else
         {
           skipRows++;
         }
       }
-    } catch (Exception e)
+    }
+    catch (Exception e)
     {
       throw new JobException("Fehler beim Lesen der Datei " + path.toString() + ":" + e.getMessage());
     }

@@ -6,15 +6,15 @@
 
 package de.destatis.regdb.session;
 
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-
 import de.destatis.regdb.db.ConnectionTool;
 import de.destatis.regdb.db.RegDBSecurity;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
+
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
 
 // Referenced classes of package de.werum.sis.idev.extern.servlet.session:
 // Session, SessionManager
@@ -45,8 +45,7 @@ public class RegDBSessionPool implements Runnable
    */
   private RegDBSessionPool()
   {
-    this.log = Logger.getInstance()
-        .getLogger(RegDBSessionPool.class);
+    this.log = Logger.getInstance().getLogger(RegDBSessionPool.class);
     this.sessionCount = 0;
     this.isAvailable = false;
     this.dontStop = true;
@@ -103,8 +102,7 @@ public class RegDBSessionPool implements Runnable
     }
     catch (InterruptedException e)
     {
-      Thread.currentThread()
-          .interrupt();
+      Thread.currentThread().interrupt();
     }
     this.poolCleaner = null;
   }
@@ -279,15 +277,12 @@ public class RegDBSessionPool implements Runnable
   @Override
   public void run()
   {
-    while (!Thread.currentThread()
-        .isInterrupted() && this.dontStop)
+    while (!Thread.currentThread().isInterrupted() && this.dontStop)
     {
       RegDBSession[] sessionsa = this.getSessionArray();
       long nowMs = System.currentTimeMillis();
-      Connection conn = ConnectionTool.getInstance()
-          .getConnection();
-      boolean dbSperre = RegDBSecurity.getInstance()
-          .isDatenbankSperre(conn);
+      Connection conn = ConnectionTool.getInstance().getConnection();
+      boolean dbSperre = RegDBSecurity.getInstance().isDatenbankSperre(conn);
       for (RegDBSession session : sessionsa)
       {
         if (session != null)
@@ -303,16 +298,13 @@ public class RegDBSessionPool implements Runnable
           {
             String sb = session.getSachbearbeiterId();
             session.setDatenbankSperre(dbSperre);
-            boolean sbSperre = RegDBSecurity.getInstance()
-                .isSachbearbeiterSperre(conn, sb);
+            boolean sbSperre = RegDBSecurity.getInstance().isSachbearbeiterSperre(conn, sb);
             session.setSachbearbeiterSperre(sbSperre);
-            session.setRootUser(RegDBSecurity.getInstance()
-                .isRootUser(conn, sb));
+            session.setRootUser(RegDBSecurity.getInstance().isRootUser(conn, sb));
           }
         }
       }
-      ConnectionTool.getInstance()
-          .freeConnection(conn);
+      ConnectionTool.getInstance().freeConnection(conn);
 
       try
       {
@@ -322,8 +314,7 @@ public class RegDBSessionPool implements Runnable
       catch (Exception e)
       {
         this.log.info("RegDBSessionPool wurde beendet");
-        Thread.currentThread()
-            .interrupt();
+        Thread.currentThread().interrupt();
         this.dontStop = false;
       }
     }
@@ -340,8 +331,7 @@ public class RegDBSessionPool implements Runnable
     synchronized (this.sessions)
     {
       msessions = new RegDBSession[this.sessions.size()];
-      msessions = this.sessions.values()
-          .toArray(msessions);
+      msessions = this.sessions.values().toArray(msessions);
     }
 
     return msessions;

@@ -5,22 +5,18 @@
  */
 package de.destatis.regdb.dateiimport.job;
 
+import de.destatis.regdb.JobBean;
+import de.destatis.regdb.JobStatus;
+import de.werum.sis.idev.res.job.JobException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import de.destatis.regdb.JobBean;
-import de.destatis.regdb.JobStatus;
-import de.werum.sis.idev.res.job.JobException;
 
 /**
  * The Class EntpackenJob.
@@ -70,7 +66,7 @@ public class EntpackenJob extends AbstractJob
   /**
    * Entzippe.
    *
-   * @param zipFile the zip file
+   * @param zipFile        the zip file
    * @param destinationDir the destination dir
    * @throws JobException the job exception
    */
@@ -111,8 +107,7 @@ public class EntpackenJob extends AbstractJob
   private Path ladeProperties() throws JobException
   {
     Path propPath = Paths.get(this.jobBean.getImportdatei().importVerzeichnis, "parameter.prop");
-    if (!propPath.toFile()
-        .exists())
+    if (!propPath.toFile().exists())
     {
       throw new JobException("Properties nicht gefunden in Verzeichnis " + this.jobBean.getImportdatei().importVerzeichnis);
     }

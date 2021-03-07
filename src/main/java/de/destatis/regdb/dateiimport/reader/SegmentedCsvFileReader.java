@@ -32,7 +32,8 @@ public class SegmentedCsvFileReader implements SegmentedFileReader<String[]>
           anzahlZeilen++;
         }
       }
-    } catch (Exception e)
+    }
+    catch (Exception e)
     {
       throw new JobException("Fehler beim Lesen der Datei " + path.toString() + ":" + e.getMessage());
     }

@@ -24,7 +24,7 @@ public class FortsetzenJob extends AbstractJob
     this.jobBean.importBlockGroesse = StringUtil.getInt(config.getParameter(this.connection, RegDBImportServlet.KONFIGURATION_MAX_FILEROWS));
     this.jobBean.loeschBlockGroesse = StringUtil.getInt(config.getParameter(this.connection, RegDBImportServlet.KONFIGURATION_MAX_LOESCHROWS));
     this.jobBean.setStatusAndInfo(JobStatus.AKTIV, "Setze Import fort..");
-    new LoeschUtil(sqlUtil).loescheStandardWerte(this.jobBean.jobId);
+    new LoeschUtil(this.sqlUtil).loescheStandardWerte(this.jobBean.jobId);
     return JobFactory.createJob(this.jobBean.getImportdatei().importFormat, this.jobBean);
   }
 }

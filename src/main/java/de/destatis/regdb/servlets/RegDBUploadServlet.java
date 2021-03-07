@@ -5,16 +5,15 @@
  */
 package de.destatis.regdb.servlets;
 
+import de.destatis.regdb.session.RegDBSession;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.sql.Connection;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import de.destatis.regdb.session.RegDBSession;
 
 /**
  * Dient zum Ausfuehren von LoadData-Anweisungen auf dem Server
@@ -48,9 +47,9 @@ public class RegDBUploadServlet extends RegDBGeneralHttpServlet
   /**
    * Do service.
    *
-   * @param req the req
-   * @param res the res
-   * @param conn the conn
+   * @param req     the req
+   * @param res     the res
+   * @param conn    the conn
    * @param session the session
    */
   /*
@@ -66,7 +65,7 @@ public class RegDBUploadServlet extends RegDBGeneralHttpServlet
       File f = File.createTempFile("tmp", null);
       try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f), 4000); BufferedInputStream bis = new BufferedInputStream(req.getInputStream(), 4000))
       {
-        for (int c; (c = bis.read()) != -1;)
+        for (int c; (c = bis.read()) != -1; )
         {
           bos.write((byte) c);
         }

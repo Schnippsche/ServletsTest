@@ -13,38 +13,56 @@ import java.util.Date;
 public class RegDBSession
 {
 
-  /** The session id. */
+  /**
+   * The session id.
+   */
   private String sessionId;
 
-  /** The last use time. */
+  /**
+   * The last use time.
+   */
   private Date lastUseTime;
 
-  /** The sachbearbeiter kennung. */
+  /**
+   * The sachbearbeiter kennung.
+   */
   private final String sachbearbeiterKennung;
 
-  /** The sachbearbeiter id. */
+  /**
+   * The sachbearbeiter id.
+   */
   private final String sachbearbeiterId;
 
-  /** The sachbearbeiter sperre. */
+  /**
+   * The sachbearbeiter sperre.
+   */
   private boolean sachbearbeiterSperre;
 
-  /** The sachbearbeiter passwort. */
+  /**
+   * The sachbearbeiter passwort.
+   */
   private String sachbearbeiterPasswort;
 
-  /** The datenbank sperre. */
+  /**
+   * The datenbank sperre.
+   */
   private boolean datenbankSperre;
 
-  /** The root user. */
+  /**
+   * The root user.
+   */
   private boolean rootUser;
 
-  /** The connection. */
+  /**
+   * The connection.
+   */
   private Connection connection;
 
   /**
    * Instantiates a new reg DB session.
    *
    * @param sachbearbeiterKennung the sachbearbeiter kennung
-   * @param sachbearbeiterId the sachbearbeiter id
+   * @param sachbearbeiterId      the sachbearbeiter id
    */
   public RegDBSession(String sachbearbeiterKennung, String sachbearbeiterId)
   {

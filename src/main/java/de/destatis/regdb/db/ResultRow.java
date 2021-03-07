@@ -22,15 +22,15 @@ public class ResultRow
    */
   public ResultRow(ResultSet rs) throws SQLException
   {
-    values = new ArrayList<>();
-    columnNames = new ArrayList<>();
+    this.values = new ArrayList<>();
+    this.columnNames = new ArrayList<>();
     if (rs != null)
     {
       ResultSetMetaData meta = rs.getMetaData();
       for (int c = 1; c <= meta.getColumnCount(); c++)
       {
-        columnNames.add(meta.getColumnLabel(c));
-        values.add(rs.getObject(c));
+        this.columnNames.add(meta.getColumnLabel(c));
+        this.values.add(rs.getObject(c));
       }
     }
 
@@ -44,7 +44,7 @@ public class ResultRow
    */
   public String getString(int columnIndex)
   {
-    return String.valueOf(values.get(convertColumn(columnIndex)));
+    return String.valueOf(this.values.get(convertColumn(columnIndex)));
   }
 
   /**
@@ -163,7 +163,7 @@ public class ResultRow
    */
   private int convertColumn(int column)
   {
-    if (column < 1 || column > columnNames.size())
+    if (column < 1 || column > this.columnNames.size())
     {
       throw new IndexOutOfBoundsException("Spaltenwert " + column + " ausserhalb Range");
     }
@@ -179,16 +179,14 @@ public class ResultRow
   private int getColumnIndex(String columnLabel)
   {
     String uc = columnLabel.toUpperCase();
-    for (int c = 0; c < columnNames.size(); c++)
+    for (int c = 0; c < this.columnNames.size(); c++)
     {
-      if (columnNames.get(c)
-        .toUpperCase()
-        .equals(uc))
+      if (this.columnNames.get(c).toUpperCase().equals(uc))
       {
         return c + 1;
       }
     }
-    throw new IllegalArgumentException("Spalte " + columnLabel + " nicht gefunden!" + StringUtil.join(columnNames, ","));
+    throw new IllegalArgumentException("Spalte " + columnLabel + " nicht gefunden!" + StringUtil.join(this.columnNames, ","));
   }
 
   @Override
@@ -196,7 +194,7 @@ public class ResultRow
   {
     StringBuilder buf = new StringBuilder();
     buf.append("ResultRow [");
-    for (int i = 0; i < values.size(); i++)
+    for (int i = 0; i < this.values.size(); i++)
     {
       buf.append(i > 0 ? "," : "");
       buf.append(this.columnNames.get(i)).append('=').append(this.values.get(i));

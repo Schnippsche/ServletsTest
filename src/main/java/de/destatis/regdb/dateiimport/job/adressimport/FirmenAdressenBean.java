@@ -134,12 +134,10 @@ public class FirmenAdressenBean extends AbstractBean
   public int insert(PreparedUpdate pu) throws JobException
   {
     pu.addValue(this.getFirmenId()); //
-    pu.addValue( this.getAdressenId()); //
-    pu.addValue( this.sachbearbeiterId); //
+    pu.addValue(this.getAdressenId()); //
+    pu.addValue(this.sachbearbeiterId); //
     pu.addValue(this.getZeitpunktEintrag());
     return pu.update();
   }
-
-  
 
 }

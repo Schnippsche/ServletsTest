@@ -19,7 +19,6 @@ import de.werum.sis.idev.res.job.JobException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -104,19 +103,18 @@ public class XmlImportJob extends AbstractImportJob
   public XmlImportJob(String jobName, JobBean jobBean)
   {
     super(jobName, jobBean);
-    this.vorbelegungsJob = new VorbelegungsImportJob(jobBean, sqlUtil);
+    this.vorbelegungsJob = new VorbelegungsImportJob(jobBean, this.sqlUtil);
   }
 
   @Override
   protected void doNormalImport() throws JobException
   {
-    Path path = this.jobBean.getImportdatei()
-      .getPath();
+    Path path = this.jobBean.getImportdatei().getPath();
     if (!this.leseTeilbereich(path))
     {
       return;
     }
-    jobBean.setStatusAndInfo(JobStatus.AKTIV, "Import aktiv");
+    this.jobBean.setStatusAndInfo(JobStatus.AKTIV, "Import aktiv");
     this.ermittleIndizes();
     this.ermittleErhebungen();
     this.startTransaction();
@@ -125,7 +123,7 @@ public class XmlImportJob extends AbstractImportJob
   @Override
   protected AbstractJob nextImportJob()
   {
-    jobBean.setStatusAndInfo(JobStatus.AKTIV, "Import aktiv");
+    this.jobBean.setStatusAndInfo(JobStatus.AKTIV, "Import aktiv");
     return new XmlImportJob(this.jobBean);
   }
 
@@ -178,7 +176,7 @@ public class XmlImportJob extends AbstractImportJob
   {
     this.log.info("ermittle Indizes der Vorbelegungen...");
     // Ermittle Vorbelegungen und wandle in VorbelegungsBeans um
-    try (PreparedSelect psBestand = sqlUtil.createPreparedSelect(VorbelegungsImportJob.SQL_SELECT_VORBELEGUNG_BESTAND))
+    try (PreparedSelect psBestand = this.sqlUtil.createPreparedSelect(VorbelegungsImportJob.SQL_SELECT_VORBELEGUNG_BESTAND))
     {
       for (XmlBean bean : this.xmlBeans)
       {
@@ -190,9 +188,9 @@ public class XmlImportJob extends AbstractImportJob
           {
             String fehler = "Adresse zur Vorbelegung mit dem Ordnungsfeld '" + bean.getQuellReferenzOf() + "' existiert nicht";
             this.log.info(fehler);
-            this.jobBean.getFormatPruefung()
-              .addFehler(new FormatError(null, fehler));
-          } else
+            this.jobBean.getFormatPruefung().addFehler(new FormatError(null, fehler));
+          }
+          else
           {
             VorbelegungsImportBean vb = this.convertIntoVorbelegung(bean, info);
             // Falls Kennung angegeben ist, dann pruefe auf Vorhandensein!
@@ -205,10 +203,10 @@ public class XmlImportJob extends AbstractImportJob
               {
                 String fehler = "Melder mit angegebener Kennung '" + kennung + "' existiert nicht!";
                 this.log.info(fehler);
-                this.jobBean.getFormatPruefung()
-                  .addFehler(new FormatError(null,fehler));
+                this.jobBean.getFormatPruefung().addFehler(new FormatError(null, fehler));
                 okay = false;
-              } else
+              }
+              else
               {
                 vb.setMelderId(this.ermittleMelderKennung(kennung));
               }
@@ -234,8 +232,7 @@ public class XmlImportJob extends AbstractImportJob
               }
               // Prufe Aktionen
               info.ersetzeAktionAny(bean, OrdnungsfeldInfo.VORBELEGUNG_ID);
-              this.vorbelegungsJob.getVorbelegungsImportBeans()
-                .add(vb);
+              this.vorbelegungsJob.getVorbelegungsImportBeans().add(vb);
               this.createVorbelegungen = true;
             }
           }
@@ -254,7 +251,7 @@ public class XmlImportJob extends AbstractImportJob
   protected Integer ermittleMelderKennung(String kennung) throws JobException
   {
     String sql = MessageFormat.format(SQL_SELECT_MELDERKENNUNG, kennung);
-    ResultRow row = sqlUtil.fetchOne(sql);
+    ResultRow row = this.sqlUtil.fetchOne(sql);
     return (row != null) ? row.getInt(1) : 0;
   }
 
@@ -298,18 +295,10 @@ public class XmlImportJob extends AbstractImportJob
         this.ordnungsfelder.put(of, new OrdnungsfeldInfo(of));
       }
     }
-    StringBuilder builder = new StringBuilder(this.jobBean.importBlockGroesse * 20);
-    for (Entry<String, OrdnungsfeldInfo> entry : this.ordnungsfelder.entrySet())
-    {
-      builder.append(builder.length() > 0 ? ',' : "");
-      builder.append('"')
-        .append(entry.getValue()
-          .getOrdnungsfeld())
-        .append('"');
-    }
-    String sql = MessageFormat.format(AdressImportJob.SQL_SELECT_BESTAND, "" + this.jobBean.quellReferenzId, builder.toString());
+    String ids = this.sqlUtil.convertStringList(this.ordnungsfelder.entrySet().stream().map(b -> b.getValue().getOrdnungsfeld()).collect(Collectors.toSet()));
+    String sql = MessageFormat.format(AdressImportJob.SQL_SELECT_BESTAND, "" + this.jobBean.quellReferenzId, ids);
     // Ermittle vorhandene Daten
-    List<ResultRow> rows = sqlUtil.fetchMany(sql);
+    List<ResultRow> rows = this.sqlUtil.fetchMany(sql);
     for (ResultRow row : rows)
     {
       OrdnungsfeldInfo info = this.ordnungsfelder.get(row.getString("QUELL_REFERENZ_OF"));
@@ -337,7 +326,7 @@ public class XmlImportJob extends AbstractImportJob
   protected void ermittleErhebungen() throws JobException
   {
     this.erhebungen = new HashSet<>();
-    try (PreparedSelect ps = sqlUtil.createPreparedSelect(ErhebungBean.SQL_SELECT_ERHEBUNG))
+    try (PreparedSelect ps = this.sqlUtil.createPreparedSelect(ErhebungBean.SQL_SELECT_ERHEBUNG))
     {
       for (XmlBean bean : this.xmlBeans)
       {
@@ -351,7 +340,8 @@ public class XmlImportJob extends AbstractImportJob
             {
               bean.setAktion(XmlImportJob.AKTION_UPDATE);
             }
-          } else
+          }
+          else
           {
             ps.addValue(bean.getStatistikId());
             ps.addValue(bean.getAmt());
@@ -387,7 +377,7 @@ public class XmlImportJob extends AbstractImportJob
     this.log.info("Erzeuge Neue Adresse...");
     this.beginStopWatch();
     int anzahl = 0;
-    try (PreparedInsert ps = sqlUtil.createPreparedInsert(AdresseBean.SQL_INSERT_ADRESSEN))
+    try (PreparedInsert ps = this.sqlUtil.createPreparedInsert(AdresseBean.SQL_INSERT_ADRESSEN))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -402,11 +392,7 @@ public class XmlImportJob extends AbstractImportJob
           ab.setNeu(true);
           ab.insert(ps);
           info.setAdressenId(ab.getAdressenId());
-          this.jobBean.getAdressen()
-            .getIdentifikatoren()
-            .getNeu()
-            .getValues()
-            .add(ab.getAdressenId());
+          this.jobBean.getAdressen().getIdentifikatoren().getNeu().getValues().add(ab.getAdressenId());
         }
       }
     }
@@ -429,7 +415,7 @@ public class XmlImportJob extends AbstractImportJob
     this.log.info("Erzeuge Neue Firmen...");
     this.beginStopWatch();
     int anzahl = 0;
-    try (PreparedInsert ps = sqlUtil.createPreparedInsert(FirmenBean.SQL_INSERT_FIRMEN))
+    try (PreparedInsert ps = this.sqlUtil.createPreparedInsert(FirmenBean.SQL_INSERT_FIRMEN))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -443,11 +429,7 @@ public class XmlImportJob extends AbstractImportJob
           fb.setNeu(true);
           fb.insert(ps);
           info.setFirmenId(fb.getFirmenId());
-          this.jobBean.getFirmen()
-            .getIdentifikatoren()
-            .getNeu()
-            .getValues()
-            .add(fb.getFirmenId());
+          this.jobBean.getFirmen().getIdentifikatoren().getNeu().getValues().add(fb.getFirmenId());
         }
       }
     }
@@ -470,7 +452,7 @@ public class XmlImportJob extends AbstractImportJob
     this.log.info("Erzeuge Neue Firmen-Adressen...");
     int anzahl = 0;
     this.beginStopWatch();
-    try (PreparedUpdate ps = sqlUtil.createPreparedUpdate(FirmenAdressenBean.SQL_INSERT_FIRMEN_ADRESSEN))
+    try (PreparedUpdate ps = this.sqlUtil.createPreparedUpdate(FirmenAdressenBean.SQL_INSERT_FIRMEN_ADRESSEN))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -520,21 +502,19 @@ public class XmlImportJob extends AbstractImportJob
     if (!neueMelder.isEmpty())
     {
       // Erstelle für jede Ämter Kennungen
-      Map<String, Long> anzahlKennungenJeAmt = neueMelder.stream()
-        .collect(Collectors.groupingBy(XmlBean::getAmt, Collectors.counting()));
+      Map<String, Long> anzahlKennungenJeAmt = neueMelder.stream().collect(Collectors.groupingBy(XmlBean::getAmt, Collectors.counting()));
       Map<String, List<String>> alleKennungen = new HashMap<>();
 
-      KennungTool kennungTool = new KennungTool(sqlUtil);
+      KennungTool kennungTool = new KennungTool(this.sqlUtil);
       for (Map.Entry<String, Long> entry : anzahlKennungenJeAmt.entrySet())
       {
         String amt = entry.getKey();
-        int anzahl = entry.getValue()
-          .intValue();
+        int anzahl = entry.getValue().intValue();
         ArrayList<String> amtsKennungen = kennungTool.erzeugeEindeutigeKennungen(anzahl, this.jobBean.sachbearbeiterLand);
         alleKennungen.put(amt, amtsKennungen);
       }
 
-      try (PreparedInsert ps = sqlUtil.createPreparedInsert(MelderBean.SQL_INSERT_MELDER))
+      try (PreparedInsert ps = this.sqlUtil.createPreparedInsert(MelderBean.SQL_INSERT_MELDER))
       {
         for (XmlBean bean : neueMelder)
         {
@@ -547,7 +527,8 @@ public class XmlImportJob extends AbstractImportJob
           {
             mb.setKennung(kennungen.get(0));
             kennungen.remove(0);
-          } else
+          }
+          else
           {
             // Kennung angegeben, existiert diese ? Wenn ja, dann nimm neue Kennung
             if (kennungTool.existiertKennung(kennung))
@@ -557,17 +538,12 @@ public class XmlImportJob extends AbstractImportJob
               this.log.info("angegebene Kennung '" + kennung + "' existiert bereits und wurde durch '" + mb.getKennung() + "' ersetzt!");
             }
           }
-          MelderDaten melderDaten = MelderDatenService.getInstance()
-            .getMelderDaten();
+          MelderDaten melderDaten = MelderDatenService.getInstance().getMelderDaten();
           mb.setMelderDaten(melderDaten);
           mb.setZeitpunktRegistrierung(this.jobBean.zeitpunktEintrag);
           mb.insert(ps);
           info.setMelderId(mb.getMelderId());
-          this.jobBean.getMelder()
-            .getIdentifikatoren()
-            .getNeu()
-            .getValues()
-            .add(mb.getMelderId());
+          this.jobBean.getMelder().getIdentifikatoren().getNeu().getValues().add(mb.getMelderId());
         }
       }
     }
@@ -590,7 +566,7 @@ public class XmlImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Erzeuge Neue Melder-Ansprechpartner...");
     int anzahl = 0;
-    try (PreparedInsert ps = sqlUtil.createPreparedInsert(AnsprechpartnerBean.SQL_INSERT_ANSPRECHPARTNER))
+    try (PreparedInsert ps = this.sqlUtil.createPreparedInsert(AnsprechpartnerBean.SQL_INSERT_ANSPRECHPARTNER))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -627,7 +603,7 @@ public class XmlImportJob extends AbstractImportJob
     int anzahl = 0;
     // Key: Statistik_id, amt, bzr
     this.log.info("Erzeuge neue Erhebungen...");
-    try (PreparedInsert ps = sqlUtil.createPreparedInsert(ErhebungBean.SQL_INSERT_ERHEBUNGEN))
+    try (PreparedInsert ps = this.sqlUtil.createPreparedInsert(ErhebungBean.SQL_INSERT_ERHEBUNGEN))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -638,9 +614,9 @@ public class XmlImportJob extends AbstractImportJob
         {
           String fehler = "Aktion 'NEU' auf vorhandener Erhebung mit Amt '" + bean.getAmt() + "', Statistik-Id " + bean.getStatistikId() + ", Bzr '" + bean.getBzr() + "'";
           this.log.info(fehler);
-          this.jobBean.getFormatPruefung()
-            .addFehler(new FormatError(null,fehler));
-        } else if (!vorhanden)
+          this.jobBean.getFormatPruefung().addFehler(new FormatError(null, fehler));
+        }
+        else if (!vorhanden)
         {
           bean.setAktion(XmlImportJob.AKTION_NEU);
           ErhebungBean eb = new ErhebungBean();
@@ -671,7 +647,7 @@ public class XmlImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Erzeuge Neue Firmen-Ansprechpartner...");
     int anzahl = 0;
-    try (PreparedInsert ps = sqlUtil.createPreparedInsert(AnsprechpartnerBean.SQL_INSERT_ANSPRECHPARTNER))
+    try (PreparedInsert ps = this.sqlUtil.createPreparedInsert(AnsprechpartnerBean.SQL_INSERT_ANSPRECHPARTNER))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -707,7 +683,7 @@ public class XmlImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Aktualisierung Adressen...");
     int anzahl = 0;
-    try (PreparedUpdate ps = sqlUtil.createPreparedUpdate(AdresseBean.SQL_UPDATE_ADRESSEN))
+    try (PreparedUpdate ps = this.sqlUtil.createPreparedUpdate(AdresseBean.SQL_UPDATE_ADRESSEN))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -720,11 +696,7 @@ public class XmlImportJob extends AbstractImportJob
           ab.setZeitpunktAenderung(this.jobBean.zeitpunktEintrag);
           ab.setNeu(false);
           ab.update(ps);
-          this.jobBean.getAdressen()
-            .getIdentifikatoren()
-            .getAenderung()
-            .getValues()
-            .add(ab.getAdressenId());
+          this.jobBean.getAdressen().getIdentifikatoren().getAenderung().getValues().add(ab.getAdressenId());
         }
       }
     }
@@ -746,7 +718,7 @@ public class XmlImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Aktualisierung Firmen...");
     int anzahl = 0;
-    try (PreparedUpdate pu = sqlUtil.createPreparedUpdate(FirmenBean.SQL_UPDATE_FIRMEN))
+    try (PreparedUpdate pu = this.sqlUtil.createPreparedUpdate(FirmenBean.SQL_UPDATE_FIRMEN))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -759,11 +731,7 @@ public class XmlImportJob extends AbstractImportJob
           fb.setZeitpunktAenderung(this.jobBean.zeitpunktEintrag);
           fb.setNeu(false);
           fb.update(pu);
-          this.jobBean.getFirmen()
-            .getIdentifikatoren()
-            .getAenderung()
-            .getValues()
-            .add(fb.getFirmenId());
+          this.jobBean.getFirmen().getIdentifikatoren().getAenderung().getValues().add(fb.getFirmenId());
         }
       }
     }
@@ -785,7 +753,7 @@ public class XmlImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Aktualisierung FirmenAnsprechpartner...");
     int anzahl = 0;
-    try (PreparedUpdate pu = sqlUtil.createPreparedUpdate(AnsprechpartnerBean.SQL_UPDATE_ANSPRECHPARTNER))
+    try (PreparedUpdate pu = this.sqlUtil.createPreparedUpdate(AnsprechpartnerBean.SQL_UPDATE_ANSPRECHPARTNER))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -820,7 +788,7 @@ public class XmlImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Aktualisierung Melder...");
     int anzahl = 0;
-    try (PreparedUpdate pu = sqlUtil.createPreparedUpdate(MelderBean.SQL_UPDATE_EXTENDED_MELDER))
+    try (PreparedUpdate pu = this.sqlUtil.createPreparedUpdate(MelderBean.SQL_UPDATE_EXTENDED_MELDER))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -833,11 +801,7 @@ public class XmlImportJob extends AbstractImportJob
           mb.setZeitpunktAenderung(this.jobBean.zeitpunktEintrag);
           mb.setNeu(false);
           mb.updateExtended(pu);
-          this.jobBean.getMelder()
-            .getIdentifikatoren()
-            .getAenderung()
-            .getValues()
-            .add(mb.getMelderId());
+          this.jobBean.getMelder().getIdentifikatoren().getAenderung().getValues().add(mb.getMelderId());
         }
       }
     }
@@ -860,7 +824,7 @@ public class XmlImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Aktualisiere Erhebungen...");
     int anzahl = 0;
-    try (PreparedUpdate ps = sqlUtil.createPreparedUpdate(ErhebungBean.SQL_UPDATE_ERHEBUNGEN))
+    try (PreparedUpdate ps = this.sqlUtil.createPreparedUpdate(ErhebungBean.SQL_UPDATE_ERHEBUNGEN))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -870,9 +834,9 @@ public class XmlImportJob extends AbstractImportJob
         {
           String fehler = "Aktion 'UPDATE' auf nicht vorhandener Erhebung mit Amt '" + bean.getAmt() + "', Statistik-Id " + bean.getStatistikId() + ", Bzr '" + bean.getBzr() + "'";
           this.log.info(fehler);
-          this.jobBean.getFormatPruefung()
-            .addFehler(new FormatError(null,fehler));
-        } else if (vorhanden)
+          this.jobBean.getFormatPruefung().addFehler(new FormatError(null, fehler));
+        }
+        else if (vorhanden)
         {
           bean.setAktion(XmlImportJob.AKTION_UPDATE);
           ErhebungBean eb = new ErhebungBean();
@@ -900,7 +864,7 @@ public class XmlImportJob extends AbstractImportJob
    */
   public void ladeErhebung(ErhebungBean eb, Integer statistikId, String amt, String bzr) throws JobException
   {
-    try (PreparedSelect ps = sqlUtil.createPreparedSelect(ErhebungBean.SQL_SELECT_ERHEBUNG))
+    try (PreparedSelect ps = this.sqlUtil.createPreparedSelect(ErhebungBean.SQL_SELECT_ERHEBUNG))
     {
       ps.addValue(statistikId);
       ps.addValue(amt);
@@ -923,11 +887,7 @@ public class XmlImportJob extends AbstractImportJob
       int id = info.getAdressenId();
       if (id > 0)
       {
-        this.jobBean.getSimulation()
-          .getAdressIdentifikatoren()
-          .getLoeschung()
-          .getValues()
-          .add(id);
+        this.jobBean.getSimulation().getAdressIdentifikatoren().getLoeschung().getValues().add(id);
         anz++;
         this.jobBean.loescheDaten = true;
       }
@@ -945,11 +905,7 @@ public class XmlImportJob extends AbstractImportJob
       int id = info.getFirmenId();
       if (id > 0)
       {
-        this.jobBean.getSimulation()
-          .getFirmenIdentifikatoren()
-          .getLoeschung()
-          .getValues()
-          .add(id);
+        this.jobBean.getSimulation().getFirmenIdentifikatoren().getLoeschung().getValues().add(id);
         anz++;
         this.jobBean.loescheDaten = true;
       }
@@ -967,11 +923,7 @@ public class XmlImportJob extends AbstractImportJob
       int id = info.getMelderId();
       if (id > 0)
       {
-        this.jobBean.getSimulation()
-          .getMelderIdentifikatoren()
-          .getLoeschung()
-          .getValues()
-          .add(id);
+        this.jobBean.getSimulation().getMelderIdentifikatoren().getLoeschung().getValues().add(id);
         anz++;
         this.jobBean.loescheDaten = true;
       }
@@ -1022,7 +974,7 @@ public class XmlImportJob extends AbstractImportJob
     int anzahl = 0;
     this.beginStopWatch();
 
-    try (PreparedUpdate ps = sqlUtil.createPreparedUpdate(RegisterImportJob.SQL_INSERT_MELDER_STATISTIKEN))
+    try (PreparedUpdate ps = this.sqlUtil.createPreparedUpdate(RegisterImportJob.SQL_INSERT_MELDER_STATISTIKEN))
     {
       for (XmlBean bean : this.sortedElements)
       {
@@ -1149,10 +1101,8 @@ public class XmlImportJob extends AbstractImportJob
       String key = entry.getKey();
       if (key != null && key.startsWith("feldname."))
       {
-        key = StringUtil.substring(key, 9)
-          .trim();
-        vb.getWerte()
-          .put(key, entry.getValue());
+        key = StringUtil.substring(key, 9).trim();
+        vb.getWerte().put(key, entry.getValue());
       }
     }
 
@@ -1257,7 +1207,9 @@ public class XmlImportJob extends AbstractImportJob
         this.amtStatOnlineKeys.put(key, statId);
       }
       if (statId == null)
+      {
         statId = 0;
+      }
       bean.setStatistikId(statId);
       this.jobBean.statistikId = statId;
     }
@@ -1266,7 +1218,7 @@ public class XmlImportJob extends AbstractImportJob
   private Integer getStatistikIdFromAmtStatOnlineKey(String amt, String statOnlineKey) throws JobException
   {
     String sql = MessageFormat.format(RegisterImportJob.SQL_SELECT_STATONLINEKEY, StringUtil.escapeSqlString(amt), StringUtil.escapeSqlString(statOnlineKey));
-    ResultRow row = sqlUtil.fetchOne(sql);
+    ResultRow row = this.sqlUtil.fetchOne(sql);
     return (row != null ? row.getInt(1) : null);
   }
 }

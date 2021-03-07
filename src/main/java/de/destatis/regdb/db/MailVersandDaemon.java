@@ -38,8 +38,7 @@ public class MailVersandDaemon
   private MailVersandDaemon()
   {
     super();
-    this.log = Logger.getInstance()
-      .getLogger(this.getClass());
+    this.log = Logger.getInstance().getLogger(this.getClass());
     this.log.info("initing " + this.getClass());
   }
 
@@ -78,19 +77,19 @@ public class MailVersandDaemon
       DBConfig dbConfig = new DBConfig();
       boolean useAuth;
 
-      emailProtocol = dbConfig.getParameter(connection, "int_email_protokoll");
-      emailHost = dbConfig.getParameter(connection, "int_email_host");
-      emailPort = Integer.parseInt(dbConfig.getParameter(connection, "int_email_port"));
+      this.emailProtocol = dbConfig.getParameter(connection, "int_email_protokoll");
+      this.emailHost = dbConfig.getParameter(connection, "int_email_host");
+      this.emailPort = Integer.parseInt(dbConfig.getParameter(connection, "int_email_port"));
       String obfuscatedEmailUser = dbConfig.getParameter(connection, "int_email_user");
       String obfuscatedEmailPassword = dbConfig.getParameter(connection, "int_email_passwort");
       String blockSize = dbConfig.getParameter(connection, "TRANSFER_MAIL_BLOCKSIZE");
-      emailBlockSize = 10;
+      this.emailBlockSize = 10;
       if (blockSize != null && !blockSize.isEmpty())
       {
-        emailBlockSize = Integer.parseInt(blockSize);
+        this.emailBlockSize = Integer.parseInt(blockSize);
       }
 
-      if (emailHost != null && !emailHost.isEmpty())
+      if (this.emailHost != null && !this.emailHost.isEmpty())
       {
 
         if (obfuscatedEmailUser != null && !obfuscatedEmailUser.isEmpty())
@@ -99,25 +98,28 @@ public class MailVersandDaemon
           if (!deobfuscatedEmailUser.isEmpty())
           {
             useAuth = true;
-            emailUser = deobfuscatedEmailUser;
+            this.emailUser = deobfuscatedEmailUser;
             if (obfuscatedEmailPassword != null && !obfuscatedEmailPassword.isEmpty())
             {
-              emailPassword = new String(ObfuscationAlgorithm.deobfuscate(obfuscatedEmailPassword));
-            } else
-            {
-              emailPassword = obfuscatedEmailPassword;
+              this.emailPassword = new String(ObfuscationAlgorithm.deobfuscate(obfuscatedEmailPassword));
             }
-          } else
+            else
+            {
+              this.emailPassword = obfuscatedEmailPassword;
+            }
+          }
+          else
           {
             useAuth = false;
-            emailUser = null;
-            emailPassword = null;
+            this.emailUser = null;
+            this.emailPassword = null;
           }
-        } else
+        }
+        else
         {
           useAuth = false;
-          emailUser = null;
-          emailPassword = null;
+          this.emailUser = null;
+          this.emailPassword = null;
         }
         Properties javaMailProperties = new Properties();
         javaMailProperties.put("mail.smtp.timeout", 4000);
@@ -128,15 +130,18 @@ public class MailVersandDaemon
         }
         this.session = Session.getInstance(javaMailProperties);
       }
-    } catch (Throwable e)
+    }
+    catch (Throwable e)
     {
       this.log.error("Mail-Versand nicht moeglich!" + e.getMessage());
-    } finally
+    }
+    finally
     {
       try
       {
         broker.freeConnection(connection);
-      } catch (Throwable ignore)
+      }
+      catch (Throwable ignore)
       {
         this.log.error("Freigabe der Connection gescheitert!");
       }
@@ -161,7 +166,7 @@ public class MailVersandDaemon
     {
       LinkedList<InternetAddress> emailListe = sammleValideMailAddressen(email.getEmpfaenger());
       Date now = new Date();
-      for (int i = 0; i < emailListe.size(); i += emailBlockSize)
+      for (int i = 0; i < emailListe.size(); i += this.emailBlockSize)
       {
         MimeMessage message = createMimeMessage();
         message.setFrom(absender);
@@ -174,7 +179,7 @@ public class MailVersandDaemon
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(textPart);
         //multipart.addBodyPart(htmlPart);
-        for (int j = 0; j < emailBlockSize && !emailListe.isEmpty(); j++)
+        for (int j = 0; j < this.emailBlockSize && !emailListe.isEmpty(); j++)
         {
           InternetAddress em = emailListe.poll();
           message.addRecipient(Message.RecipientType.BCC, em);
@@ -184,7 +189,8 @@ public class MailVersandDaemon
         message.setSentDate(now);
         send(message);
       }
-    } catch (MessagingException exc)
+    }
+    catch (MessagingException exc)
     {
       this.log.error("Mailversand fehlgeschlagen: " + exc.getMessage());
     }
@@ -222,7 +228,8 @@ public class MailVersandDaemon
     try
     {
       return new InternetAddress(mail);
-    } catch (AddressException exc)
+    }
+    catch (AddressException exc)
     {
       this.log.error("Fehlerhafte Mail-Adresse " + mail);
     }
@@ -253,19 +260,25 @@ public class MailVersandDaemon
       transport.connect(this.emailHost, this.emailPort, this.emailUser, this.emailPassword);
       transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
       this.log.info("Mail verschickt an " + getAllEmpfaenger(mimeMessage));
-    } catch (AuthenticationFailedException ex)
+    }
+    catch (AuthenticationFailedException ex)
     {
       this.log.error("Mail-Server-Authentifizierung fehlgeschlagen:" + ex.getMessage());
-    } catch (MessagingException ex)
+    }
+    catch (MessagingException ex)
     {
       this.log.error("Mail-Server-Verbindung fehlgeschlagen:" + ex.getMessage());
-    } finally
+    }
+    finally
     {
       try
       {
         if (transport != null)
+        {
           transport.close();
-      } catch (Throwable e)
+        }
+      }
+      catch (Throwable e)
       {
         this.log.error("Fehler beim Schliessen der Mailverbindung", e);
       }
@@ -282,7 +295,9 @@ public class MailVersandDaemon
       {
         InternetAddress ia = (InternetAddress) address;
         if (builder.length() > 0)
+        {
           builder.append(',');
+        }
         builder.append(ia.getAddress());
       }
     }

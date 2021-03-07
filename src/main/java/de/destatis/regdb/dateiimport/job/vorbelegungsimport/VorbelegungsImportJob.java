@@ -85,8 +85,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
   @Override
   protected void doNormalImport() throws JobException
   {
-    Path path = this.jobBean.getImportdatei()
-      .getPath();
+    Path path = this.jobBean.getImportdatei().getPath();
     this.leseTeilbereich(path);
     if (this.vorbelegungsImportBeans.isEmpty())
     {
@@ -100,14 +99,13 @@ public class VorbelegungsImportJob extends AbstractImportJob
 
   private void transferiereDateien() throws JobException
   {
-    File uploadFile = Paths.get(this.jobBean.getImportdatei().importVerzeichnis, "dateiupload.zip")
-      .toFile();
-    log.debug("Transferiere Datei " + uploadFile);
+    File uploadFile = Paths.get(this.jobBean.getImportdatei().importVerzeichnis, "dateiupload.zip").toFile();
+    this.log.debug("Transferiere Datei " + uploadFile);
     if (uploadFile.exists())
     {
-      String kennung = jobBean.sachbearbeiterKennung;
+      String kennung = this.jobBean.sachbearbeiterKennung;
       DesEncrypter encrypter = new DesEncrypter("MStatRegDB key");
-      String passwort = encrypter.decrypt(jobBean.sachbearbeiterPasswort);
+      String passwort = encrypter.decrypt(this.jobBean.sachbearbeiterPasswort);
       DownloadDienst downloadDienst = new DownloadDienst(RegDBGeneralHttpServlet.interneAblaeufeHost, String.valueOf(RegDBGeneralHttpServlet.interneAblaeufePort), kennung, passwort);
       DownloadStatus ergebnis = downloadDienst.exportiereDownloadDatei(String.valueOf(this.jobBean.statistikId), this.jobBean.amt, this.jobBean.berichtszeitraum, uploadFile);
       if (ergebnis.getStatus() != DownloadStatus.STATUS_OK)
@@ -163,20 +161,16 @@ public class VorbelegungsImportJob extends AbstractImportJob
     this.beginStopWatch();
     String sql = MessageFormat.format(SQL_SELECT_LOESCHKANDIDATEN, this.jobBean.amt, String.valueOf(this.jobBean.statistikId), this.jobBean.berichtszeitraum, this.jobBean.zeitpunktEintrag);
     int anzahl = 0;
-    List<ResultRow> rows = sqlUtil.fetchMany(sql);
+    List<ResultRow> rows = this.sqlUtil.fetchMany(sql);
     for (ResultRow row : rows)
     {
       int vorbelId = row.getInt("VORBELEGUNG_ID");
-      this.jobBean.getVorbelegungen()
-        .getIdentifikatoren()
-        .getLoeschung()
-        .getValues()
-        .add(vorbelId);
+      this.jobBean.getVorbelegungen().getIdentifikatoren().getLoeschung().getValues().add(vorbelId);
       anzahl++;
     }
     // Daten ermittelt, nun endgültig löschen
     sql = MessageFormat.format(SQL_UPDATE_LOESCHKANDIDATEN, this.jobBean.amt, String.valueOf(this.jobBean.statistikId), this.jobBean.berichtszeitraum, this.jobBean.zeitpunktEintrag);
-    sqlUtil.update(sql);
+    this.sqlUtil.update(sql);
     this.log.info(MessageFormat.format("{0} VorbelegungVerwaltung geloescht in {1} ", anzahl, this.getElapsedTime()));
   }
 
@@ -193,10 +187,10 @@ public class VorbelegungsImportJob extends AbstractImportJob
       if (test == null)
       {
         map.put(bean.getIdentifier(), bean);
-      } else
+      }
+      else
       {
-        test.getWerte()
-          .putAll(bean.getWerte());
+        test.getWerte().putAll(bean.getWerte());
       }
     }
     this.vorbelegungsImportBeans = new ArrayList<>(map.values());
@@ -212,12 +206,11 @@ public class VorbelegungsImportJob extends AbstractImportJob
     this.log.info("Aktualisiere Eintragungen fuer Infoschreiben...");
     this.beginStopWatch();
     int anzahl = 0;
-    try (PreparedUpdate ps = sqlUtil.createPreparedUpdate(SQL_UPDATE_INFOSCHREIBEN))
+    try (PreparedUpdate ps = this.sqlUtil.createPreparedUpdate(SQL_UPDATE_INFOSCHREIBEN))
     {
       for (VorbelegungsImportBean bean : this.vorbelegungsImportBeans)
       {
-        this.log.debug(MessageFormat.format("update Infoschreiben, bzr={0},amt={1},statistikid={2},firmenid={3},melderid={4}", bean.getBzr(), bean.getAmt(), bean.getStatistikId(), bean
-          .getFirmenId(), bean.getMelderId()));
+        this.log.debug(MessageFormat.format("update Infoschreiben, bzr={0},amt={1},statistikid={2},firmenid={3},melderid={4}", bean.getBzr(), bean.getAmt(), bean.getStatistikId(), bean.getFirmenId(), bean.getMelderId()));
         ps.addValue(bean.getBzr());
         ps.addValue(this.jobBean.zeitpunktEintrag);
         ps.addValue(bean.getAmt());
@@ -248,8 +241,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
       if (bean.getVbWerteIndex() > 0)
       {
         buf.setLength(0);
-        for (Map.Entry<String, String> entry : bean.getWerte()
-          .entrySet())
+        for (Map.Entry<String, String> entry : bean.getWerte().entrySet())
         {
           if (buf.length() > 0)
           {
@@ -258,9 +250,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
           String feldName = entry.getKey();
           if (feldName.endsWith("_datei"))
           {
-            this.jobBean.getVorbelegungen()
-              .getFirmenIdsFuerMailVersand()
-              .add(bean.getFirmenId());
+            this.jobBean.getVorbelegungen().getFirmenIdsFuerMailVersand().add(bean.getFirmenId());
           }
           String value = "(" + bean.getVbWerteIndex() + ",\"" + StringUtil.escapeSqlString(feldName) + "\",\"" + StringUtil.escapeSqlString(entry.getValue()) + "\")";
           buf.append(value);
@@ -269,9 +259,10 @@ public class VorbelegungsImportJob extends AbstractImportJob
         if (buf.length() > 0)
         {
           String sql = SQL_INSERT_WERT + buf.toString();
-          sqlUtil.execute(sql);
+          this.sqlUtil.execute(sql);
         }
-      } else
+      }
+      else
       {
         this.log.info("VB_WERTE_INDX ist 0");
       }
@@ -289,7 +280,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
     this.log.info("Aktualisiere Verwaltungs-Eintraege...");
     this.beginStopWatch();
     int anzahl = 0;
-    try (PreparedUpdate ps = sqlUtil.createPreparedUpdate(SQL_UPDATE_VERWALTUNG))
+    try (PreparedUpdate ps = this.sqlUtil.createPreparedUpdate(SQL_UPDATE_VERWALTUNG))
     {
       // FORMULARNAME=?, ZEITPUNKT_AENDERUNG=? WHERE VORBELEGUNG_ID = ?
       for (VorbelegungsImportBean bean : this.vorbelegungsImportBeans)
@@ -301,11 +292,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
           ps.addValue(this.jobBean.zeitpunktEintrag);
           ps.addValue(bean.getVorbelegungId());
           ps.update();
-          this.jobBean.getVorbelegungen()
-            .getIdentifikatoren()
-            .getAenderung()
-            .getValues()
-            .add(bean.getVorbelegungId());
+          this.jobBean.getVorbelegungen().getIdentifikatoren().getAenderung().getValues().add(bean.getVorbelegungId());
         }
       }
     }
@@ -316,7 +303,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
   {
     this.log.info("Ermittle hoechsten VB_WERTE_INDX...");
     this.beginStopWatch();
-    ResultRow row = sqlUtil.fetchOne(SQL_SELECT_MAX_VB_WERTE);
+    ResultRow row = this.sqlUtil.fetchOne(SQL_SELECT_MAX_VB_WERTE);
     if (row != null)
     {
       this.log.info("VB_WERTE_INDX betraegt " + row.getInt(1) + ", " + MSG_AUSGEFUEHRT_IN + this.getElapsedTime());
@@ -342,7 +329,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
     int indx = this.ermittleHoechstenVbwerteIndx();
     // Ermittle den hoechsten VB_WERTE_INDX der Tabellen
 
-    try (PreparedInsert ps = sqlUtil.createPreparedInsert(SQL_INSERT_VERWALTUNG))
+    try (PreparedInsert ps = this.sqlUtil.createPreparedInsert(SQL_INSERT_VERWALTUNG))
     {
       for (VorbelegungsImportBean bean : this.vorbelegungsImportBeans)
       {
@@ -366,11 +353,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
           if (keys != null)
           {
             bean.setVorbelegungId(keys.getInt(1));
-            this.jobBean.getVorbelegungen()
-              .getIdentifikatoren()
-              .getNeu()
-              .getValues()
-              .add(bean.getVorbelegungId());
+            this.jobBean.getVorbelegungen().getIdentifikatoren().getNeu().getValues().add(bean.getVorbelegungId());
           }
         }
 
@@ -392,7 +375,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
     int anzahlNeueintraege = 0;
     int anzahlBestehendeEintraege = 0;
     ermittleFirmenIds();
-    try (PreparedSelect psBestand = sqlUtil.createPreparedSelect(SQL_SELECT_VORBELEGUNG_BESTAND))
+    try (PreparedSelect psBestand = this.sqlUtil.createPreparedSelect(SQL_SELECT_VORBELEGUNG_BESTAND))
     {
       for (VorbelegungsImportBean bean : this.vorbelegungsImportBeans)
       {
@@ -410,7 +393,8 @@ public class VorbelegungsImportJob extends AbstractImportJob
           bean.setVbWerteIndex(row.getInt("VB_WERTE_INDX"));
           bean.setNeueVorbelegung(false);
           anzahlBestehendeEintraege++;
-        } else
+        }
+        else
         {
           anzahlNeueintraege++;
         }
@@ -422,20 +406,17 @@ public class VorbelegungsImportJob extends AbstractImportJob
 
   private void ermittleFirmenIds() throws JobException
   {
-    String ofs = sqlUtil.convertStringList(this.vorbelegungsImportBeans.stream()
-      .filter(b -> b.getFirmenId() == 0)
-      .map(VorbelegungsImportBean::getQuellReferenzOf)
-      .collect(Collectors.toSet()));
+    String ofs = this.sqlUtil.convertStringList(this.vorbelegungsImportBeans.stream().filter(b -> b.getFirmenId() == 0).map(VorbelegungsImportBean::getQuellReferenzOf).collect(Collectors.toSet()));
     String sql = MessageFormat.format(SQL_SELECT_FIRMA, ofs, String.valueOf(this.jobBean.quellReferenzId));
-    HashMap<String, Integer> ofFirmen = new HashMap<>(vorbelegungsImportBeans.size());
-    List<ResultRow> rows = sqlUtil.fetchMany(sql);
+    HashMap<String, Integer> ofFirmen = new HashMap<>(this.vorbelegungsImportBeans.size());
+    List<ResultRow> rows = this.sqlUtil.fetchMany(sql);
     for (ResultRow row : rows)
     {
       ofFirmen.put(row.getString(1), row.getInt(2)); // 1 = OF , 2 = FirmenId
     }
 
     // iteriere über allle Ordnungsfelder und weise Firmen Id zu
-    for (VorbelegungsImportBean bean : vorbelegungsImportBeans)
+    for (VorbelegungsImportBean bean : this.vorbelegungsImportBeans)
     {
       if (bean.getFirmenId() == 0)
       {
@@ -491,7 +472,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
     // Zuerst Werte loeschen
     // Relevanter Schluessel ist AMT, STATISTIK_ID,BZR
     int anzWerte;
-    try (PreparedUpdate ps = sqlUtil.createPreparedUpdate(SQL_DELETE_WERTE))
+    try (PreparedUpdate ps = this.sqlUtil.createPreparedUpdate(SQL_DELETE_WERTE))
     {
       ps.addValue(this.jobBean.amt);
       ps.addValue(this.jobBean.statistikId);
@@ -511,18 +492,16 @@ public class VorbelegungsImportJob extends AbstractImportJob
   public void loescheVorbelegungenMitIds(Set<Integer> ids) throws JobException
   {
     if (ids == null || ids.isEmpty())
+    {
       return;
+    }
     this.log.debug("Loesche Vorbelegungen mit IDs...");
-    String in = sqlUtil.convertNumberList(ids);
+    String in = this.sqlUtil.convertNumberList(ids);
     String sqlWerte = MessageFormat.format(SQL_DELETE_WERTE_MIT_VBIDS, in);
     String sqlVerwaltung = MessageFormat.format(SQL_DELETE_VERWALTUNG_MIT_VBIDS, in, this.jobBean.zeitpunktEintrag);
-    sqlUtil.execute(sqlWerte);
-    sqlUtil.execute(sqlVerwaltung);
-    this.jobBean.getVorbelegungen()
-      .getIdentifikatoren()
-      .getLoeschung()
-      .getValues()
-      .addAll(ids);
+    this.sqlUtil.execute(sqlWerte);
+    this.sqlUtil.execute(sqlVerwaltung);
+    this.jobBean.getVorbelegungen().getIdentifikatoren().getLoeschung().getValues().addAll(ids);
     this.log.debug("Vorbelegungen gelöscht!");
   }
 
@@ -534,9 +513,7 @@ public class VorbelegungsImportJob extends AbstractImportJob
   public void versendeMails() throws JobException
   {
     // Versende Mails, falls Dateien da waren und in TRANSFERZIEL gewünscht ( Eintrag MAIL_DOWNLOAD )
-    if (this.jobBean.getVorbelegungen()
-      .getFirmenIdsFuerMailVersand()
-      .isEmpty())
+    if (this.jobBean.getVorbelegungen().getFirmenIdsFuerMailVersand().isEmpty())
     {
       this.log.info("Keine Firmen fuer Mailbenachrichtigung");
       return;
@@ -551,22 +528,20 @@ public class VorbelegungsImportJob extends AbstractImportJob
     }
 
     // Sind Mail-Adressen da ?
-    String ids = sqlUtil.convertNumberList(this.jobBean.getVorbelegungen()
-      .getFirmenIdsFuerMailVersand());
+    String ids = this.sqlUtil.convertNumberList(this.jobBean.getVorbelegungen().getFirmenIdsFuerMailVersand());
     String sql = MessageFormat.format(SQL_SELECT_MAIL_ADRESSEN, ids);
-    List<ResultRow> rows = sqlUtil.fetchMany(sql);
+    List<ResultRow> rows = this.sqlUtil.fetchMany(sql);
     for (ResultRow row : rows)
     {
       mail.addEmpfaenger(row.getString("EMAIL"));
     }
-    MailVersandDaemon.getInstance()
-      .sendMail(mail);
+    MailVersandDaemon.getInstance().sendMail(mail);
   }
 
   private Email createMailObjekt() throws JobException
   {
     String sql = MessageFormat.format(SQL_SELECT_TRANSFERZIEL, this.jobBean.amt, "" + this.jobBean.statistikId);
-    ResultRow row = sqlUtil.fetchOne(sql);
+    ResultRow row = this.sqlUtil.fetchOne(sql);
     if (row != null)
     {
       String absender = row.getString(1);

@@ -5,20 +5,6 @@
  */
 package de.destatis.regdb.servlets;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import de.destatis.regdb.db.ConnectionTool;
 import de.destatis.regdb.db.DBLockException;
 import de.destatis.regdb.db.WrongSessionException;
@@ -27,6 +13,19 @@ import de.destatis.regdb.session.RegDBSessionManager;
 import de.werum.sis.idev.res.conf.db.DBConfig;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public abstract class RegDBGeneralHttpServlet extends HttpServlet
 {
@@ -66,18 +65,15 @@ public abstract class RegDBGeneralHttpServlet extends HttpServlet
   {
     if (this.log == null)
     {
-      this.log = Logger.getInstance()
-          .getLogger(cls);
+      this.log = Logger.getInstance().getLogger(cls);
       this.log.info("initing " + this.getClass());
     }
 
     if (interneAblaeufeHost == null)
     {
-      Connection conn = ConnectionTool.getInstance()
-          .getConnection();
+      Connection conn = ConnectionTool.getInstance().getConnection();
       this.checkConfiguration(conn);
-      ConnectionTool.getInstance()
-          .freeConnection(conn);
+      ConnectionTool.getInstance().freeConnection(conn);
     }
 
   }
@@ -163,9 +159,9 @@ public abstract class RegDBGeneralHttpServlet extends HttpServlet
    *
    * @param req the req
    * @return the reg DB session
-   * @throws ServletException the servlet exception
+   * @throws ServletException      the servlet exception
    * @throws WrongSessionException the wrong session exception
-   * @throws DBLockException the DB lock exception
+   * @throws DBLockException       the DB lock exception
    */
   public synchronized RegDBSession doAuthentication(HttpServletRequest req) throws ServletException, WrongSessionException, DBLockException
   {
@@ -174,8 +170,7 @@ public abstract class RegDBGeneralHttpServlet extends HttpServlet
     {
       throw new ServletException("keine Session angegeben");
     }
-    RegDBSession session = RegDBSessionManager.getInstance()
-        .getSession(sessionID);
+    RegDBSession session = RegDBSessionManager.getInstance().getSession(sessionID);
     if (session == null)
     {
       throw new WrongSessionException();
@@ -268,9 +263,9 @@ public abstract class RegDBGeneralHttpServlet extends HttpServlet
   /**
    * Do service.
    *
-   * @param req the req
-   * @param res the res
-   * @param conn the connection
+   * @param req     the req
+   * @param res     the res
+   * @param conn    the connection
    * @param session the session
    * @throws Exception the exception
    */
@@ -279,7 +274,7 @@ public abstract class RegDBGeneralHttpServlet extends HttpServlet
   /**
    * Send ergebnis.
    *
-   * @param res the res
+   * @param res      the res
    * @param ergebnis the ergebnis
    */
   public synchronized void sendErgebnis(HttpServletResponse res, Object ergebnis)

@@ -30,13 +30,15 @@ public class SegmentedXmlFileReader implements SegmentedFileReader<XmlBean>
       SAXParserFactory factory = SAXParserFactory.newInstance();
       SAXParser saxParser = factory.newSAXParser();
       saxParser.parse(is, handler);
-    } catch (SAXException e)
+    }
+    catch (SAXException e)
     {
       if (!"LIMIT".equals(e.getMessage()))
       {
         throw new JobException(e.getMessage(), e);
       }
-    } catch (IOException | ParserConfigurationException e)
+    }
+    catch (IOException | ParserConfigurationException e)
     {
       throw new JobException(e.getMessage(), e);
     }

@@ -85,7 +85,7 @@ public class AuswirkungenJob extends AbstractJob
     String sql = MessageFormat.format(SQL_SELECTCOUNT_LOESCHKANDIDATEN, this.jobBean.quellReferenzId);
     this.log.debug(sql);
     this.jobBean.getSimulation().anzahlAdressenImBestand = 0;
-    ResultRow row = sqlUtil.fetchOne(sql);
+    ResultRow row = this.sqlUtil.fetchOne(sql);
     if (row != null)
     {
       this.jobBean.getSimulation().anzahlAdressenImBestand = row.getInt(1);
@@ -102,8 +102,7 @@ public class AuswirkungenJob extends AbstractJob
   {
     this.beginStopWatch();
     // Lade zuerst die Ordnungsfelder und generiere daraus eine HashList
-    Set<String> bestehendeOfs = this.jobBean.getAdressen()
-      .getOrdnungsfelder();
+    Set<String> bestehendeOfs = this.jobBean.getAdressen().getOrdnungsfelder();
     int adressenInImport = bestehendeOfs.size();
 
     // Falls Loeschung erwuenscht, dann ermittle die IDs aller bestehenden Adressen
@@ -115,25 +114,19 @@ public class AuswirkungenJob extends AbstractJob
     if (this.jobBean.getSimulation().anzahlAdressenImBestand == 0)
     {
       prozent = 100;
-    } else
+    }
+    else
     {
       prozent = (max * 100) / this.jobBean.getSimulation().anzahlAdressenImBestand;
     }
-    this.log.debug(MessageFormat.format("Auswirkungen {0} bis {1} von {2} werden ermittelt...", this.jobBean.getSimulation().adressenOffset + 1, max, this.jobBean
-      .getSimulation().anzahlAdressenImBestand));
+    this.log.debug(MessageFormat.format("Auswirkungen {0} bis {1} von {2} werden ermittelt...", this.jobBean.getSimulation().adressenOffset + 1, max, this.jobBean.getSimulation().anzahlAdressenImBestand));
     info = MessageFormat.format("Auswirkungen des Imports werden ermittelt, {0}%", prozent);
     this.log.info(info);
     this.jobBean.setStatusAndInfo(JobStatus.AKTIV, info);
     int anzahl = queryOrdnungsfelder(bestehendeOfs);
     info = MessageFormat.format("Auswirkungen des Imports wurden zu {0}% ermittelt", prozent);
     this.jobBean.getSimulation().adressenOffset += anzahl;
-    this.jobBean.getSimulation()
-      .getAdressIdentifikatoren()
-      .getNeu()
-      .setAnzahl(adressenInImport - this.jobBean.getSimulation()
-        .getAdressIdentifikatoren()
-        .getAenderung()
-        .getAnzahl());
+    this.jobBean.getSimulation().getAdressIdentifikatoren().getNeu().setAnzahl(adressenInImport - this.jobBean.getSimulation().getAdressIdentifikatoren().getAenderung().getAnzahl());
     this.jobBean.setStatusAndInfo(JobStatus.AKTIV, info);
     this.log.info(info);
   }
@@ -143,7 +136,7 @@ public class AuswirkungenJob extends AbstractJob
     int anzahl = 0;
     String sql = MessageFormat.format(SQL_SELECT_LOESCHKANDIDATEN, "" + this.jobBean.quellReferenzId, "" + this.jobBean.getSimulation().lastAdressenId, "" + this.jobBean.loeschBlockGroesse);
     HashSet<Integer> loeschAdressen = new HashSet<>(bestehendeOfs.size());
-    List<ResultRow> rows = sqlUtil.fetchMany(sql);
+    List<ResultRow> rows = this.sqlUtil.fetchMany(sql);
     for (ResultRow row : rows)
     {
       int adressenId = row.getInt(1);
@@ -152,12 +145,9 @@ public class AuswirkungenJob extends AbstractJob
       // OF aus Datenbank ist in Import enthalten
       if (bestehendeOfs.contains(of))
       {
-        this.jobBean.getSimulation()
-          .getAdressIdentifikatoren()
-          .getAenderung()
-          .getValues()
-          .add(adressenId);
-      } else if (this.jobBean.loescheDaten)
+        this.jobBean.getSimulation().getAdressIdentifikatoren().getAenderung().getValues().add(adressenId);
+      }
+      else if (this.jobBean.loescheDaten)
       {
         // Ordnungsfeld ist nicht in Importdatei und wird daher zum Löschen markiert, falls Loeschen aktiv ist
         loeschAdressen.add(adressenId); // ADRESSEN_ID
@@ -178,7 +168,7 @@ public class AuswirkungenJob extends AbstractJob
   public void erzeugeInfoDateien(Set<Integer> loeschAdressen) throws JobException
   {
     // Protokoll erstellen
-    LoeschUtil loeschUtil = new LoeschUtil(sqlUtil);
+    LoeschUtil loeschUtil = new LoeschUtil(this.sqlUtil);
     loeschUtil.setSachbearbeiterId(this.jobBean.sachbearbeiterId);
     loeschUtil.setZeitpunkt(this.jobBean.zeitpunktEintrag);
     this.log.debug("erzeugeInfoDateien mit " + loeschAdressen.size() + " Kandidaten");
@@ -192,31 +182,19 @@ public class AuswirkungenJob extends AbstractJob
       Path firmenProtokoll = Paths.get(importVerzeichnis, LOESCH_PROTOKOLL_FIRMEN_KANDIDATEN);
       Path melderProtokoll = Paths.get(importVerzeichnis, LOESCH_PROTOKOLL_MELDER_KANDIDATEN);
       // zu loeschende Adressen sind bekannt, schreibe Details in Protokolldatei
-      this.jobBean.getSimulation()
-        .getAdressIdentifikatoren()
-        .getLoeschung()
-        .getValues()
-        .addAll(loeschAdressen);
+      this.jobBean.getSimulation().getAdressIdentifikatoren().getLoeschung().getValues().addAll(loeschAdressen);
 
       loeschUtil.schreibeAdressInfos(adressProtokoll, loeschAdressen);
 
       // Ermittle Firmen
       Set<Integer> loeschFirmen = loeschUtil.pruefeAdressVerweise(loeschAdressen, LoeschUtil.SQL_SELECT_FIRMEN_ADRESSEN);
       loeschUtil.schreibeFirmenInfos(firmenProtokoll, loeschFirmen);
-      this.jobBean.getSimulation()
-        .getFirmenIdentifikatoren()
-        .getLoeschung()
-        .getValues()
-        .addAll(loeschFirmen);
+      this.jobBean.getSimulation().getFirmenIdentifikatoren().getLoeschung().getValues().addAll(loeschFirmen);
 
       // Ermittle Melder
       Set<Integer> loeschMelder = loeschUtil.pruefeAdressVerweise(loeschAdressen, LoeschUtil.SQL_SELECT_LOESCH_MELDER);
       loeschUtil.schreibeMelderInfos(melderProtokoll, loeschMelder);
-      this.jobBean.getSimulation()
-        .getMelderIdentifikatoren()
-        .getLoeschung()
-        .getValues()
-        .addAll(loeschMelder);
+      this.jobBean.getSimulation().getMelderIdentifikatoren().getLoeschung().getValues().addAll(loeschMelder);
 
       // Zippen
       AufraeumUtil aufraeumUtil = new AufraeumUtil();

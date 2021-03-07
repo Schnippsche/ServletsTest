@@ -58,10 +58,9 @@ public class MelderkontoImportJob extends AbstractImportJob
   {
     super.doBeforeFirstImport();
     // Zusatzdaten entpacken
-    importVerzeichnis = this.jobBean.getImportdatei().importVerzeichnis;
-    Path destination = Paths.get(importVerzeichnis);
-    File uploadFile = Paths.get(importVerzeichnis, "dateiupload.zip")
-      .toFile();
+    this.importVerzeichnis = this.jobBean.getImportdatei().importVerzeichnis;
+    Path destination = Paths.get(this.importVerzeichnis);
+    File uploadFile = Paths.get(this.importVerzeichnis, "dateiupload.zip").toFile();
     if (uploadFile.exists())
     {
       entzippe(uploadFile, destination);
@@ -71,19 +70,17 @@ public class MelderkontoImportJob extends AbstractImportJob
   @Override
   protected void doNormalImport() throws JobException
   {
-    File uploadFile = Paths.get(importVerzeichnis, "zsdaten.properties")
-      .toFile();
+    File uploadFile = Paths.get(this.importVerzeichnis, "zsdaten.properties").toFile();
     if (uploadFile.exists())
     {
-      verzeichnisProperties = ladeVerzeichnisProperties(uploadFile);
+      this.verzeichnisProperties = ladeVerzeichnisProperties(uploadFile);
       String kennung = this.jobBean.sachbearbeiterKennung;
       String passwort = this.jobBean.sachbearbeiterPasswort;
       DesEncrypter encrypter = new DesEncrypter("MStatRegDB key");
       passwort = encrypter.decrypt(passwort);
-      mktoDateiDienst = new MelderkontoDateiDienst(RegDBGeneralHttpServlet.interneAblaeufeHost, String.valueOf(RegDBGeneralHttpServlet.interneAblaeufePort), kennung, passwort);
+      this.mktoDateiDienst = new MelderkontoDateiDienst(RegDBGeneralHttpServlet.interneAblaeufeHost, String.valueOf(RegDBGeneralHttpServlet.interneAblaeufePort), kennung, passwort);
     }
-    Path path = this.jobBean.getImportdatei()
-      .getPath();
+    Path path = this.jobBean.getImportdatei().getPath();
     this.leseTeilbereich(path);
     if (this.melderKontoImportBeans.isEmpty())
     {
@@ -97,7 +94,7 @@ public class MelderkontoImportJob extends AbstractImportJob
   @Override
   protected AbstractJob nextImportJob()
   {
-    return new MelderkontoImportJob(jobBean);
+    return new MelderkontoImportJob(this.jobBean);
   }
 
   @Override
@@ -117,18 +114,14 @@ public class MelderkontoImportJob extends AbstractImportJob
   private void ermittleIndizes() throws JobException
   {
     // Hole alle neuen Eintraege
-    List<MelderkontoImportBean> neueBeans = this.melderKontoImportBeans.stream()
-      .filter(MelderkontoImportBean::isNeuerMelderkontoEintrag)
-      .collect(Collectors.toList());
+    List<MelderkontoImportBean> neueBeans = this.melderKontoImportBeans.stream().filter(MelderkontoImportBean::isNeuerMelderkontoEintrag).collect(Collectors.toList());
     if (!neueBeans.isEmpty())
     {
       ermittleAdressenIds(neueBeans);
       ermittleFirmenIds(neueBeans);
     }
     // Hole alle betsehenden Eintraege
-    List<MelderkontoImportBean> vorhandeneBeans = this.melderKontoImportBeans.stream()
-      .filter(b -> !b.isNeuerMelderkontoEintrag())
-      .collect(Collectors.toList());
+    List<MelderkontoImportBean> vorhandeneBeans = this.melderKontoImportBeans.stream().filter(b -> !b.isNeuerMelderkontoEintrag()).collect(Collectors.toList());
     if (!vorhandeneBeans.isEmpty())
     {
       ermittleMelderkontoIds(vorhandeneBeans);
@@ -138,7 +131,7 @@ public class MelderkontoImportJob extends AbstractImportJob
   private void ermittleMelderkontoIds(List<MelderkontoImportBean> vorhandeneBeans) throws JobException
   {
     this.log.debug("ermittleMelderkontoIds mit " + vorhandeneBeans.size() + " Eintraegen");
-    try (PreparedSelect ps = sqlUtil.createPreparedSelect(SQL_SELECT_MELDERKONTOIDS))
+    try (PreparedSelect ps = this.sqlUtil.createPreparedSelect(SQL_SELECT_MELDERKONTOIDS))
     {
       for (MelderkontoImportBean bean : vorhandeneBeans)
       {
@@ -147,8 +140,11 @@ public class MelderkontoImportJob extends AbstractImportJob
         if (row != null)
         {
           bean.setMktoId(row.getInt(1));
-        } else
+        }
+        else
+        {
           throw new JobException("Die Meldungs-ID " + bean.getMeldungId() + " konnte keinem Melderkonto zugeordnet werden!");
+        }
       }
     }
   }
@@ -156,7 +152,7 @@ public class MelderkontoImportJob extends AbstractImportJob
   private void ermittleAdressenIds(List<MelderkontoImportBean> beans) throws JobException
   {
     this.log.debug("ermittleAdressenIds mit " + beans.size() + " Eintraegen");
-    try (PreparedSelect ps = sqlUtil.createPreparedSelect(SQL_SELECT_ADRESSEN))
+    try (PreparedSelect ps = this.sqlUtil.createPreparedSelect(SQL_SELECT_ADRESSEN))
     {
       for (MelderkontoImportBean bean : beans)
       {
@@ -165,8 +161,11 @@ public class MelderkontoImportJob extends AbstractImportJob
         if (row != null)
         {
           bean.setAdressenId(row.getInt(1));
-        } else
+        }
+        else
+        {
           throw new JobException("Das Ordnungsfeld '" + bean.getQuellReferenzOf() + "' konnte keiner Adresse zugeordnet werden!");
+        }
       }
     }
   }
@@ -174,7 +173,7 @@ public class MelderkontoImportJob extends AbstractImportJob
   private void ermittleFirmenIds(List<MelderkontoImportBean> beans) throws JobException
   {
     this.log.debug("ermittleFirmenIds mit " + beans.size() + " Eintraegen");
-    try (PreparedSelect ps = sqlUtil.createPreparedSelect(SQL_SELECT_FIRMEN))
+    try (PreparedSelect ps = this.sqlUtil.createPreparedSelect(SQL_SELECT_FIRMEN))
     {
       for (MelderkontoImportBean bean : beans)
       {
@@ -183,36 +182,32 @@ public class MelderkontoImportJob extends AbstractImportJob
         if (row != null)
         {
           bean.setFirmenId(row.getInt(1));
-        } else
+        }
+        else
+        {
           throw new JobException("Der Adresse '" + bean.getAdressenId() + "' konnte keine Firma zugeordnet werden!");
+        }
       }
     }
   }
 
   private void erzeugeOderAktualisiereEintraege() throws JobException
   {
-    this.log.debug("erzeugeOderAktualisiereEintraege mit " + melderKontoImportBeans.size() + " Eintraegen");
+    this.log.debug("erzeugeOderAktualisiereEintraege mit " + this.melderKontoImportBeans.size() + " Eintraegen");
     this.beginStopWatch();
-    try (PreparedInsert psInsert = sqlUtil.createPreparedInsert(SQL_INSERT_MELDERKONTO); PreparedUpdate psUpdate = sqlUtil.createPreparedUpdate(SQL_UPDATE_MELDERKONTO))
+    try (PreparedInsert psInsert = this.sqlUtil.createPreparedInsert(SQL_INSERT_MELDERKONTO); PreparedUpdate psUpdate = this.sqlUtil.createPreparedUpdate(SQL_UPDATE_MELDERKONTO))
     {
       for (MelderkontoImportBean bean : this.melderKontoImportBeans)
       {
         if (bean.isNeuerMelderkontoEintrag())
         {
           insertMelderkonto(bean, psInsert);
-          this.jobBean.getMelderkonto()
-            .getIdentifikatoren()
-            .getNeu()
-            .getValues()
-            .add(bean.getMktoId());
-        } else
+          this.jobBean.getMelderkonto().getIdentifikatoren().getNeu().getValues().add(bean.getMktoId());
+        }
+        else
         {
           updateMelderkonto(bean, psUpdate);
-          this.jobBean.getMelderkonto()
-            .getIdentifikatoren()
-            .getAenderung()
-            .getValues()
-            .add(bean.getMktoId());
+          this.jobBean.getMelderkonto().getIdentifikatoren().getAenderung().getValues().add(bean.getMktoId());
         }
       }
     }
@@ -222,19 +217,20 @@ public class MelderkontoImportJob extends AbstractImportJob
   {
     for (MelderkontoImportBean bean : this.melderKontoImportBeans)
     {
-      if (!bean.getZsDaten()
-        .isEmpty())
+      if (!bean.getZsDaten().isEmpty())
       {
         // Wandle Date um
-        File file = Paths.get(importVerzeichnis, verzeichnisProperties.getProperty(bean.getZsDaten(), ""))
-          .toFile();
+        File file = Paths.get(this.importVerzeichnis, this.verzeichnisProperties.getProperty(bean.getZsDaten(), "")).toFile();
         this.log.debug("Uebertrage Datei an WerumDienst:" + file.toString() + " Originalname:" + bean.getZsDaten());
-        MelderkontoDateiStatus status = mktoDateiDienst.importiereMelderkontoDatei("" + bean.getMktoId(), file);
+        MelderkontoDateiStatus status = this.mktoDateiDienst.importiereMelderkontoDatei("" + bean.getMktoId(), file);
         if (status.getStatus() == MelderkontoDateiStatus.STATUS_OK)
         {
           this.log.info("Meldekontodatei wurde korrekt übergeben");
-        } else
+        }
+        else
+        {
           this.log.error("Fehler beim Übertragen der Melderkontodatei " + bean.getZsDaten());
+        }
       }
     }
   }
@@ -250,7 +246,9 @@ public class MelderkontoImportJob extends AbstractImportJob
     ps.addValue(bean.getBzr());
     String[] mkf = bean.getMkf();
     for (int i = 0; i < 10; i++)
+    {
       ps.addValue(mkf[i]);
+    }
     ps.addValue(this.jobBean.sachbearbeiterId);
     ps.addValue("NEU");
     ps.addValue(this.jobBean.zeitpunktEintrag);
@@ -267,7 +265,9 @@ public class MelderkontoImportJob extends AbstractImportJob
     // SET MKF1=?, MKF2=?, MKF3=?, MKF4=?, MKF5=?, MKF6=?, MKF7=?, MKF8=?, MKF9=?, MKF10=?, SACHBEARBEITER_ID=?,STATUS=?,ZEITPUNKT_AENDERUNG=? WHERE MKTO_ID=?
     String[] mkf = bean.getMkf();
     for (int i = 0; i < 10; i++)
+    {
       ps.addValue(mkf[i]);
+    }
     ps.addValue(this.jobBean.sachbearbeiterId);
     ps.addValue("AEND");
     ps.addValue(this.jobBean.zeitpunktEintrag);
@@ -312,7 +312,8 @@ public class MelderkontoImportJob extends AbstractImportJob
         }
         zipEntry = zis.getNextEntry();
       }
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       this.log.error(e.getMessage());
       throw new JobException("Fehler beim Entzippen der Datei " + zipFile.getName() + ":" + e.getMessage());
@@ -326,7 +327,8 @@ public class MelderkontoImportJob extends AbstractImportJob
       Properties prop = new Properties();
       prop.load(fis);
       return prop;
-    } catch (Exception e)
+    }
+    catch (Exception e)
     {
       throw new JobException(e.getMessage(), e);
     }

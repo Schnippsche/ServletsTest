@@ -26,34 +26,54 @@ public class FirmenBean extends AbstractBean
    */
   public static final String SQL_UPDATE_FIRMEN = "UPDATE firmen,ansprechpartner SET firmen.SACHBEARBEITER_ID=?, firmen.NAME=?, firmen.NAME_ERGAENZUNG=?, firmen.KURZTEXT=?, firmen.STATUS='AEND', firmen.ZEITPUNKT_AENDERUNG=?, ansprechpartner.NAME=?,ansprechpartner.VORNAME=?,ansprechpartner.TELEFON=?,ansprechpartner.FAX=?,ansprechpartner.EMAIL=?, ansprechpartner.STATUS='AEND',ansprechpartner.ZEITPUNKT_AENDERUNG=? WHERE firmen.ANSPRECHPARTNER_ID = ansprechpartner.ANSPRECHPARTNER_ID AND firmen.FIRMEN_ID=? AND ansprechpartner.ANSPRECHPARTNER_ID=?";
 
-  /** The Constant serialVersionUID. */
+  /**
+   * The Constant serialVersionUID.
+   */
   private static final long serialVersionUID = 1L;
 
-  /** The firmen id. */
+  /**
+   * The firmen id.
+   */
   private Integer firmenId;
 
-  /** The sachbearbeiter id. */
+  /**
+   * The sachbearbeiter id.
+   */
   private Integer sachbearbeiterId;
 
-  /** The name. */
+  /**
+   * The name.
+   */
   private String name;
 
-  /** The name ergaenzung. */
+  /**
+   * The name ergaenzung.
+   */
   private String nameErgaenzung;
 
-  /** The kurztext. */
+  /**
+   * The kurztext.
+   */
   private String kurztext;
 
-  /** The zeitpunkt eintrag. */
+  /**
+   * The zeitpunkt eintrag.
+   */
   private String zeitpunktEintrag;
 
-  /** The zeitpunkt aenderung. */
+  /**
+   * The zeitpunkt aenderung.
+   */
   private String zeitpunktAenderung;
 
-  /** The ansprechpartner. */
+  /**
+   * The ansprechpartner.
+   */
   private final AnsprechpartnerBean ansprechpartner;
 
-  /** The neu. */
+  /**
+   * The neu.
+   */
   private boolean neu;
 
   /**

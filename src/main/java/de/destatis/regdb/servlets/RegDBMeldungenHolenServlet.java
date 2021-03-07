@@ -5,18 +5,17 @@
  */
 package de.destatis.regdb.servlets;
 
+import de.destatis.regdb.meldungen.MeldungenHolen;
+import de.destatis.regdb.session.RegDBSession;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
 import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import de.destatis.regdb.meldungen.MeldungenHolen;
-import de.destatis.regdb.session.RegDBSession;
 
 public class RegDBMeldungenHolenServlet extends RegDBGeneralHttpServlet
 {
@@ -45,9 +44,9 @@ public class RegDBMeldungenHolenServlet extends RegDBGeneralHttpServlet
   /**
    * Do service.
    *
-   * @param req the req
-   * @param res the res
-   * @param conn the conn
+   * @param req     the req
+   * @param res     the res
+   * @param conn    the conn
    * @param session the session
    * @throws Exception the exception
    */
@@ -115,7 +114,7 @@ public class RegDBMeldungenHolenServlet extends RegDBGeneralHttpServlet
     res.setHeader("OriginalFile", meldungenHolen.getFileName());
     try (BufferedOutputStream bos = new BufferedOutputStream(res.getOutputStream(), 4000); BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file), 4000))
     {
-      for (int c; (c = bis.read()) != -1;)
+      for (int c; (c = bis.read()) != -1; )
       {
         bos.write((byte) c);
       }

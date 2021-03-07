@@ -1,5 +1,10 @@
 package de.destatis.regdb.db;
 
+import au.com.bytecode.opencsv.CSVWriter;
+import de.werum.sis.idev.res.job.JobException;
+import de.werum.sis.idev.res.log.Logger;
+import de.werum.sis.idev.res.log.LoggerIfc;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -11,18 +16,9 @@ import java.sql.Connection;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import au.com.bytecode.opencsv.CSVWriter;
-import de.werum.sis.idev.res.job.JobException;
-import de.werum.sis.idev.res.log.Logger;
-import de.werum.sis.idev.res.log.LoggerIfc;
 
 /**
  * @author Stefan Toengi
@@ -98,8 +94,7 @@ public class LoeschUtil
    * The Constant SQL_DELETE_MAINJOB.
    */
   private static final String SQL_DELETE_MAINJOB = "DELETE FROM {0} WHERE IMPORT_VERWALTUNG_ID = {1}";
-  protected final LoggerIfc log = Logger.getInstance()
-      .getLogger(LoeschUtil.class);
+  protected final LoggerIfc log = Logger.getInstance().getLogger(LoeschUtil.class);
   /**
    * The loesch ansprechpartner.
    */
@@ -135,8 +130,7 @@ public class LoeschUtil
     super();
     this.sqlUtil = sqlUtil;
     this.sachbearbeiterId = 0;
-    this.zeitpunkt = LocalDateTime.now()
-        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    this.zeitpunkt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     this.loeschFirmenSet = new HashSet<>();
     this.loeschMelderSet = new HashSet<>();
     this.loeschAnsprechpartnerSet = new HashSet<>();
@@ -163,7 +157,7 @@ public class LoeschUtil
   /**
    * Creates the infos.
    *
-   * @param sql the sql
+   * @param sql     the sql
    * @param spalten the spalten
    * @return the list
    * @throws JobException the job exception
@@ -171,7 +165,7 @@ public class LoeschUtil
   public List<String[]> createInfos(String sql, String[] spalten) throws JobException
   {
     List<String[]> all = new ArrayList<>();
-    List<ResultRow> rows = sqlUtil.fetchMany(sql);
+    List<ResultRow> rows = this.sqlUtil.fetchMany(sql);
     for (ResultRow rs : rows)
     {
       String[] row = new String[spalten.length];
@@ -200,10 +194,10 @@ public class LoeschUtil
       return 0;
     }
 
-    String ids = sqlUtil.convertNumberList(set);
+    String ids = this.sqlUtil.convertNumberList(set);
     // Ersetze Platzhalter fuer IDs mit echten IDS
     String cmd = sql.replace("[IDS]", ids);
-    return sqlUtil.update(cmd);
+    return this.sqlUtil.update(cmd);
   }
 
   /**
@@ -255,17 +249,15 @@ public class LoeschUtil
     String sql;
     if (this.loeschMelderSet != null && !this.loeschMelderSet.isEmpty())
     {
-      ids = sqlUtil.convertNumberList(this.loeschMelderSet);
+      ids = this.sqlUtil.convertNumberList(this.loeschMelderSet);
       sql = MessageFormat.format(SQL_SELECT_ANSPRECHPARTNER, ids, "melder", MELDER_ID);
-      sqlUtil.fetchMany(sql)
-          .forEach(e -> this.loeschAnsprechpartnerSet.add(e.getInt(1)));
+      this.sqlUtil.fetchMany(sql).forEach(e -> this.loeschAnsprechpartnerSet.add(e.getInt(1)));
     }
     if (this.loeschFirmenSet != null && !this.loeschFirmenSet.isEmpty())
     {
-      ids = sqlUtil.convertNumberList(this.loeschFirmenSet);
+      ids = this.sqlUtil.convertNumberList(this.loeschFirmenSet);
       sql = MessageFormat.format(SQL_SELECT_ANSPRECHPARTNER, ids, "firmen", FIRMEN_ID);
-      sqlUtil.fetchMany(sql)
-          .forEach(e -> this.loeschAnsprechpartnerSet.add(e.getInt(1)));
+      this.sqlUtil.fetchMany(sql).forEach(e -> this.loeschAnsprechpartnerSet.add(e.getInt(1)));
     }
     if (!this.loeschAnsprechpartnerSet.isEmpty())
     {
@@ -438,11 +430,11 @@ public class LoeschUtil
       this.deleteMeldung();
       this.deleteDownloadinfo();
       writeProtokoll();
-      sqlUtil.dbCommit();
+      this.sqlUtil.dbCommit();
     }
     catch (Throwable throwable)
     {
-      sqlUtil.dbRollback();
+      this.sqlUtil.dbRollback();
       throw new JobException(throwable.getMessage(), throwable);
     }
   }
@@ -469,8 +461,7 @@ public class LoeschUtil
       {
         if (Files.exists(path))
         {
-          ZipEntry e = new ZipEntry(path.getFileName()
-              .toString());
+          ZipEntry e = new ZipEntry(path.getFileName().toString());
           zos.putNextEntry(e);
           Files.copy(path, zos);
           zos.closeEntry();
@@ -563,9 +554,9 @@ public class LoeschUtil
     this.log.debug("Loesche Importeintraege mit ID " + jobId);
     String sql;
     sql = MessageFormat.format(SQL_DELETE_MAINJOB, "import_teil", "" + jobId);
-    sqlUtil.update(sql);
+    this.sqlUtil.update(sql);
     sql = MessageFormat.format(SQL_DELETE_MAINJOB, "import_verwaltung", "" + jobId);
-    sqlUtil.update(sql);
+    this.sqlUtil.update(sql);
   }
 
   /**
@@ -577,7 +568,7 @@ public class LoeschUtil
   public void loescheStandardWerte(Integer mainJobId) throws JobException
   {
     this.log.debug("loescheStandardWerte, mainJobId = " + mainJobId);
-    try (PreparedUpdate ps = sqlUtil.createPreparedUpdate(SQL_ENTFERNE_SERVERIMPORT))
+    try (PreparedUpdate ps = this.sqlUtil.createPreparedUpdate(SQL_ENTFERNE_SERVERIMPORT))
     {
       ps.addValues(mainJobId);
       ps.update();
@@ -587,15 +578,15 @@ public class LoeschUtil
   /**
    * Loesche standard werte.
    *
-   * @param amt the amt
-   * @param statistikId the statistik id
+   * @param amt              the amt
+   * @param statistikId      the statistik id
    * @param sachbearbeiterId the sachbearbeiter id
    * @throws JobException the job exception
    */
   public void loescheStandardWerte(String amt, Integer statistikId, Integer sachbearbeiterId) throws JobException
   {
     this.log.debug(MessageFormat.format("loescheStandardWerte (Amt={0}, statistikId={1}, sbId={2}", amt, statistikId, sachbearbeiterId));
-    try (PreparedUpdate pu = sqlUtil.createPreparedUpdate(SQL_ENTFERNE_SERVERIMPORT_AMT_STATISTIK))
+    try (PreparedUpdate pu = this.sqlUtil.createPreparedUpdate(SQL_ENTFERNE_SERVERIMPORT_AMT_STATISTIK))
     {
       pu.addValues(amt, statistikId, sachbearbeiterId);
       pu.update();
@@ -606,7 +597,7 @@ public class LoeschUtil
    * Pruefe adress verweise.
    *
    * @param adressenIds the adressen ids
-   * @param defaultSql the default sql
+   * @param defaultSql  the default sql
    * @return the sets the
    * @throws JobException the job exception
    */
@@ -617,16 +608,15 @@ public class LoeschUtil
     {
       return loeschKandidaten;
     }
-    String tmpsql = MessageFormat.format(defaultSql, sqlUtil.convertNumberList(adressenIds));
-    sqlUtil.fetchMany(tmpsql)
-        .forEach(e -> loeschKandidaten.add(e.getInt(1)));
+    String tmpsql = MessageFormat.format(defaultSql, this.sqlUtil.convertNumberList(adressenIds));
+    this.sqlUtil.fetchMany(tmpsql).forEach(e -> loeschKandidaten.add(e.getInt(1)));
     return loeschKandidaten;
   }
 
   /**
    * Schreibe adress infos.
    *
-   * @param protokoll the protokoll
+   * @param protokoll   the protokoll
    * @param adressenIds the adressen ids
    * @return true, if successful
    * @throws JobException the job exception
@@ -652,9 +642,9 @@ public class LoeschUtil
   /**
    * Schreibe infos.
    *
-   * @param protokoll the protokoll
-   * @param ids the ids
-   * @param sqlSelect the sql select
+   * @param protokoll   the protokoll
+   * @param ids         the ids
+   * @param sqlSelect   the sql select
    * @param infoSpalten the info spalten
    * @return true, if successful
    * @throws JobException the job exception
@@ -665,7 +655,7 @@ public class LoeschUtil
     {
       return false;
     }
-    String tmpSql = MessageFormat.format(sqlSelect, sqlUtil.convertNumberList(ids));
+    String tmpSql = MessageFormat.format(sqlSelect, this.sqlUtil.convertNumberList(ids));
     List<String[]> all = createInfos(tmpSql, infoSpalten);
     return this.writeLogInfo(protokoll, infoSpalten, all);
   }
@@ -687,18 +677,17 @@ public class LoeschUtil
    * Speichere standardwerte.
    *
    * @param originalDateiname the original dateiname
-   * @param amt the amt
-   * @param statistikId the statistik id
-   * @param mainJobId the main job id
-   * @param sachbearbeiterId the sachbearbeiter id
-   * @param zeitpunkt the zeitpunkt
+   * @param amt               the amt
+   * @param statistikId       the statistik id
+   * @param mainJobId         the main job id
+   * @param sachbearbeiterId  the sachbearbeiter id
+   * @param zeitpunkt         the zeitpunkt
    * @throws JobException the job exception
    */
   public void speichereStandardwerte(String originalDateiname, String amt, Integer statistikId, Integer mainJobId, Integer sachbearbeiterId, String zeitpunkt) throws JobException
   {
-    this.log.debug(MessageFormat
-        .format("speichereStandardWerte (Dateiname={0}, Amt={1}, statistikId={2}, mainJobId={3}, sbId={4}, zeitpunkt={5}", originalDateiname, amt, statistikId, mainJobId, sachbearbeiterId, zeitpunkt));
-    try (PreparedInsert pi = sqlUtil.createPreparedInsert(SQL_INSERT_STANDARDWERTE))
+    this.log.debug(MessageFormat.format("speichereStandardWerte (Dateiname={0}, Amt={1}, statistikId={2}, mainJobId={3}, sbId={4}, zeitpunkt={5}", originalDateiname, amt, statistikId, mainJobId, sachbearbeiterId, zeitpunkt));
+    try (PreparedInsert pi = this.sqlUtil.createPreparedInsert(SQL_INSERT_STANDARDWERTE))
     {
       pi.addValues("PRUEFLAUF", originalDateiname, amt, statistikId, mainJobId, sachbearbeiterId, zeitpunkt);
       pi.insert();
@@ -708,9 +697,9 @@ public class LoeschUtil
   /**
    * Write log info.
    *
-   * @param ziel the ziel
+   * @param ziel           the ziel
    * @param ueberschriften the ueberschriften
-   * @param arr the arr
+   * @param arr            the arr
    * @return true, if successful
    */
   protected boolean writeLogInfo(Path ziel, String[] ueberschriften, List<String[]> arr)

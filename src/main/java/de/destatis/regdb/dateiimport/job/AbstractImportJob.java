@@ -100,18 +100,20 @@ public abstract class AbstractImportJob extends AbstractJob
     this.log.debug("Transaction starts...");
     try
     {
-      sqlUtil.dbBeginTransaction();
+      this.sqlUtil.dbBeginTransaction();
       this.doInTransaction();
-      sqlUtil.dbCommit();
-    } catch (Throwable throwable)
+      this.sqlUtil.dbCommit();
+    }
+    catch (Throwable throwable)
     {
       this.log.error(throwable.getMessage(), throwable);
       this.log.info("Versuche Rollback...");
-      sqlUtil.dbRollback();
+      this.sqlUtil.dbRollback();
       this.log.info("Rollback durchgeführt");
-    } finally
+    }
+    finally
     {
-      sqlUtil.dbEndTransaction();
+      this.sqlUtil.dbEndTransaction();
     }
     String zeit = (System.currentTimeMillis() - st) / 1000 + " seconds";
     this.log.debug("Transaction ends in " + zeit);

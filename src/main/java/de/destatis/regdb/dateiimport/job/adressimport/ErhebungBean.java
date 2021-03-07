@@ -13,7 +13,9 @@ import de.werum.sis.idev.res.job.JobException;
 public class ErhebungBean extends AbstractBean
 {
 
-  /** The Constant serialVersionUID. */
+  /**
+   * The Constant serialVersionUID.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
@@ -30,7 +32,9 @@ public class ErhebungBean extends AbstractBean
    * The constant SQL_UPDATE_ERHEBUNGEN.
    */
   public static final String SQL_UPDATE_ERHEBUNGEN = "UPDATE erhebung SET ERSTER_MELDUNGSTERMIN=?,LETZTER_MELDUNGSTERMIN=?,STATSPEZ_KEY=?,FORMULAR_ID=?,VORBELEGUNGSABHAENGIG=?,SENDEN=?,ZURUECKSETZEN=?,PRUEFUNG=?,LOKALSICHERUNG=?,SERVERSICHERUNG=?,ARCHIVIERUNG=?,WEITERE_MELDUNG=?,STATUS='AKTIV',ZEITPUNKT_AENDERUNG=? WHERE STATISTIK_ID=? AND AMT=? AND BZR=?";
-  /** The neu. */
+  /**
+   * The neu.
+   */
   private boolean neu;
   private Integer statistikId;
   private String amt;
@@ -47,10 +51,14 @@ public class ErhebungBean extends AbstractBean
   private String serversicherung;
   private String archivierung;
   private String weitereMeldung;
-  /** The zeitpunkt eintrag. */
+  /**
+   * The zeitpunkt eintrag.
+   */
   private String zeitpunktEintrag;
 
-  /** The zeitpunkt aenderung. */
+  /**
+   * The zeitpunkt aenderung.
+   */
   private String zeitpunktAenderung;
 
   /**

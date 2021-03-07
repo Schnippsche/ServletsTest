@@ -1,9 +1,9 @@
 package de.destatis.regdb.dateiimport.job.xmlimport;
 
-import java.io.Serializable;
-
 import de.destatis.regdb.db.ResultRow;
 import de.werum.sis.idev.res.job.JobException;
+
+import java.io.Serializable;
 
 /**
  * @author Stefan
@@ -24,7 +24,7 @@ public class OrdnungsfeldInfo implements Serializable, Comparable<OrdnungsfeldIn
   private boolean manuell;
 
   /**
-   * 
+   *
    */
   @SuppressWarnings("unused")
   private OrdnungsfeldInfo()
@@ -188,16 +188,13 @@ public class OrdnungsfeldInfo implements Serializable, Comparable<OrdnungsfeldIn
   @Override
   public int compareTo(OrdnungsfeldInfo other)
   {
-    return this.getOrdnungsfeld()
-        .compareTo(other.getOrdnungsfeld());
+    return this.getOrdnungsfeld().compareTo(other.getOrdnungsfeld());
   }
 
   @Override
   public String toString()
   {
-    return "OrdnungsfeldInfo [ordnungsfeld="
-        + this.ordnungsfeld + ", adressenId=" + this.getAdressenId() + ", firmenId=" + this.getFirmenId() + ", melderId=" + this.getMelderId() + ", firmenPartnerId=" + this.getFirmenPartnerId()
-        + ", melderPartnerId=" + this.getMelderPartnerId() + ", manuell=" + this.manuell + "]";
+    return "OrdnungsfeldInfo [ordnungsfeld=" + this.ordnungsfeld + ", adressenId=" + this.getAdressenId() + ", firmenId=" + this.getFirmenId() + ", melderId=" + this.getMelderId() + ", firmenPartnerId=" + this.getFirmenPartnerId() + ", melderPartnerId=" + this.getMelderPartnerId() + ", manuell=" + this.manuell + "]";
   }
 
 }

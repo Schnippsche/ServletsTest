@@ -16,7 +16,9 @@ import de.werum.sis.idev.res.job.JobException;
 public class AnsprechpartnerBean extends AbstractBean
 {
 
-  /** The Constant serialVersionUID. */
+  /**
+   * The Constant serialVersionUID.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
@@ -29,43 +31,69 @@ public class AnsprechpartnerBean extends AbstractBean
    */
   public static final String SQL_UPDATE_ANSPRECHPARTNER = "UPDATE ansprechpartner SET ANREDE=?, NAME=?, VORNAME=?, ABTEILUNG=?,TELEFON=?,MOBIL=?,FAX=?,EMAIL=?,SACHBEARBEITER_ID=?,STATUS='AEND',ZEITPUNKT_AENDERUNG=? WHERE ANSPRECHPARTNER_ID=?";
 
-  /** The ansprechpartner id. */
+  /**
+   * The ansprechpartner id.
+   */
   private Integer ansprechpartnerId;
 
-  /** The anrede. */
+  /**
+   * The anrede.
+   */
   private String anrede;
 
-  /** The name. */
+  /**
+   * The name.
+   */
   private String name;
 
-  /** The vorname. */
+  /**
+   * The vorname.
+   */
   private String vorname;
 
-  /** The abteilung. */
+  /**
+   * The abteilung.
+   */
   private String abteilung;
 
-  /** The telefon. */
+  /**
+   * The telefon.
+   */
   private String telefon;
 
-  /** The mobil. */
+  /**
+   * The mobil.
+   */
   private String mobil;
 
-  /** The fax. */
+  /**
+   * The fax.
+   */
   private String fax;
 
-  /** The email. */
+  /**
+   * The email.
+   */
   private String email;
 
-  /** The sachbearbeiter id. */
+  /**
+   * The sachbearbeiter id.
+   */
   private Integer sachbearbeiterId;
 
-  /** The zeitpunkt eintrag. */
+  /**
+   * The zeitpunkt eintrag.
+   */
   private String zeitpunktEintrag;
 
-  /** The zeitpunkt aenderung. */
+  /**
+   * The zeitpunkt aenderung.
+   */
   private String zeitpunktAenderung;
 
-  /** The neu. */
+  /**
+   * The neu.
+   */
   private boolean neu;
 
   private String status;

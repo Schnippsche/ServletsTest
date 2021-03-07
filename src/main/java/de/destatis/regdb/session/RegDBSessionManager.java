@@ -6,11 +6,11 @@
 
 package de.destatis.regdb.session;
 
-import java.sql.Connection;
-
 import de.destatis.regdb.db.ConnectionTool;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
+
+import java.sql.Connection;
 
 public class RegDBSessionManager
 {
@@ -37,8 +37,7 @@ public class RegDBSessionManager
     if (instance == null)
     {
       instance = new RegDBSessionManager();
-      log = Logger.getInstance()
-          .getLogger(RegDBSessionManager.class);
+      log = Logger.getInstance().getLogger(RegDBSessionManager.class);
     }
     return instance;
   }
@@ -46,7 +45,7 @@ public class RegDBSessionManager
   /**
    * Creates the session.
    *
-   * @param kennung the kennung
+   * @param kennung  the kennung
    * @param melderId the melder id
    * @return the reg DB session
    */
@@ -55,8 +54,7 @@ public class RegDBSessionManager
     RegDBSessionPool sessionPool = RegDBSessionPool.getInstance();
     RegDBSession session = null;
     String sessionId = this.createSessionId(sessionPool);
-    Connection conn = ConnectionTool.getInstance()
-        .getConnection();
+    Connection conn = ConnectionTool.getInstance().getConnection();
     if (sessionId != null && conn != null)
     {
       session = new RegDBSession(kennung, melderId);
@@ -156,8 +154,7 @@ public class RegDBSessionManager
     if (session != null)
     {
       String sessionId = session.getSessionId();
-      ConnectionTool.getInstance()
-          .freeConnection(session.getConnection());
+      ConnectionTool.getInstance().freeConnection(session.getConnection());
       if (sessionPool.isAvailable() && sessionId != null)
       {
         sessionPool.removeSession(sessionId);
@@ -185,7 +182,7 @@ public class RegDBSessionManager
     String nextSessionId = factory.erzeugeSessionId();
     int maxTry = maxTryForCreateSessionId;
     boolean haveUniqueId;
-    for (haveUniqueId = false; !haveUniqueId && maxTry > 0;)
+    for (haveUniqueId = false; !haveUniqueId && maxTry > 0; )
     {
       if (sessionPool.isAvailable() && sessionPool.containsSessionId(nextSessionId))
       {

@@ -13,9 +13,10 @@ import java.io.Serializable;
 public abstract class AbstractBean implements Serializable
 {
 
-  /** The Constant serialVersionUID. */
+  /**
+   * The Constant serialVersionUID.
+   */
   private static final long serialVersionUID = 1L;
-
 
   /**
    * Not null.

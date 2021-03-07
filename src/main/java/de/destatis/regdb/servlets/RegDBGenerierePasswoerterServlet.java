@@ -5,16 +5,15 @@
  */
 package de.destatis.regdb.servlets;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.text.MessageFormat;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import de.destatis.regdb.session.RegDBSession;
 import de.werum.sis.idev.intern.actions.util.MelderDaten;
 import de.werum.sis.idev.intern.actions.util.MelderDienst;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.text.MessageFormat;
 
 public class RegDBGenerierePasswoerterServlet extends RegDBGeneralHttpServlet
 {
@@ -43,9 +42,9 @@ public class RegDBGenerierePasswoerterServlet extends RegDBGeneralHttpServlet
   /**
    * Do service.
    *
-   * @param req the req
-   * @param res the res
-   * @param conn the conn
+   * @param req     the req
+   * @param res     the res
+   * @param conn    the conn
    * @param session the session
    * @throws Exception the exception
    */
@@ -65,19 +64,16 @@ public class RegDBGenerierePasswoerterServlet extends RegDBGeneralHttpServlet
       MelderDienst melderDienst = new MelderDienst(interneAblaeufeHost, "" + interneAblaeufePort, kennung, passwort);
       String tabellenname = (String) command;
       // INDEX_ID muss PRIMARY KEY sein, damit die Updates im Resultset funktionieren
-      String cmd = "SELECT INDEX_ID, SCHLUESSELAKTION, PASSWORT, SYSTEM_PASSWORT, PRIVATER_SCHLUESSEL,OEFFENTLICHER_SCHLUESSEL,PRIVATER_SCHLUESSEL_GESCHUETZT,OEFFENTLICHER_SCHLUESSEL_GESCHUETZT FROM "
-          + tabellenname + " WHERE SCHLUESSELAKTION IN('NEU','UPDATE')";
+      String cmd = "SELECT INDEX_ID, SCHLUESSELAKTION, PASSWORT, SYSTEM_PASSWORT, PRIVATER_SCHLUESSEL,OEFFENTLICHER_SCHLUESSEL,PRIVATER_SCHLUESSEL_GESCHUETZT,OEFFENTLICHER_SCHLUESSEL_GESCHUETZT FROM " + tabellenname + " WHERE SCHLUESSELAKTION IN('NEU','UPDATE')";
 
-      try (ResultSet rs = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
-          .executeQuery(cmd))
+      try (ResultSet rs = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE).executeQuery(cmd))
       {
         long ti_start = System.currentTimeMillis();
         int counterNeu = 0, counterUpdate = 0;
         while (rs.next())
         {
           String systemPasswort = rs.getString("SYSTEM_PASSWORT");
-          if (systemPasswort == null || systemPasswort.trim()
-              .length() == 0)
+          if (systemPasswort == null || systemPasswort.trim().length() == 0)
           {
             systemPasswort = "";
           }

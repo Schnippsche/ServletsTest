@@ -5,14 +5,13 @@
  */
 package de.destatis.regdb.servlets;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import de.destatis.regdb.session.RegDBSession;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import de.destatis.regdb.session.RegDBSession;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class RegDBInsertServlet extends RegDBGeneralHttpServlet
 {
@@ -41,9 +40,9 @@ public class RegDBInsertServlet extends RegDBGeneralHttpServlet
   /**
    * Do service.
    *
-   * @param req the req
-   * @param res the res
-   * @param conn the conn
+   * @param req     the req
+   * @param res     the res
+   * @param conn    the conn
    * @param session the session
    * @throws Exception the exception
    */

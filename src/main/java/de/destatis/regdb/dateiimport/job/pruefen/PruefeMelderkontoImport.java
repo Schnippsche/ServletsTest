@@ -38,7 +38,7 @@ public class PruefeMelderkontoImport extends AbstractPruefeImport<String[]>
   @Override
   protected boolean validateBeforeFileLoad() throws JobException
   {
-    return pruefUtil.checkAdressbestand(this.jobBean.quellReferenzId);
+    return this.pruefUtil.checkAdressbestand(this.jobBean.quellReferenzId);
   }
 
   @Override
@@ -46,25 +46,26 @@ public class PruefeMelderkontoImport extends AbstractPruefeImport<String[]>
   {
     int rowNumber = offset;
     HashMap<String, Integer> meldungIdRowNr = new HashMap<>(rows.size());
-    try (PreparedSelect ps = sqlUtil.createPreparedSelect(SQL_SELECT_MELDERKONTO))
+    try (PreparedSelect ps = this.sqlUtil.createPreparedSelect(SQL_SELECT_MELDERKONTO))
     {
       for (String[] cols : rows)
       {
         rowNumber++;
-        pruefUtil.checkFixSpaltenLaenge(cols.length, 18, rowNumber);
-        if (cols.length > 3 && pruefUtil.checkIstZahl(cols[3], rowNumber))
+        this.pruefUtil.checkFixSpaltenLaenge(cols.length, 18, rowNumber);
+        if (cols.length > 3 && this.pruefUtil.checkIstZahl(cols[3], rowNumber))
         {
           int quellId = StringUtil.getInt(cols[3]);
-          if (quellRefId == 0)
+          if (this.quellRefId == 0)
           {
-            quellRefId = quellId;
-            pruefUtil.checkAdressbestand(quellRefId);
-          } else if (quellId != quellRefId)
+            this.quellRefId = quellId;
+            this.pruefUtil.checkAdressbestand(this.quellRefId);
+          }
+          else if (quellId != this.quellRefId)
           {
-            pruefUtil.addError(null, "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
+            this.pruefUtil.addError(null, "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
           }
           int meldungsId = 0;
-          if (cols[0].trim().isEmpty() && pruefUtil.checkIstZahl(cols[0], rowNumber))
+          if (cols[0].trim().isEmpty() && this.pruefUtil.checkIstZahl(cols[0], rowNumber))
           {
             meldungsId = StringUtil.getInt(cols[0]);
           }
@@ -75,13 +76,13 @@ public class PruefeMelderkontoImport extends AbstractPruefeImport<String[]>
             ps.addValue(cols[1]); // StatistikId
             if (ps.fetchOne() == null)
             {
-              pruefUtil.addError(rowNumber, MessageFormat.format("Kombination aus MeldungsID {0}, Amt {1} und StatistikId {2} existiert nicht!", meldungsId, cols[2], cols[1]));
+              this.pruefUtil.addError(rowNumber, MessageFormat.format("Kombination aus MeldungsID {0}, Amt {1} und StatistikId {2} existiert nicht!", meldungsId, cols[2], cols[1]));
             }
           }
         }
       }
     }
-    pruefUtil.checkMeldungsIdsExistieren(meldungIdRowNr);
+    this.pruefUtil.checkMeldungsIdsExistieren(meldungIdRowNr);
   }
 
   @Override

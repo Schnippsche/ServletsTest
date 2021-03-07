@@ -28,25 +28,24 @@ public class PruefeIdevImport extends AbstractPruefeImport<String[]>
     switch (this.jobBean.getImportdatei().importFormat)
     {
       case IMPORTOHNEZUSATZFELDER:
-        anzahlSpalten = 18;
+        this.anzahlSpalten = 18;
         break;
       case IMPORTMITZUSATZFELDER:
-        anzahlSpalten = 28;
+        this.anzahlSpalten = 28;
         break;
       case IMPORTMITANSPRECHPARTNER:
-        anzahlSpalten = 16;
+        this.anzahlSpalten = 16;
         break;
       default:
-        pruefUtil.addError(null, "Ungueltiges Format:" + this.jobBean.getImportdatei().importFormat.toString());
+        this.pruefUtil.addError(null, "Ungueltiges Format:" + this.jobBean.getImportdatei().importFormat.toString());
     }
   }
 
   @Override
   protected boolean validateBeforeFileLoad() throws JobException
   {
-    return pruefUtil.checkAdressbestand(this.jobBean.quellReferenzId);
+    return this.pruefUtil.checkAdressbestand(this.jobBean.quellReferenzId);
   }
-
 
   @Override
   protected void validate(ArrayList<String[]> rows, int offset) throws JobException
@@ -55,17 +54,15 @@ public class PruefeIdevImport extends AbstractPruefeImport<String[]>
     for (String[] cols : rows)
     {
       rowNumber++;
-      pruefUtil.checkFixSpaltenLaenge(cols.length, anzahlSpalten, rowNumber);
+      this.pruefUtil.checkFixSpaltenLaenge(cols.length, this.anzahlSpalten, rowNumber);
       if (cols.length > 0)
       {
         String of = cols[0];
-        pruefUtil.checkOrdnungsfeld(of, rowNumber);
+        this.pruefUtil.checkOrdnungsfeld(of, rowNumber);
         // Alles okay, nehme Ordnungsfeld auf
         if (this.jobBean.getFormatPruefung().fehlerfrei)
         {
-          this.jobBean.getAdressen()
-            .getOrdnungsfelder()
-            .add(of);
+          this.jobBean.getAdressen().getOrdnungsfelder().add(of);
         }
       }
     }

@@ -5,14 +5,6 @@
  */
 package de.destatis.regdb.dateiimport;
 
-import java.io.File;
-import java.sql.Connection;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
-
 import de.destatis.regdb.db.ConnectionTool;
 import de.destatis.regdb.db.StringUtil;
 import de.destatis.regdb.servlets.RegDBImportServlet;
@@ -20,6 +12,10 @@ import de.werum.sis.idev.intern.actions.util.MelderDaten;
 import de.werum.sis.idev.res.conf.db.DBConfig;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
+
+import java.io.File;
+import java.sql.Connection;
+import java.util.concurrent.*;
 
 /**
  * The Class MelderDatenService.
@@ -45,8 +41,7 @@ public class MelderDatenService
   /**
    * The Constant log.
    */
-  protected static final LoggerIfc log = Logger.getInstance()
-    .getLogger(MelderDatenService.class);
+  protected static final LoggerIfc log = Logger.getInstance().getLogger(MelderDatenService.class);
   private static MelderDatenService instance;
   private BlockingQueue<MelderDaten> blockingQueue;
   private String dateiImportDir;
@@ -73,12 +68,10 @@ public class MelderDatenService
   private void init()
   {
     DBConfig config = new DBConfig();
-    Connection conn = ConnectionTool.getInstance()
-      .getConnection();
+    Connection conn = ConnectionTool.getInstance().getConnection();
     String poolSize = "2000";
     String poolThreads = "4";
     String strTmpDir = System.getProperty("java.io.tmpdir");
-
     if (conn != null)
     {
       String newValue = config.getParameter(conn, KONFIGURATION_MELDERDATEN_POOLSIZE);
@@ -105,7 +98,8 @@ public class MelderDatenService
       {
         config.setParameter(conn, KONFIGURATION_DATEIIMPORT_DIRECTORY, this.dateiImportDir, RegDBImportServlet.INTERN);
       }
-    } else
+    }
+    else
     {
       File importDir = new File(this.dateiImportDir);
       if (!importDir.exists() && importDir.mkdir())
@@ -114,8 +108,7 @@ public class MelderDatenService
       }
     }
     log.debug("Verwende Verzeichnis " + this.dateiImportDir + " fuer Serverimporte");
-    ConnectionTool.getInstance()
-      .freeConnection(conn);
+    ConnectionTool.getInstance().freeConnection(conn);
     int maximumMelderDaten;
     int maximumThreads;
     maximumMelderDaten = StringUtil.getInt(poolSize);
@@ -152,11 +145,11 @@ public class MelderDatenService
     try
     {
       return this.blockingQueue.poll(60, TimeUnit.SECONDS);
-    } catch (InterruptedException e)
+    }
+    catch (InterruptedException e)
     {
       log.error("MelderDaten abholen wegen Timeout abgebrochen!");
-      Thread.currentThread()
-        .interrupt();
+      Thread.currentThread().interrupt();
     }
     return null;
   }

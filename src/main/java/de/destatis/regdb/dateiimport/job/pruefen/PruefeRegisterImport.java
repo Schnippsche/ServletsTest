@@ -46,47 +46,47 @@ public class PruefeRegisterImport extends AbstractPruefeImport<String>
     for (String row : rows)
     {
       rowNumber++;
-      pruefUtil.checkMinStringLaenge(row, "Zeilenlänge", 50, rowNumber);
-      pruefUtil.checkMaxStringLaenge(row, "Zeilenlänge", 430, rowNumber);
-      String statOnlineKey = StringUtil.substring(row, 0, 10)
-        .trim();
-      pruefUtil.checkNichtLeer(statOnlineKey, "Stat-Online-Key", rowNumber);
-      String of = StringUtil.substring(row, 10, 20)
-        .trim();
-      pruefUtil.checkNichtLeer(of, "Quell-Referenz-Of", rowNumber);
-      String tmpAmt = StringUtil.substring(row, 20, 22)
-        .trim();
-      if (pruefUtil.checkNichtLeer(of, "Amt", rowNumber))
+      this.pruefUtil.checkMinStringLaenge(row, "Zeilenlänge", 50, rowNumber);
+      this.pruefUtil.checkMaxStringLaenge(row, "Zeilenlänge", 430, rowNumber);
+      String statOnlineKey = StringUtil.substring(row, 0, 10).trim();
+      this.pruefUtil.checkNichtLeer(statOnlineKey, "Stat-Online-Key", rowNumber);
+      String of = StringUtil.substring(row, 10, 20).trim();
+      this.pruefUtil.checkNichtLeer(of, "Quell-Referenz-Of", rowNumber);
+      String tmpAmt = StringUtil.substring(row, 20, 22).trim();
+      if (this.pruefUtil.checkNichtLeer(of, "Amt", rowNumber))
       {
         this.jobBean.amt = tmpAmt;
       }
       String key = tmpAmt + "|" + statOnlineKey;
-      Integer statistikId = amtStatOnlineKeys.get(key);
+      Integer statistikId = this.amtStatOnlineKeys.get(key);
       Integer quellRefId;
       // Neu aufnehmen?
       if (statistikId == null)
       {
         String sql = MessageFormat.format(RegisterImportJob.SQL_SELECT_STATONLINEKEY, StringUtil.escapeSqlString(tmpAmt), StringUtil.escapeSqlString(statOnlineKey));
-        ResultRow rs = sqlUtil.fetchOne(sql);
+        ResultRow rs = this.sqlUtil.fetchOne(sql);
         if (rs == null)
         {
-          pruefUtil.addError(null, MessageFormat.format("Kombination aus Amt ({0}) und StatOnlineKey ({1}) existiert nicht!", tmpAmt, statOnlineKey));
-        } else
+          this.pruefUtil.addError(null, MessageFormat.format("Kombination aus Amt ({0}) und StatOnlineKey ({1}) existiert nicht!", tmpAmt, statOnlineKey));
+        }
+        else
         {
           statistikId = rs.getInt(1);
           quellRefId = rs.getInt(2);
-          amtStatOnlineKeys.put(key, statistikId);
-          if (quellReferenzId == null)
+          this.amtStatOnlineKeys.put(key, statistikId);
+          if (this.quellReferenzId == null)
           {
-            quellReferenzId = quellRefId;
+            this.quellReferenzId = quellRefId;
             this.jobBean.quellReferenzId = quellRefId;
-            pruefUtil.checkAdressbestand(quellRefId);
-          } else if (!quellReferenzId.equals(quellRefId))
+            this.pruefUtil.checkAdressbestand(quellRefId);
+          }
+          else if (!this.quellReferenzId.equals(quellRefId))
           {
-            pruefUtil.addError(null, "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
+            this.pruefUtil.addError(null, "Die Importdatei enthält Daten zu unterschiedlichen Adressbeständen");
           }
         }
-      } else
+      }
+      else
       {
         this.jobBean.statistikId = statistikId;
       }
@@ -94,30 +94,28 @@ public class PruefeRegisterImport extends AbstractPruefeImport<String>
       // Aber nur, wenn gültige Statistik vorliegt
       if (statistikId != null)
       {
-        String bzr = StringUtil.substring(row, 22, 28)
-          .trim();
+        String bzr = StringUtil.substring(row, 22, 28).trim();
         key = tmpAmt + "|" + statistikId + "|" + bzr;
-        if (!amtStatistikBzr.contains(key))
+        if (!this.amtStatistikBzr.contains(key))
         {
           String sql = MessageFormat.format(RegisterImportJob.SQL_SELECT_BZR, StringUtil.escapeSqlString(tmpAmt), "" + statistikId, StringUtil.escapeSqlString(bzr));
-          ResultRow rs = sqlUtil.fetchOne(sql);
+          ResultRow rs = this.sqlUtil.fetchOne(sql);
           if (rs == null)
           {
-            pruefUtil.addError(null, "Keine Erhebung für Amt (" + tmpAmt + "), Statistik-Id  (" + statistikId + ") und Bzr (" + bzr + ") gefunden!");
+            this.pruefUtil.addError(null, "Keine Erhebung für Amt (" + tmpAmt + "), Statistik-Id  (" + statistikId + ") und Bzr (" + bzr + ") gefunden!");
           }
-          amtStatistikBzr.add(key);
+          this.amtStatistikBzr.add(key);
         }
       }
       //
       // Alles Okay, nehme Ordnungsfeld auf
       if (this.jobBean.getFormatPruefung().fehlerfrei)
       {
-        this.jobBean.getAdressen()
-          .getOrdnungsfelder()
-          .add(of);
+        this.jobBean.getAdressen().getOrdnungsfelder().add(of);
       }
     }
   }
+
   @Override
   protected AbstractJob jobAfterValidation()
   {

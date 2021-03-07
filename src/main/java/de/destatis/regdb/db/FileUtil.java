@@ -22,8 +22,7 @@ public class FileUtil
    */
   public static void ignoreUtfBom(BufferedReader reader, String charset) throws JobException
   {
-    if (charset != null && charset.toUpperCase()
-      .startsWith("UTF"))
+    if (charset != null && charset.toUpperCase().startsWith("UTF"))
     {
       try
       {
@@ -32,10 +31,12 @@ public class FileUtil
         {
           reader.reset();
         }
-      } catch (MalformedInputException e)
+      }
+      catch (MalformedInputException e)
       {
         throw new JobException("Falscher Zeichensatz!");
-      } catch (IOException e)
+      }
+      catch (IOException e)
       {
         throw new JobException(e.getMessage(), e);
       }

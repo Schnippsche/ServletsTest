@@ -5,9 +5,6 @@
  */
 package de.destatis.regdb.dateiimport;
 
-import java.security.GeneralSecurityException;
-import java.util.concurrent.BlockingQueue;
-
 import de.werum.sis.crypt.PackedKeyPair;
 import de.werum.sis.idev.intern.actions.util.MelderDaten;
 import de.werum.sis.idev.res.job.JobException;
@@ -18,18 +15,26 @@ import de.werum.sis.idev.res.secure.UserDataEncryptionAlgorithm;
 import de.werum.sis.idev.res.secure.UserKeyEncryptionAlgorithm;
 import de.werum.sis.idev.res.util.PasswordGenerator;
 
+import java.security.GeneralSecurityException;
+import java.util.concurrent.BlockingQueue;
+
 /**
  * The Class MelderDatenProducer.
  */
 public class MelderDatenProducer implements Runnable
 {
 
-  /** The log. */
-  protected final LoggerIfc log = Logger.getInstance()
-      .getLogger(this.getClass());
-  /** The blocking queue. */
+  /**
+   * The log.
+   */
+  protected final LoggerIfc log = Logger.getInstance().getLogger(this.getClass());
+  /**
+   * The blocking queue.
+   */
   private final BlockingQueue<MelderDaten> blockingQueue;
-  /** The quit. */
+  /**
+   * The quit.
+   */
   private boolean quit = false;
 
   /**
@@ -52,8 +57,7 @@ public class MelderDatenProducer implements Runnable
   {
     try
     {
-      while (!Thread.currentThread()
-          .isInterrupted() && !this.quit)
+      while (!Thread.currentThread().isInterrupted() && !this.quit)
       {
         this.blockingQueue.put(this.passwortUndSchluesselGenerieren());
       }
@@ -62,8 +66,7 @@ public class MelderDatenProducer implements Runnable
     {
       this.quit = true;
       this.log.info("Beende MelderdatenProducer");
-      Thread.currentThread()
-          .interrupt();
+      Thread.currentThread().interrupt();
     }
     catch (JobException e)
     {
@@ -99,8 +102,8 @@ public class MelderDatenProducer implements Runnable
   /**
    * Daten verschluesseln.
    *
-   * @param systemPasswort the system passwort
-   * @param privaterSchluessel the privater schluessel
+   * @param systemPasswort          the system passwort
+   * @param privaterSchluessel      the privater schluessel
    * @param oeffentlicherSchluessel the oeffentlicher schluessel
    * @return the melder daten
    * @throws JobException the job exception

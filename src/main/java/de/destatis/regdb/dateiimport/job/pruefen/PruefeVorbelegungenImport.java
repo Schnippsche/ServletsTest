@@ -26,13 +26,13 @@ public class PruefeVorbelegungenImport extends AbstractPruefeImport<String[]>
   public PruefeVorbelegungenImport(JobBean jobBean, SqlUtil sqlUtil)
   {
     super(new SegmentedCsvFileReader(), jobBean, sqlUtil);
-    anzahlSpalten = 4;
+    this.anzahlSpalten = 4;
   }
 
   @Override
   protected boolean validateBeforeFileLoad() throws JobException
   {
-    return pruefUtil.checkAdressbestand(this.jobBean.quellReferenzId);
+    return this.pruefUtil.checkAdressbestand(this.jobBean.quellReferenzId);
   }
 
   @Override
@@ -45,11 +45,11 @@ public class PruefeVorbelegungenImport extends AbstractPruefeImport<String[]>
     for (String[] cols : rows)
     {
       rowNumber++;
-      pruefUtil.checkMinSpaltenLaenge(cols.length, anzahlSpalten, rowNumber);
+      this.pruefUtil.checkMinSpaltenLaenge(cols.length, this.anzahlSpalten, rowNumber);
       if (cols.length > 3)
       {
         String of = cols[0];
-        if (pruefUtil.checkOrdnungsfeld(of, rowNumber))
+        if (this.pruefUtil.checkOrdnungsfeld(of, rowNumber))
         {
           quellOfRows.put(of, rowNumber);
         }
@@ -60,7 +60,7 @@ public class PruefeVorbelegungenImport extends AbstractPruefeImport<String[]>
           String feldinhalt = (i + 1 < cols.length) ? cols[i + 1].trim() : "";
           if (feldname.endsWith("_datei"))
           {
-            pruefUtil.checkOhneLeerzeichen(feldinhalt, "Dateiname", rowNumber);
+            this.pruefUtil.checkOhneLeerzeichen(feldinhalt, "Dateiname", rowNumber);
           }
         }
         String melderId = cols[2].trim();
@@ -70,15 +70,15 @@ public class PruefeVorbelegungenImport extends AbstractPruefeImport<String[]>
         }
       }
     }
-    pruefUtil.checkOrdnungsfelderExistieren(quellOfRows);
-    pruefUtil.checkMelderExistieren(melderIdRows);
+    this.pruefUtil.checkOrdnungsfelderExistieren(quellOfRows);
+    this.pruefUtil.checkMelderExistieren(melderIdRows);
     //
   }
 
   @Override
   protected AbstractJob jobAfterValidation()
   {
-    return new VorbelegungsImportJob(jobBean);
+    return new VorbelegungsImportJob(this.jobBean);
   }
 
 }

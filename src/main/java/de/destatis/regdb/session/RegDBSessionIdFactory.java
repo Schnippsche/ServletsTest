@@ -6,19 +6,18 @@
 
 package de.destatis.regdb.session;
 
-import java.util.Arrays;
-import java.util.Random;
-
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
+
+import java.util.Arrays;
+import java.util.Random;
 
 public class RegDBSessionIdFactory
 {
 
   private static RegDBSessionIdFactory sidFactory = null;
 
-  private static final LoggerIfc log = Logger.getInstance()
-      .getLogger(RegDBSessionIdFactory.class);
+  private static final LoggerIfc log = Logger.getInstance().getLogger(RegDBSessionIdFactory.class);
 
   private final Random random;
 

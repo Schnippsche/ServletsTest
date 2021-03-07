@@ -5,15 +5,14 @@
  */
 package de.destatis.regdb.servlets;
 
-import java.sql.Connection;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import de.destatis.regdb.db.ConnectionTool;
 import de.destatis.regdb.db.RegDBSecurity;
 import de.destatis.regdb.session.RegDBSession;
 import de.destatis.regdb.session.RegDBSessionManager;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Connection;
 
 public class RegDBSessionServlet extends RegDBGeneralHttpServlet
 {
@@ -63,16 +62,13 @@ public class RegDBSessionServlet extends RegDBGeneralHttpServlet
         String passwort = req.getParameter("regdbpasswort");
         this.log.info("Sachbearbeiter mit Kennung " + kennung + " (" + req.getRemoteHost() + ") meldet sich an");
         // Check kennung & passwort
-        Connection conn = ConnectionTool.getInstance()
-            .getConnection();
+        Connection conn = ConnectionTool.getInstance().getConnection();
         if (conn == null)
         {
           throw new Exception("Die Datenbank ist nicht erreichbar!");
         }
-        int sbID = RegDBSecurity.getInstance()
-            .getSachbearbeiterID(conn, kennung, passwort, interneAblaeufeHost, String.valueOf(interneAblaeufePort));
-        ConnectionTool.getInstance()
-            .freeConnection(conn);
+        int sbID = RegDBSecurity.getInstance().getSachbearbeiterID(conn, kennung, passwort, interneAblaeufeHost, String.valueOf(interneAblaeufePort));
+        ConnectionTool.getInstance().freeConnection(conn);
         if (sbID == -1)
         {
           throw new Exception("Kombination aus Benutzerkennung und Passwort nicht bekannt!");
@@ -82,28 +78,24 @@ public class RegDBSessionServlet extends RegDBGeneralHttpServlet
           throw new Exception("Benutzer ist zur Zeit nicht aktiv!");
         }
 
-        RegDBSession session = RegDBSessionManager.getInstance()
-            .createSession(kennung, "" + sbID);
+        RegDBSession session = RegDBSessionManager.getInstance().createSession(kennung, "" + sbID);
         if (session == null)
         {
           throw new Exception("Konnte keine neue Session erzeugen!");
         }
         session.setSachbearbeiterPasswort(passwort);
-        session.setRootUser(RegDBSecurity.getInstance()
-            .isRootUser(conn, "" + sbID));
+        session.setRootUser(RegDBSecurity.getInstance().isRootUser(conn, "" + sbID));
         returnMessage = session.getSessionId();
       }
       else if ("destroysession".equals(action))
       {
         String sid = req.getParameter("sid");
-        RegDBSession session = RegDBSessionManager.getInstance()
-            .getSession(sid);
+        RegDBSession session = RegDBSessionManager.getInstance().getSession(sid);
         if (session != null)
         {
           String kennung = session.getSachbearbeiterKennung();
           this.log.info("Sachbearbeiter mit Kennung " + kennung + " (" + req.getRemoteHost() + ") meldet sich ab");
-          RegDBSessionManager.getInstance()
-              .destroySession(session);
+          RegDBSessionManager.getInstance().destroySession(session);
         }
       }
       else
@@ -131,16 +123,15 @@ public class RegDBSessionServlet extends RegDBGeneralHttpServlet
   {
     this.log.info("RegDBSessionServlet beendet");
     super.destroy();
-    RegDBSessionManager.getInstance()
-        .destroySessionPool();
+    RegDBSessionManager.getInstance().destroySessionPool();
   }
 
   /**
    * Do service.
    *
-   * @param req the req
-   * @param res the res
-   * @param conn the conn
+   * @param req     the req
+   * @param res     the res
+   * @param conn    the conn
    * @param session the session
    */
   /*

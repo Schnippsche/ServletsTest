@@ -1,5 +1,6 @@
 package de.destatis.regdb;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,13 +9,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
 /**
  * @author Stefan Toengi
- *         Klasse zum Abbilden von Zahlenreihen als Range
- *         z.B. wird aus dem Set 1000,1001,1002,1003,1004,1009
- *         der String 1000-1004,1009
+ * Klasse zum Abbilden von Zahlenreihen als Range
+ * z.B. wird aus dem Set 1000,1001,1002,1003,1004,1009
+ * der String 1000-1004,1009
  */
 public class Range
 {
@@ -72,10 +71,7 @@ public class Range
     int len = this.values.size();
     int idx1 = 0;
     int idx2 = 0;
-    List<Integer> arr = this.values.stream()
-        .filter(i -> i > 0)
-        .sorted()
-        .collect(Collectors.toList());
+    List<Integer> arr = this.values.stream().filter(i -> i > 0).sorted().collect(Collectors.toList());
 
     StringBuilder builder = new StringBuilder();
     boolean komma = false;
@@ -86,10 +82,7 @@ public class Range
       }
       if (idx2 - idx1 > 2)
       {
-        builder.append(komma ? ',' : "")
-            .append(arr.get(idx1))
-            .append('-')
-            .append(arr.get(idx2 - 1));
+        builder.append(komma ? ',' : "").append(arr.get(idx1)).append('-').append(arr.get(idx2 - 1));
         komma = true;
         idx1 = idx2;
       }
@@ -97,8 +90,7 @@ public class Range
       {
         for (; idx1 < idx2; idx1++)
         {
-          builder.append(komma ? ',' : "")
-              .append(arr.get(idx1));
+          builder.append(komma ? ',' : "").append(arr.get(idx1));
           komma = true;
         }
       }
@@ -123,9 +115,7 @@ public class Range
       {
         int upper = Integer.parseInt(matcher.group(2));
         int lower = Integer.parseInt(matcher.group(1));
-        this.values.addAll(IntStream.range(lower, upper + 1)
-            .boxed()
-            .collect(Collectors.toSet()));
+        this.values.addAll(IntStream.range(lower, upper + 1).boxed().collect(Collectors.toSet()));
       }
       else
       {

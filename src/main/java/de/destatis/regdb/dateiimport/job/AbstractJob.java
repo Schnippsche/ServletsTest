@@ -1,15 +1,16 @@
 package de.destatis.regdb.dateiimport.job;
 
+import de.destatis.regdb.FormatError;
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.JobStatus;
 import de.destatis.regdb.db.ConnectionTool;
 import de.destatis.regdb.db.DateiImportDaemon;
 import de.destatis.regdb.db.PreparedUpdate;
 import de.destatis.regdb.db.SqlUtil;
-import de.werum.sis.idev.res.data.db.CheckDBLock;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
+
 import java.sql.Connection;
 
 /**
@@ -22,8 +23,7 @@ public abstract class AbstractJob implements Runnable
   /**
    * The log.
    */
-  protected final LoggerIfc log = Logger.getInstance()
-    .getLogger(this.getClass());
+  protected final LoggerIfc log = Logger.getInstance().getLogger(this.getClass());
   /**
    * The job name.
    */
@@ -65,27 +65,23 @@ public abstract class AbstractJob implements Runnable
   @Override
   public void run()
   {
-    this.connection = ConnectionTool.getInstance()
-      .getConnection();
+    this.connection = ConnectionTool.getInstance().getConnection();
 
     if (this.connection == null)
     {
       // gleichen Job nochmal starten
-      DateiImportDaemon.getInstance()
-        .addJob(this);
+      DateiImportDaemon.getInstance().addJob(this);
       return;
     }
 
     try
     {
-      sqlUtil = new SqlUtil(connection);
+      this.sqlUtil = new SqlUtil(this.connection);
       // ueberpruefe, ob die Datenbank gesperrt ist
-      if (CheckDBLock.dbIsLocked(this.connection))
+      if (this.sqlUtil.dbIsLocked())
       {
-        this.log.error("Die RegDB ist gesperrt.");
-        return;
+        throw new JobException("Die Datenbank ist gesperrt!");
       }
-
       long startTime = System.currentTimeMillis();
       final AbstractJob nextJob = this.verarbeiteJob();
       long endTime = (System.currentTimeMillis() - startTime) / 1000;
@@ -94,19 +90,20 @@ public abstract class AbstractJob implements Runnable
       updateDBJob();
       if (nextJob != null)
       {
-        DateiImportDaemon.getInstance()
-          .addJob(nextJob);
+        DateiImportDaemon.getInstance().addJob(nextJob);
 
       }
-    } catch (Throwable e)
+    }
+    catch (Throwable e)
     {
+      this.jobBean.getFormatPruefung().addFehler(new FormatError(null, e.getMessage()));
       this.jobBean.setStatusAndInfo(JobStatus.FEHLER, "Job abgebrochen:" + e.getMessage());
       this.log.error("Fehler beim Job " + this.jobName + ":" + e.toString(), e);
       updateDBJob();
-    } finally
+    }
+    finally
     {
-      ConnectionTool.getInstance()
-        .freeConnection(this.connection);
+      ConnectionTool.getInstance().freeConnection(this.connection);
     }
 
   }
@@ -144,8 +141,7 @@ public abstract class AbstractJob implements Runnable
    */
   public boolean isCancelled()
   {
-    boolean result = DateiImportDaemon.getInstance()
-      .isJobAborted(this.jobBean.jobId);
+    boolean result = DateiImportDaemon.getInstance().isJobAborted(this.jobBean.jobId);
 
     this.log.debug("isAbort für " + this.jobBean.jobId + " liefert " + result);
     return result;
@@ -157,34 +153,24 @@ public abstract class AbstractJob implements Runnable
   protected void updateDBJob()
   {
     this.log.debug("update MainJob");
-    try (PreparedUpdate pu = sqlUtil.createPreparedUpdate(SQL_UPDATE_MAIN_JOB))
+    try (PreparedUpdate pu = this.sqlUtil.createPreparedUpdate(SQL_UPDATE_MAIN_JOB))
     {
-      pu.addValue(this.jobBean.getStatus()
-        .toString());
+      pu.addValue(this.jobBean.getStatus().toString());
       pu.addValue(this.jobBean.statistikId);
       pu.addValue(this.jobBean.amt);
       pu.addValue(this.jobBean.quellReferenzId);
       pu.addValue(this.jobBean.getInfo());
-      pu.addValue(this.jobBean.getAdressen()
-        .getIdentifikatoren()
-        .getNeu()
-        .getAnzahl());
-      pu.addValue(this.jobBean.getAdressen()
-        .getIdentifikatoren()
-        .getAenderung()
-        .getAnzahl());
-      pu.addValue(this.jobBean.getAdressen()
-        .getIdentifikatoren()
-        .getLoeschung()
-        .getAnzahl());
+      pu.addValue(this.jobBean.getAdressen().getIdentifikatoren().getNeu().getAnzahl());
+      pu.addValue(this.jobBean.getAdressen().getIdentifikatoren().getAenderung().getAnzahl());
+      pu.addValue(this.jobBean.getAdressen().getIdentifikatoren().getLoeschung().getAnzahl());
       pu.addValue(this.jobBean.jobId);
       pu.update();
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       this.log.error("Job konnte nicht in Datenbank aktualisert werden:" + e.getMessage());
     }
-    DateiImportDaemon.getInstance()
-      .updateStatusList(this.connection);
+    DateiImportDaemon.getInstance().updateStatusList(this.connection);
   }
 
   /**

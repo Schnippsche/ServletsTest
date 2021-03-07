@@ -61,8 +61,7 @@ public abstract class AbstractPruefeImport<T>
    */
   protected AbstractPruefeImport(SegmentedFileReader<T> reader, JobBean jobBean, SqlUtil sqlUtil)
   {
-    log = Logger.getInstance()
-      .getLogger(this.getClass());
+    this.log = Logger.getInstance().getLogger(this.getClass());
     this.reader = reader;
     this.jobBean = jobBean;
     this.sqlUtil = sqlUtil;
@@ -84,39 +83,38 @@ public abstract class AbstractPruefeImport<T>
     {
       do
       {
-        this.log.info(MessageFormat.format(MSG_PRUEFSTART, offset, offset + jobBean.importBlockGroesse - 1, jobBean.getImportdatei().getPath().getFileName()));
-        rows = reader.readSegment(jobBean.getImportdatei().getPath(), jobBean.getImportdatei().getCharset(), offset, jobBean.importBlockGroesse);
+        this.log.info(MessageFormat.format(MSG_PRUEFSTART, offset, offset + this.jobBean.importBlockGroesse - 1, this.jobBean.getImportdatei().getPath().getFileName()));
+        rows = this.reader.readSegment(this.jobBean.getImportdatei().getPath(), this.jobBean.getImportdatei().getCharset(), offset, this.jobBean.importBlockGroesse);
         if (!rows.isEmpty())
         {
           this.jobBean.getImportdatei().anzahlDatensaetze += rows.size();
           validate(rows, offset);
-          offset += jobBean.importBlockGroesse;
+          offset += this.jobBean.importBlockGroesse;
         }
-      } while (!rows.isEmpty() && pruefUtil.isFehlerLimitNichtErreicht() && rows.size() == jobBean.importBlockGroesse);
+      } while (!rows.isEmpty() && this.pruefUtil.isFehlerLimitNichtErreicht() && rows.size() == this.jobBean.importBlockGroesse);
     }
-    pruefUtil.checkRunningImport(this.jobBean.quellReferenzId);
-    this.log.info(MessageFormat.format(MSG_PRUEFENDE, jobBean.getFormatPruefung().anzahlFehler));
+    this.pruefUtil.checkRunningImport(this.jobBean.quellReferenzId);
+    this.log.info(MessageFormat.format(MSG_PRUEFENDE, this.jobBean.getFormatPruefung().anzahlFehler));
     if (!this.jobBean.getFormatPruefung().fehlerfrei)
     {
       String fehlerText;
       if (this.jobBean.getFormatPruefung().anzahlFehler == 1)
       {
         fehlerText = this.jobBean.getFormatPruefung().getSortedErrors().get(0).toString();
-      } else
+      }
+      else
       {
-        fehlerText = "Es sind " + jobBean.getFormatPruefung().anzahlFehler + " vorhanden; Details siehe Protokoll";
+        fehlerText = "Es sind " + this.jobBean.getFormatPruefung().anzahlFehler + " vorhanden; Details siehe Protokoll";
       }
       this.jobBean.setStatusAndInfo(JobStatus.FEHLER, fehlerText);
       return null;
     }
 
-
     if (this.jobBean.getSimulation().importSimulieren)
     {
-      LoeschUtil util = new LoeschUtil(sqlUtil);
+      LoeschUtil util = new LoeschUtil(this.sqlUtil);
       util.loescheStandardWerte(this.jobBean.amt, this.jobBean.statistikId, this.jobBean.sachbearbeiterId);
-      util.speichereStandardwerte(this.jobBean
-        .getImportdatei().originalDateiname, this.jobBean.amt, this.jobBean.statistikId, this.jobBean.jobId, this.jobBean.sachbearbeiterId, this.jobBean.zeitpunktEintrag);
+      util.speichereStandardwerte(this.jobBean.getImportdatei().originalDateiname, this.jobBean.amt, this.jobBean.statistikId, this.jobBean.jobId, this.jobBean.sachbearbeiterId, this.jobBean.zeitpunktEintrag);
       return new AuswirkungenJob(this.jobBean);
     }
     if (this.jobBean.loescheDaten)
@@ -125,7 +123,6 @@ public abstract class AbstractPruefeImport<T>
     }
     return jobAfterValidation();
   }
-
 
   /**
    * Validate.

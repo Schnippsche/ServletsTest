@@ -1,34 +1,30 @@
 package de.destatis.regdb.dateiimport.job.xmlimport;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-
+import de.werum.sis.idev.res.log.Logger;
+import de.werum.sis.idev.res.log.LoggerIfc;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import de.werum.sis.idev.res.log.Logger;
-import de.werum.sis.idev.res.log.LoggerIfc;
-
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Stefan
  */
-public class
-XmlDefaultHandler extends DefaultHandler
+public class XmlDefaultHandler extends DefaultHandler
 {
 
   private static final String KEY_OF = "quell_referenz_of";
   private static final String KEY_STATSPEZ = "statspez_key";
   private static final String XML_PARAM = "param";
-  protected final LoggerIfc log = Logger.getInstance()
-    .getLogger(this.getClass());
+  protected final LoggerIfc log = Logger.getInstance().getLogger(this.getClass());
   private final StringBuilder builder;
   private final HashMap<String, String> values;
   private final ArrayList<XmlBean> beans;
@@ -84,8 +80,7 @@ XmlDefaultHandler extends DefaultHandler
   public void startElement(String uri, String localName, String qName, Attributes attributes)
   {
     this.builder.setLength(0);
-    qName = qName.trim()
-      .toLowerCase();
+    qName = qName.trim().toLowerCase();
     switch (qName)
     {
       case XmlImportJob.XML_ERHEBUNG:
@@ -93,10 +88,10 @@ XmlDefaultHandler extends DefaultHandler
       case XmlImportJob.XML_FIRMA:
       case XmlImportJob.XML_MELDER:
       case XmlImportJob.XML_VORBELEGUNG:
-        lineNumber = locator != null ? locator.getLineNumber() : 0;
+        this.lineNumber = this.locator != null ? this.locator.getLineNumber() : 0;
         break;
       case XML_PARAM:
-        lineNumber = locator != null ? locator.getLineNumber() : 0;
+        this.lineNumber = this.locator != null ? this.locator.getLineNumber() : 0;
         int attributeLength = attributes.getLength();
         for (int i = 0; i < attributeLength; i++)
         {
@@ -126,8 +121,7 @@ XmlDefaultHandler extends DefaultHandler
   {
     String value = this.builder.toString();
     this.builder.setLength(0);
-    qName = qName.trim()
-      .toLowerCase();
+    qName = qName.trim().toLowerCase();
     switch (qName)
     {
       case XmlImportJob.XML_ERHEBUNG:
@@ -182,8 +176,8 @@ XmlDefaultHandler extends DefaultHandler
     {
       this.values.put(XmlBean.ELEMENT_NAME, elementName);
       XmlBean bean = new XmlBean(identifier, this.values);
-      bean.setRowNumber(lineNumber);
-      log.debug(bean.toString());
+      bean.setRowNumber(this.lineNumber);
+      this.log.debug(bean.toString());
       this.beans.add(bean);
     }
     this.values.clear();
@@ -205,14 +199,14 @@ XmlDefaultHandler extends DefaultHandler
     Schema schema = null;
     try
     {
-      File file = new File(getClass().getResource("regdb.xsd")
-        .toURI());
+      File file = new File(getClass().getResource("regdb.xsd").toURI());
       this.log.debug("File:" + file.toString());
       schema = schemaFactory.newSchema(file);
       this.log.debug("Verwende XML Schema " + schema);
-    } catch (SAXException | URISyntaxException exc)
+    }
+    catch (SAXException | URISyntaxException exc)
     {
-      log.error("Fehler bei XML DTD" + exc.getMessage(), exc);
+      this.log.error("Fehler bei XML DTD" + exc.getMessage(), exc);
     }
     return schema;
   }

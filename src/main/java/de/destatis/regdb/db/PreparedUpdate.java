@@ -1,21 +1,21 @@
 package de.destatis.regdb.db;
 
+import de.werum.sis.idev.res.job.JobException;
+
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import de.werum.sis.idev.res.job.JobException;
 
 /**
  * The type Prepared update.
  */
 public class PreparedUpdate extends PreparedSql
 {
- 
+
   /**
    * Instantiates a new Prepared update.
    *
    * @param connection the connection
-   * @param sql the sql
+   * @param sql        the sql
    * @throws JobException the job exception
    */
   public PreparedUpdate(Connection connection, String sql) throws JobException
@@ -23,7 +23,7 @@ public class PreparedUpdate extends PreparedSql
     super();
     try
     {
-      ps = connection.prepareStatement(sql);
+      this.ps = connection.prepareStatement(sql);
     }
     catch (SQLException e)
     {
@@ -42,13 +42,13 @@ public class PreparedUpdate extends PreparedSql
     try
     {
       setPsValues();
-      return ps.executeUpdate();
+      return this.ps.executeUpdate();
 
     }
     catch (SQLException e)
-    {      
+    {
       throw new JobException(e.getMessage());
     }
   }
-  
+
 }

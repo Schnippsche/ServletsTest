@@ -157,7 +157,8 @@ public class PruefUtil
         addError(rowNumber, MessageFormat.format(MSG_OF_NICHT_NUMERISCH, "null"));
       }
       result = false;
-    } else
+    }
+    else
     {
       if (pruefWert.length() != this.jobBean.getAdressen().ordnungsfeldLaenge)
       {
@@ -166,8 +167,7 @@ public class PruefUtil
       }
 
       // Typpruefung OF wenn Typ = NOV
-      if (this.jobBean.quellReferenzNumerisch && !numberPattern.matcher(pruefWert)
-        .matches())
+      if (this.jobBean.quellReferenzNumerisch && !numberPattern.matcher(pruefWert).matches())
       {
         addError(rowNumber, MessageFormat.format(MSG_OF_NICHT_NUMERISCH, pruefWert));
         result = false;
@@ -220,10 +220,9 @@ public class PruefUtil
    */
   public void addError(Integer rowNumber, String message)
   {
-    if (fehlerLimitNichtErreicht)
+    if (this.fehlerLimitNichtErreicht)
     {
-      this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung()
-        .addFehler(new FormatError(rowNumber, message));
+      this.fehlerLimitNichtErreicht = this.jobBean.getFormatPruefung().addFehler(new FormatError(rowNumber, message));
     }
   }
 
@@ -236,7 +235,7 @@ public class PruefUtil
    */
   public boolean checkAdressbestand(Integer quellRefId) throws JobException
   {
-    try (PreparedSelect ps = sqlUtil.createPreparedSelect(SQL_SELECT_ORDNUNGSFELD))
+    try (PreparedSelect ps = this.sqlUtil.createPreparedSelect(SQL_SELECT_ORDNUNGSFELD))
     {
       ps.addValue(quellRefId);
       ResultRow rs = ps.fetchOne();
@@ -248,7 +247,8 @@ public class PruefUtil
         this.jobBean.quellReferenzNumerisch = "NUM".equals(this.jobBean.getAdressen().ordnungsfeldTyp);
         this.jobBean.quellReferenzId = quellRefId;
         return true;
-      } else
+      }
+      else
       {
         addError(null, MessageFormat.format(MSG_ADRESSBESTAND_INVALID, quellRefId));
       }
@@ -265,7 +265,7 @@ public class PruefUtil
    */
   public boolean checkOrdnungsfelderExistieren(Map<String, Integer> ofRows) throws JobException
   {
-    String sql = MessageFormat.format(SQL_SELECT_OF_EXISTS, this.jobBean.quellReferenzId, sqlUtil.convertStringList(ofRows.keySet()));
+    String sql = MessageFormat.format(SQL_SELECT_OF_EXISTS, this.jobBean.quellReferenzId, this.sqlUtil.convertStringList(ofRows.keySet()));
     return removeExistingEntries(ofRows, sql, MSG_OF_NICHT_VORHANDEN);
   }
 
@@ -278,13 +278,13 @@ public class PruefUtil
    */
   public boolean checkMeldungsIdsExistieren(Map<String, Integer> idRows) throws JobException
   {
-    String sql = MessageFormat.format(SQL_SELECT_MELDUNGSID_EXISTS, sqlUtil.convertStringList(idRows.keySet()));
+    String sql = MessageFormat.format(SQL_SELECT_MELDUNGSID_EXISTS, this.sqlUtil.convertStringList(idRows.keySet()));
     return removeExistingEntries(idRows, sql, MSG_MELDUNG_NICHT_VORHANDEN);
   }
 
   private boolean removeExistingEntries(Map<String, Integer> checkMap, String sql, String msgNichtVorhanden) throws JobException
   {
-    try (PreparedSelect ps = sqlUtil.createPreparedSelect(sql))
+    try (PreparedSelect ps = this.sqlUtil.createPreparedSelect(sql))
     {
       List<ResultRow> rows = ps.fetchMany();
       for (ResultRow row : rows)
@@ -296,7 +296,9 @@ public class PruefUtil
       }
     }
     if (checkMap.isEmpty())
+    {
       return true;
+    }
     for (Map.Entry<String, Integer> entry : checkMap.entrySet())
     {
       addError(entry.getValue(), MessageFormat.format(msgNichtVorhanden, entry.getKey()));
@@ -317,7 +319,7 @@ public class PruefUtil
     {
       return true;
     }
-    String sql = MessageFormat.format(SQL_SELECT_MELDER_EXISTS, sqlUtil.convertStringList(melderIdRows.keySet()));
+    String sql = MessageFormat.format(SQL_SELECT_MELDER_EXISTS, this.sqlUtil.convertStringList(melderIdRows.keySet()));
     return removeExistingEntries(melderIdRows, sql, MSG_MELDER_NICHT_VORHANDEN);
   }
 
@@ -330,8 +332,7 @@ public class PruefUtil
    */
   public boolean checkIstZahl(String pruefWert, int rowNumber)
   {
-    if (pruefWert != null && numberPattern.matcher(pruefWert)
-      .matches())
+    if (pruefWert != null && numberPattern.matcher(pruefWert).matches())
     {
       return true;
     }
@@ -351,12 +352,11 @@ public class PruefUtil
     if (quellReferenzId != null)
     {
       String sql = MessageFormat.format(SQL_SELECT_QUELLREFID_IMPORT, "" + quellReferenzId, "" + this.jobBean.jobId);
-      ResultRow rs = sqlUtil.fetchOne(sql);
+      ResultRow rs = this.sqlUtil.fetchOne(sql);
       if (rs != null && rs.getInt(1) > 0)
       {
         String fehler = MessageFormat.format("Es läuft bereits ein Import auf dem Adressbestand {0}, ID {1}", rs.getString(2), rs.getString(1));
-        this.jobBean.getFormatPruefung()
-          .addFehler(new FormatError(null, fehler));
+        this.jobBean.getFormatPruefung().addFehler(new FormatError(null, fehler));
         return false;
       }
     }

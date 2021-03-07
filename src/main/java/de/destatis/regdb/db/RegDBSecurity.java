@@ -5,23 +5,22 @@
  */
 package de.destatis.regdb.db;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import de.werum.sis.idev.intern.actions.util.DienstStatus;
 import de.werum.sis.idev.intern.actions.util.SachbearbeiterDienst;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class RegDBSecurity
 {
 
   private static RegDBSecurity instance = null;
   private static final String SPERRE = "SPERRE";
-  private static final LoggerIfc log = Logger.getInstance()
-      .getLogger(RegDBSecurity.class);
+  private static final LoggerIfc log = Logger.getInstance().getLogger(RegDBSecurity.class);
   public static final String ROOT_RECHT = "ROOT";
   public static final String GADMIN_RECHT = "GADMIN";
   public static final String SADMIN_RECHT = "SADMIN";
@@ -66,8 +65,7 @@ public class RegDBSecurity
   {
     if (conn != null)
     {
-      try (ResultSet rs = conn.createStatement()
-          .executeQuery("SELECT status FROM version"))
+      try (ResultSet rs = conn.createStatement().executeQuery("SELECT status FROM version"))
       {
         if (rs.next())
         {
@@ -85,11 +83,11 @@ public class RegDBSecurity
   /**
    * Liefert sachbearbeiter ID.
    *
-   * @param conn the connection
-   * @param kennung the kennung
+   * @param conn     the connection
+   * @param kennung  the kennung
    * @param passwort the passwort
-   * @param host the host
-   * @param port the port
+   * @param host     the host
+   * @param port     the port
    * @return sachbearbeiter ID
    */
   public int getSachbearbeiterID(Connection conn, String kennung, String passwort, String host, String port)
@@ -102,8 +100,7 @@ public class RegDBSecurity
       if (status.getStatus() == DienstStatus.STATUS_OK)
       {
         String sql = "SELECT sachbearbeiter_id FROM sachbearbeiter WHERE kennung = '" + kennung + "'";
-        try (ResultSet rs = conn.createStatement()
-            .executeQuery(sql))
+        try (ResultSet rs = conn.createStatement().executeQuery(sql))
         {
           if (rs.next())
           {
@@ -134,8 +131,7 @@ public class RegDBSecurity
   public boolean isSachbearbeiterSperre(Connection conn, String sbID)
   {
     boolean result = false;
-    try (ResultSet rs = conn.createStatement()
-        .executeQuery("SELECT status from sachbearbeiter where sachbearbeiter_id=" + sbID))
+    try (ResultSet rs = conn.createStatement().executeQuery("SELECT status from sachbearbeiter where sachbearbeiter_id=" + sbID))
     {
       if (rs.next())
       {
@@ -153,13 +149,12 @@ public class RegDBSecurity
    * Is amt sperre.
    *
    * @param conn the connection
-   * @param amt the amt
+   * @param amt  the amt
    * @return the string
    */
   public String isAmtSperre(Connection conn, String amt)
   {
-    try (ResultSet rs = conn.createStatement()
-        .executeQuery("SELECT status,sperre_info FROM amt WHERE amt='" + amt + "'"))
+    try (ResultSet rs = conn.createStatement().executeQuery("SELECT status,sperre_info FROM amt WHERE amt='" + amt + "'"))
     {
       if (rs.next() && SPERRE.equals(rs.getString(1)))
       {
@@ -176,7 +171,7 @@ public class RegDBSecurity
   /**
    * Checks if is root user.
    *
-   * @param conn the connection
+   * @param conn             the connection
    * @param sachbearbeiterID the sachbearbeiter ID
    * @return true, if is root user
    */
@@ -184,8 +179,7 @@ public class RegDBSecurity
   {
     // ROOT-Recht pruefen
     String cmd = "SELECT COUNT(*) FROM sb_gruppen INNER JOIN sb_gruppen_zuordnung USING (SB_GRUPPEN_ID) WHERE RECHTE='ROOT' AND SACHBEARBEITER_ID=" + sachbearbeiterID;
-    try (ResultSet rs = conn.createStatement()
-        .executeQuery(cmd))
+    try (ResultSet rs = conn.createStatement().executeQuery(cmd))
     {
       if (rs.next())
       {
@@ -203,11 +197,11 @@ public class RegDBSecurity
   /**
    * Prueft, ob Sachbearbeiter das angegebene Mindestrecht an Amt/Statistik hat.
    *
-   * @param sbId Sachbearbeiter ID
-   * @param amt Amt ID
-   * @param statistik Statistik ID
+   * @param sbId         Sachbearbeiter ID
+   * @param amt          Amt ID
+   * @param statistik    Statistik ID
    * @param minimumGrant das gewuenschte Minimalrecht
-   * @param conn the conn
+   * @param conn         the conn
    * @return boolean true oder false
    */
   public boolean sbHasGrantforAmtStatistik(int sbId, String amt, String statistik, int minimumGrant, Connection conn)

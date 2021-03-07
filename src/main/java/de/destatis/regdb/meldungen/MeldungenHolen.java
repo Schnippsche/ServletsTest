@@ -5,6 +5,14 @@
  */
 package de.destatis.regdb.meldungen;
 
+import de.destatis.regdb.db.RegDBSecurity;
+import de.destatis.regdb.servlets.RegDBGeneralHttpServlet;
+import de.werum.sis.idev.intern.actions.util.MeldungsBereitstellung;
+import de.werum.sis.idev.intern.actions.util.MeldungsBereitstellungStatus;
+import de.werum.sis.idev.res.conf.db.DBConfig;
+import de.werum.sis.idev.res.log.Logger;
+import de.werum.sis.idev.res.log.LoggerIfc;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -14,14 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
-
-import de.destatis.regdb.db.RegDBSecurity;
-import de.destatis.regdb.servlets.RegDBGeneralHttpServlet;
-import de.werum.sis.idev.intern.actions.util.MeldungsBereitstellung;
-import de.werum.sis.idev.intern.actions.util.MeldungsBereitstellungStatus;
-import de.werum.sis.idev.res.conf.db.DBConfig;
-import de.werum.sis.idev.res.log.Logger;
-import de.werum.sis.idev.res.log.LoggerIfc;
 
 public class MeldungenHolen
 {
@@ -51,18 +51,17 @@ public class MeldungenHolen
   /**
    * Instantiates a new meldungen holen.
    *
-   * @param sb_id the sb id
-   * @param kennung the kennung
-   * @param passwort the passwort
-   * @param amt the amt
-   * @param statistik the statistik
+   * @param sb_id          the sb id
+   * @param kennung        the kennung
+   * @param passwort       the passwort
+   * @param amt            the amt
+   * @param statistik      the statistik
    * @param statusUmsetzen the status umsetzen
-   * @param conn the conn
+   * @param conn           the conn
    */
   private MeldungenHolen(String sb_id, String kennung, String passwort, String amt, String statistik, boolean statusUmsetzen, Connection conn)
   {
-    this.log = Logger.getInstance()
-        .getLogger(this.getClass());
+    this.log = Logger.getInstance().getLogger(this.getClass());
     this.mySbId = Integer.parseInt(sb_id);
     this.myKennung = kennung;
     this.myPasswort = passwort;
@@ -95,14 +94,14 @@ public class MeldungenHolen
   /**
    * Instantiates a new meldungen holen.
    *
-   * @param sb_id the sb id
-   * @param kennung the kennung
-   * @param passwort the passwort
-   * @param amt the amt
-   * @param statistik the statistik
-   * @param meldungs_ids the meldungs ids
+   * @param sb_id          the sb id
+   * @param kennung        the kennung
+   * @param passwort       the passwort
+   * @param amt            the amt
+   * @param statistik      the statistik
+   * @param meldungs_ids   the meldungs ids
    * @param statusUmsetzen the status umsetzen
-   * @param conn the conn
+   * @param conn           the conn
    */
   public MeldungenHolen(String sb_id, String kennung, String passwort, String amt, String statistik, String meldungs_ids, boolean statusUmsetzen, Connection conn)
   {
@@ -116,15 +115,15 @@ public class MeldungenHolen
   /**
    * Instantiates a new meldungen holen.
    *
-   * @param sb_id the sb id
-   * @param kennung the kennung
-   * @param passwort the passwort
-   * @param amt the amt
-   * @param statistik the statistik
-   * @param bzr the bzr
-   * @param meldeart the meldeart
+   * @param sb_id          the sb id
+   * @param kennung        the kennung
+   * @param passwort       the passwort
+   * @param amt            the amt
+   * @param statistik      the statistik
+   * @param bzr            the bzr
+   * @param meldeart       the meldeart
    * @param statusUmsetzen the status umsetzen
-   * @param conn the conn
+   * @param conn           the conn
    */
   public MeldungenHolen(String sb_id, String kennung, String passwort, String amt, String statistik, String bzr, String meldeart, boolean statusUmsetzen, Connection conn)
   {
@@ -308,8 +307,7 @@ public class MeldungenHolen
     this.myMeldungsDaten = new Vector<>();
     this.myErstesDatum = "21001231.235959";
     this.myErsteMeldungsId = "0";
-    try (ResultSet rs = this.myConn.createStatement()
-        .executeQuery(sql))
+    try (ResultSet rs = this.myConn.createStatement().executeQuery(sql))
     {
       this.log.debug("Sql:" + sql);
       while (rs.next())
@@ -484,11 +482,9 @@ public class MeldungenHolen
     }
 
     // Hat der SB Rechte an Amt / Statistik ?
-    if (!RegDBSecurity.getInstance()
-        .sbHasGrantforAmtStatistik(this.mySbId, this.myAmt, this.myStatistik, RegDBSecurity.SADMIN_RECHT_INT, this.myConn))
+    if (!RegDBSecurity.getInstance().sbHasGrantforAmtStatistik(this.mySbId, this.myAmt, this.myStatistik, RegDBSecurity.SADMIN_RECHT_INT, this.myConn))
     {
-      throw new MeldungenHolenException("Dem Sachbearbeiter "
-          + this.mySbId + " mit Kennung '" + this.myKennung + "' fehlen die erforderlichen Rechte an Amt " + this.myAmt + " / Statistik " + this.myStatistik);
+      throw new MeldungenHolenException("Dem Sachbearbeiter " + this.mySbId + " mit Kennung '" + this.myKennung + "' fehlen die erforderlichen Rechte an Amt " + this.myAmt + " / Statistik " + this.myStatistik);
     }
 
   }

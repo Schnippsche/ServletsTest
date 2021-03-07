@@ -5,15 +5,14 @@
  */
 package de.destatis.regdb.servlets;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import de.destatis.regdb.ServerimportStatusBean;
 import de.destatis.regdb.db.DateiImportDaemon;
 import de.destatis.regdb.session.RegDBSession;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Connection;
+import java.util.ArrayList;
 
 /**
  * Dient zum Ermitteln des serverseitigen Importstatus eines Sachbearbeiters
@@ -47,9 +46,9 @@ public class RegDBImportstatusServlet extends RegDBGeneralHttpServlet
   /**
    * Do service.
    *
-   * @param req the req
-   * @param res the res
-   * @param conn the conn
+   * @param req     the req
+   * @param res     the res
+   * @param conn    the conn
    * @param session the session
    */
   /*
@@ -64,12 +63,10 @@ public class RegDBImportstatusServlet extends RegDBGeneralHttpServlet
     if ("INIT".equals(cmd))
     {
       this.log.debug("ImportstatusServlet aktualisiert Statusliste");
-      DateiImportDaemon.getInstance()
-          .updateStatusList(conn);
+      DateiImportDaemon.getInstance().updateStatusList(conn);
     }
 
-    ArrayList<ServerimportStatusBean> list = DateiImportDaemon.getInstance()
-        .getStatusBeans(session.getSachbearbeiterId());
+    ArrayList<ServerimportStatusBean> list = DateiImportDaemon.getInstance().getStatusBeans(session.getSachbearbeiterId());
     this.sendErgebnis(res, list);
   }
 
@@ -77,7 +74,6 @@ public class RegDBImportstatusServlet extends RegDBGeneralHttpServlet
   public void destroy()
   {
     super.destroy();
-    DateiImportDaemon.getInstance()
-        .destroy();
+    DateiImportDaemon.getInstance().destroy();
   }
 }

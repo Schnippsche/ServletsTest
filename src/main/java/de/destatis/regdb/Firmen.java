@@ -14,7 +14,7 @@ public class Firmen
   public boolean neuanlageErlaubt;
 
   /**
-   * 
+   *
    */
   public Firmen()
   {

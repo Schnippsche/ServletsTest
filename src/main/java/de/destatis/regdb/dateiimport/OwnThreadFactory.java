@@ -20,8 +20,7 @@ public class OwnThreadFactory implements ThreadFactory
   @Override
   public Thread newThread(Runnable runnable)
   {
-    Thread thread = Executors.defaultThreadFactory()
-        .newThread(runnable);
+    Thread thread = Executors.defaultThreadFactory().newThread(runnable);
     thread.setDaemon(true);
     return thread;
   }

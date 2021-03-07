@@ -12,26 +12,38 @@ public enum ImportFormat
 {
 
   UNBEKANNT,
-  
-  /** The importohnezusatzfelder. */
+
+  /**
+   * The importohnezusatzfelder.
+   */
   IMPORTOHNEZUSATZFELDER,
 
-  /** The importmitzusatzfelder. */
+  /**
+   * The importmitzusatzfelder.
+   */
   IMPORTMITZUSATZFELDER,
 
-  /** The importmitansprechpartner. */
+  /**
+   * The importmitansprechpartner.
+   */
   IMPORTMITANSPRECHPARTNER,
 
-  /** The registerimport. */
+  /**
+   * The registerimport.
+   */
   REGISTERIMPORT,
 
-  /** The vorbelegungsimport. */
+  /**
+   * The vorbelegungsimport.
+   */
   VORBELEGUNGSIMPORT,
-  
+
   VORBELEGUNGDOWNLOADIMPORT,
 
-  /** The xmlimport. */
+  /**
+   * The xmlimport.
+   */
   XMLIMPORT,
-  
+
   MELDERKONTOIMPORT
 }

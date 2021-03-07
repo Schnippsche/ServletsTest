@@ -20,20 +20,23 @@ public class MelderkontoImportBean
   private String[] mkf; // 1 - 10
   private String zsDaten;
   private boolean neuerMelderkontoEintrag;
+
   public MelderkontoImportBean(String[] cols)
   {
     super();
-    mkf = new String[10];
-    meldungId = 0;
-    zsDaten = "";
+    this.mkf = new String[10];
+    this.meldungId = 0;
+    this.zsDaten = "";
     for (int i = 0; i < 10; i++)
-      mkf[i] = "";
+    {
+      this.mkf[i] = "";
+    }
     if (!cols[0].isEmpty())
     {
       this.setMeldungId(Integer.parseInt(cols[0]));
     }
 
-    neuerMelderkontoEintrag = (meldungId <= 0);
+    this.neuerMelderkontoEintrag = (this.meldungId <= 0);
     setStatistikId(cols[1]);
     setAmt(cols[2]);
     setQuellReferenzId(cols[3]);
@@ -42,7 +45,7 @@ public class MelderkontoImportBean
     setBzr(cols[6]);
     for (int i = 0; i < 10 && (i + 7 < cols.length); i++)
     {
-      mkf[i] = cols[i + 7];
+      this.mkf[i] = cols[i + 7];
     }
     if (cols.length >= 17)
     {
@@ -261,10 +264,7 @@ public class MelderkontoImportBean
   @Override
   public String toString()
   {
-    return "MelderkontoImportBean [mktoId="
-        + this.mktoId + ", meldungId=" + this.meldungId + ", statistikId=" + this.statistikId + ", amt=" + this.amt + ", quellReferenzId=" + this.quellReferenzId + ", quellReferenzOf="
-        + this.quellReferenzOf + ", quellReferenzInt=" + this.quellReferenzInt + ", bzr=" + this.bzr + ", adressenId=" + this.adressenId + ", firmenId=" + this.firmenId + ", mkf=" + Arrays
-            .toString(this.mkf) + ", zsDaten=" + this.zsDaten + ", neuerMelderkontoEintrag=" + this.neuerMelderkontoEintrag + "]";
+    return "MelderkontoImportBean [mktoId=" + this.mktoId + ", meldungId=" + this.meldungId + ", statistikId=" + this.statistikId + ", amt=" + this.amt + ", quellReferenzId=" + this.quellReferenzId + ", quellReferenzOf=" + this.quellReferenzOf + ", quellReferenzInt=" + this.quellReferenzInt + ", bzr=" + this.bzr + ", adressenId=" + this.adressenId + ", firmenId=" + this.firmenId + ", mkf=" + Arrays.toString(this.mkf) + ", zsDaten=" + this.zsDaten + ", neuerMelderkontoEintrag=" + this.neuerMelderkontoEintrag + "]";
   }
 
 }

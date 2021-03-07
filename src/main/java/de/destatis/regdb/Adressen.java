@@ -1,11 +1,10 @@
 package de.destatis.regdb;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Stefan

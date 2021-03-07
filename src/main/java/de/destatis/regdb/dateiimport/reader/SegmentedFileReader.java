@@ -23,5 +23,5 @@ public interface SegmentedFileReader<T>
    * @return the t
    * @throws JobException the job exception
    */
-  public ArrayList<T> readSegment(Path path, Charset charset, int offset, int len) throws JobException;
+  ArrayList<T> readSegment(Path path, Charset charset, int offset, int len) throws JobException;
 }

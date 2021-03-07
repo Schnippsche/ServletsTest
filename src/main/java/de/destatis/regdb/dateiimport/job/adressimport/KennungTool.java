@@ -28,8 +28,7 @@ public class KennungTool
   /**
    * The Log.
    */
-  protected final LoggerIfc log = Logger.getInstance()
-    .getLogger(this.getClass());
+  protected final LoggerIfc log = Logger.getInstance().getLogger(this.getClass());
   private final SecureRandom secureRandom;
   private final SqlUtil sqlUtil;
   private static final int MAX_SIZE = 500;
@@ -70,8 +69,7 @@ public class KennungTool
       }
       this.entferneVorhandeneKennungen(pruefKennungen);
       result.addAll(pruefKennungen);
-    }
-    while (result.size() < anzahl);
+    } while (result.size() < anzahl);
     this.log.debug("Anzahl Kennungen:" + result.size());
     String elapsed = (System.currentTimeMillis() - start) / 1000 + " Sekunden";
     this.log.debug(anzahl + " Kennungen erzeugt in " + elapsed);
@@ -81,9 +79,9 @@ public class KennungTool
 
   private void entferneVorhandeneKennungen(HashSet<String> pruefKennungen) throws JobException
   {
-    String kennungen = sqlUtil.convertStringList(pruefKennungen);
+    String kennungen = this.sqlUtil.convertStringList(pruefKennungen);
     String sql = MessageFormat.format(SQL_SELECT_MELDERKENNUNG, kennungen);
-    List<ResultRow> rows = sqlUtil.fetchMany(sql);
+    List<ResultRow> rows = this.sqlUtil.fetchMany(sql);
     for (ResultRow row : rows)
     {
       pruefKennungen.remove(row.getString(1));
@@ -101,7 +99,7 @@ public class KennungTool
   public boolean existiertKennung(String pruefKennung) throws JobException
   {
     String sql = MessageFormat.format(SQL_SELECT_MELDERKENNUNG, "'" + pruefKennung + "'");
-    ResultRow row = sqlUtil.fetchOne(sql);
+    ResultRow row = this.sqlUtil.fetchOne(sql);
     return (row != null);
   }
 
