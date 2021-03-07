@@ -7,16 +7,17 @@ package de.destatis.regdb.dateiimport.job;
 
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.JobStatus;
+import de.destatis.regdb.db.FileUtil;
 import de.werum.sis.idev.res.job.JobException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * The Class EntpackenJob.
@@ -76,32 +77,13 @@ public class EntpackenJob extends AbstractJob
     {
       throw new JobException("Zip-Datei " + zipFile + " wurde nicht gefunden");
     }
-    this.log.debug("entzippe " + zipFile.toString());
-    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile)))
-    {
-      ZipEntry zipEntry = zis.getNextEntry();
-      while (zipEntry != null)
-      {
-        this.log.debug("ZipEntry:" + zipEntry.toString());
-        Path dest = destinationDir.resolve(zipEntry.getName());
-        this.log.debug(dest.toString());
-        Files.createDirectories(dest);
-        if (!zipEntry.isDirectory())
-        {
-          this.log.debug("Kopiere Datei nach " + dest);
-          Files.copy(zis, dest, StandardCopyOption.REPLACE_EXISTING);
-        }
-        zipEntry = zis.getNextEntry();
-      }
-      // Alles erfolgreich dann starte naechsten Job     
-      this.jobBean.getImportdatei().dateiName = "importdatei.txt";
-      return new PruefenJob(this.jobBean);
-    }
-    catch (IOException e)
-    {
-      this.log.error(e.getMessage(), e);
-      throw new JobException("Fehler beim Entzippen der Datei " + zipFile.getName() + ":" + e.getMessage());
-    }
+
+    FileUtil.entzippen(zipFile, destinationDir);
+
+    // Alles erfolgreich dann starte naechsten Job
+    this.jobBean.getImportdatei().dateiName = "importdatei.txt";
+    return new PruefenJob(this.jobBean);
+
   }
 
   private Path ladeProperties() throws JobException

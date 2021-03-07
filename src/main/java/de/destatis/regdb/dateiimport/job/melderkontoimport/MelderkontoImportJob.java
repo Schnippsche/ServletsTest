@@ -13,17 +13,12 @@ import de.werum.sis.idev.res.job.JobException;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * The type Melderkonto import job.
@@ -63,7 +58,7 @@ public class MelderkontoImportJob extends AbstractImportJob
     File uploadFile = Paths.get(this.importVerzeichnis, "dateiupload.zip").toFile();
     if (uploadFile.exists())
     {
-      entzippe(uploadFile, destination);
+      FileUtil.entzippen(uploadFile, destination);
     }
   }
 
@@ -290,33 +285,6 @@ public class MelderkontoImportJob extends AbstractImportJob
     {
       MelderkontoImportBean bean = new MelderkontoImportBean(cols);
       this.melderKontoImportBeans.add(bean);
-    }
-  }
-
-  private void entzippe(File zipFile, Path destinationDir) throws JobException
-  {
-    this.log.debug("entzippe " + zipFile.toString());
-    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile)))
-    {
-      ZipEntry zipEntry = zis.getNextEntry();
-      while (zipEntry != null)
-      {
-        this.log.debug("ZipEntry:" + zipEntry.toString());
-        Path dest = destinationDir.resolve(zipEntry.getName());
-        this.log.debug(dest.toString());
-        Files.createDirectories(dest);
-        if (!zipEntry.isDirectory())
-        {
-          this.log.debug("Kopiere Datei nach " + dest);
-          Files.copy(zis, dest, StandardCopyOption.REPLACE_EXISTING);
-        }
-        zipEntry = zis.getNextEntry();
-      }
-    }
-    catch (IOException e)
-    {
-      this.log.error(e.getMessage());
-      throw new JobException("Fehler beim Entzippen der Datei " + zipFile.getName() + ":" + e.getMessage());
     }
   }
 

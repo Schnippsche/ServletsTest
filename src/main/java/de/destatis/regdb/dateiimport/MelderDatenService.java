@@ -6,6 +6,7 @@
 package de.destatis.regdb.dateiimport;
 
 import de.destatis.regdb.db.ConnectionTool;
+import de.destatis.regdb.db.FileUtil;
 import de.destatis.regdb.db.StringUtil;
 import de.destatis.regdb.servlets.RegDBImportServlet;
 import de.werum.sis.idev.intern.actions.util.MelderDaten;
@@ -87,10 +88,7 @@ public class MelderDatenService
     {
       this.dateiImportDir = new File(strTmpDir).getParent();
       File importDir = new File(this.dateiImportDir, "dateiimport");
-      if (!importDir.exists())
-      {
-        importDir.mkdir();
-      }
+      FileUtil.makeDirectory(importDir);
       this.dateiImportDir = importDir.toString();
       // Ersetze \ durch /
       this.dateiImportDir = this.dateiImportDir.replace('\\', '/');
@@ -102,10 +100,7 @@ public class MelderDatenService
     else
     {
       File importDir = new File(this.dateiImportDir);
-      if (!importDir.exists() && importDir.mkdir())
-      {
-        log.info("Directory '" + importDir + " wurde angelegt");
-      }
+      FileUtil.makeDirectory(importDir);
     }
     log.debug("Verwende Verzeichnis " + this.dateiImportDir + " fuer Serverimporte");
     ConnectionTool.getInstance().freeConnection(conn);
