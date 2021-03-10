@@ -13,6 +13,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * The type Reg db execute servlet.
+ */
 public class RegDBExecuteServlet extends RegDBGeneralHttpServlet
 {
 
@@ -37,20 +40,7 @@ public class RegDBExecuteServlet extends RegDBGeneralHttpServlet
     super.init(RegDBExecuteServlet.class);
   }
 
-  /**
-   * Do service.
-   *
-   * @param req     the req
-   * @param res     the res
-   * @param session the session
-   * @throws SQLException the SQL exception
-   * @par am conn the conn
-   */
-  /*
-   * (non-Javadoc)
-   * @see de.destatis.regdb.servlets.RegDBGeneralHttpServlet#doService(javax.servlet.http.HttpServletRequest,
-   * javax.servlet.http.HttpServletResponse)
-   */
+
   @Override
   public void doService(HttpServletRequest req, HttpServletResponse res, Connection conn, RegDBSession session) throws SQLException
   {

@@ -17,10 +17,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class IdevRegisterImportTest
+class
+IdevRegisterImportTest
 {
 
   @BeforeAll
@@ -155,7 +157,7 @@ class IdevRegisterImportTest
     JobBean bean = new JobBean();
     bean.getFormatPruefung().maximaleAnzahlFehler = 100;
     bean.getImportdatei().importFormat = ImportFormat.REGISTERIMPORT;
-    bean.getImportdatei().importVerzeichnis = Tool.getTestPath().resolve("registerimport").toString();
+    bean.getImportdatei().importVerzeichnis = Objects.requireNonNull(Tool.getTestPath()).resolve("registerimport").toString();
     bean.getImportdatei().dateiName = "10_saetze_korrekt.txt";
     bean.getImportdatei().originalDateiname = bean.getImportdatei().dateiName;
     bean.quellReferenzId = 1;

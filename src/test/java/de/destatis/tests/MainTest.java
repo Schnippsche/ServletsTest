@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,8 +27,7 @@ class MainTest
   static void init()
   {
     Logger.getInstance().setLogLevel(LogLevel.DEBUG);
-    log = Logger.getInstance()
-      .getLogger(MainTest.class);
+    log = Logger.getInstance().getLogger(MainTest.class);
     log.debug("Testen der Anwendung regdbservlets...");
   }
 
@@ -86,9 +87,21 @@ class MainTest
     assertTrue(util.checkIstZahl("0000", 8));
     assertFalse(util.checkIstZahl("", 8));
     assertFalse(util.checkIstZahl(null, 8));
+    Set<Integer> intIds = new HashSet<>(1000);
+    Set<String> charIds = new HashSet<>(1000);
+    for (int i = 1; i < 1000; i++)
+    {
+      intIds.add(i);
+      charIds.add("10000" + (i + 1000));
+    }
+
     //
     try
     {
+      sqlUtil.createTempTables();
+      sqlUtil.insertIntIds(intIds);
+      sqlUtil.insertStringIds(charIds);
+
       assertFalse(util.checkAdressbestand(0));
       assertTrue(util.checkAdressbestand(1));
       assertEquals(1, bean.quellReferenzId);
@@ -106,7 +119,8 @@ class MainTest
       assertTrue(util.checkRunningImport(10));
       assertTrue(util.checkRunningImport(null));
 
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(e.getMessage(), e);
       fail();
@@ -136,7 +150,8 @@ class MainTest
       showLogErrors(bean);
       assertTrue(bean.getFormatPruefung().anzahlFehler > 7);
       assertEquals(14, bean.getImportdatei().anzahlDatensaetze);
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(e.getMessage(), e);
       fail();
@@ -163,7 +178,8 @@ class MainTest
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
       assertEquals(10, bean.getImportdatei().anzahlDatensaetze);
       assertEquals(10, bean.getAdressen().getOrdnungsfelder().size());
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(e.getMessage(), e);
       fail();
@@ -194,7 +210,8 @@ class MainTest
       assertTrue(bean.getFormatPruefung().anzahlFehler > 9);
       assertEquals(6, bean.getImportdatei().anzahlDatensaetze);
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(e.getMessage(), e);
       fail();
@@ -223,7 +240,8 @@ class MainTest
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
       assertEquals(100, bean.getImportdatei().anzahlDatensaetze);
       assertEquals(100, bean.getAdressen().getOrdnungsfelder().size());
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(e.getMessage(), e);
       fail();
@@ -252,7 +270,8 @@ class MainTest
       assertTrue(bean.getFormatPruefung().anzahlFehler > 7);
       assertEquals(6, bean.getImportdatei().anzahlDatensaetze);
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(e.getMessage(), e);
       fail();
@@ -281,7 +300,8 @@ class MainTest
       assertTrue(bean.getFormatPruefung().anzahlFehler >= 7);
       assertEquals(8, bean.getImportdatei().anzahlDatensaetze);
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(e.getMessage(), e);
       fail();
@@ -310,7 +330,8 @@ class MainTest
       assertTrue(bean.getFormatPruefung().anzahlFehler > 16);
       assertEquals(12, bean.getImportdatei().anzahlDatensaetze);
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(e.getMessage(), e);
       fail();
@@ -339,7 +360,8 @@ class MainTest
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
       assertEquals(31, bean.getImportdatei().anzahlDatensaetze);
       assertEquals(0, bean.getAdressen().getOrdnungsfelder().size());
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(e.getMessage(), e);
       fail();

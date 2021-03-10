@@ -39,9 +39,11 @@ public class Email
   }
 
   /**
-   * @param absender
-   * @param betreff
-   * @param text
+   * Instantiates a new Email.
+   *
+   * @param absender the absender
+   * @param betreff  the betreff
+   * @param text     the text
    */
   public Email(String absender, String betreff, String text)
   {
@@ -73,6 +75,11 @@ public class Email
     this.empfaenger = empfaenger;
   }
 
+  /**
+   * Add empfaenger.
+   *
+   * @param empfaenger the empfaenger
+   */
   public void addEmpfaenger(String empfaenger)
   {
     this.getEmpfaenger().add(empfaenger);

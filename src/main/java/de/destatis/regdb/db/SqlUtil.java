@@ -285,4 +285,32 @@ public class SqlUtil
     ResultRow row = this.fetchOne("SELECT STATUS FROM version");
     return row != null && ("SPERRE".equalsIgnoreCase(row.getString(1)));
   }
+
+  public void createTempTables() throws JobException
+  {
+    this.execute("DROP TABLE IF EXISTS tmpchar");
+    this.execute("CREATE TABLE tmpchar (ID VARCHAR(40) NOT NULL DEFAULT '') ENGINE=MEMORY");
+    this.execute("DROP TABLE IF EXISTS tmpint");
+    this.execute("CREATE TABLE tmpint (ID INT(11) NOT NULL DEFAULT 0) ENGINE=MEMORY");
+  }
+
+  public void insertIntIds(Collection<? extends Number> elements) throws JobException
+  {
+    this.execute("TRUNCATE TABLE tmpint");
+    if (elements != null && !elements.isEmpty())
+    {
+      String sql = "INSERT INTO tmpint (ID) VALUES" + elements.stream().map(String::valueOf).collect(Collectors.joining("),(", "(", ")"));
+      this.execute(sql);
+    }
+  }
+
+  public void insertStringIds(Collection<String> elements) throws JobException
+  {
+    this.execute("TRUNCATE TABLE tmpchar");
+    if (elements != null && !elements.isEmpty())
+    {
+      String sql = "INSERT INTO tmpchar (ID) VALUES" + elements.stream().map(StringUtil::escapeSqlString).collect(Collectors.joining("'),('", "('", "')"));
+      this.execute(sql);
+    }
+  }
 }
