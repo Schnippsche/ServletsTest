@@ -106,16 +106,16 @@ public class AenderungenHolen
     if (spalten != null)
     {
       StringBuilder error = new StringBuilder();
-      for (int i = 0; i < spalten.length; i++)
+      for (final String s : spalten)
       {
-        String col = spalten[i].trim().toUpperCase();
+        String col = s.trim().toUpperCase();
         if (!_adressenMap.contains(col) && !_firmenMap.contains(col) && !_partnerMap.contains(col) && !_aenderungTabelleMap.contains(col))
         {
           if (error.length() > 0)
           {
             error.append(',');
           }
-          error.append(spalten[i]);
+          error.append(s);
         }
       }
       if (error.length() > 0)
@@ -178,16 +178,16 @@ public class AenderungenHolen
     if (spalten != null)
     {
       StringBuilder error = new StringBuilder();
-      for (int i = 0; i < spalten.length; i++)
+      for (final String s : spalten)
       {
-        String col = spalten[i].trim().toUpperCase();
+        String col = s.trim().toUpperCase();
         if (!_adressenMap.contains(col) && !_firmenMap.contains(col) && !_partnerMap.contains(col) && !_aenderungTabelleMap.contains(col))
         {
           if (error.length() > 0)
           {
             error.append(',');
           }
-          error.append(spalten[i]);
+          error.append(s);
         }
       }
       if (error.length() > 0)
@@ -261,9 +261,9 @@ public class AenderungenHolen
             }
           }
           this.initDirekteintrag(rs.getString("ADRESSEN_ID"), rs.getString("FIRMEN_ID"), rs.getString("ANSPRECHPARTNER_ID"));
-          for (int x = 0; x < cols.length; x++)
+          for (final String col : cols)
           {
-            this.addColumnValue(cols[x].trim(), rs.getString(cols[x].trim()));
+            this.addColumnValue(col.trim(), rs.getString(col.trim()));
           }
           this.doDirekteintrag();
           // ID merken
