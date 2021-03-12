@@ -2,6 +2,7 @@ package de.destatis.tests;
 
 import de.destatis.regdb.JobBean;
 import de.destatis.regdb.dateiimport.ImportFormat;
+import de.destatis.regdb.dateiimport.job.PruefenJob;
 import de.destatis.regdb.dateiimport.job.pruefen.*;
 import de.destatis.regdb.db.SqlUtil;
 import de.werum.sis.idev.res.job.JobException;
@@ -146,7 +147,7 @@ class MainTest
     PruefeRegisterImport imp = new PruefeRegisterImport(bean, sqlUtil);
     try
     {
-      imp.checkFile();
+      imp.checkFile(PruefenJob.READ_MAXIMUM_LINES_SIZE);
       showLogErrors(bean);
       assertTrue(bean.getFormatPruefung().anzahlFehler > 7);
       assertEquals(14, bean.getImportdatei().anzahlDatensaetze);
@@ -173,7 +174,7 @@ class MainTest
     PruefeRegisterImport imp = new PruefeRegisterImport(bean, sqlUtil);
     try
     {
-      imp.checkFile();
+      imp.checkFile(PruefenJob.READ_MAXIMUM_LINES_SIZE);
       showLogErrors(bean);
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
       assertEquals(10, bean.getImportdatei().anzahlDatensaetze);
@@ -205,7 +206,7 @@ class MainTest
     PruefeIdevImport imp = new PruefeIdevImport(bean, sqlUtil);
     try
     {
-      imp.checkFile();
+      imp.checkFile(PruefenJob.READ_MAXIMUM_LINES_SIZE);
       showLogErrors(bean);
       assertTrue(bean.getFormatPruefung().anzahlFehler > 9);
       assertEquals(6, bean.getImportdatei().anzahlDatensaetze);
@@ -235,7 +236,7 @@ class MainTest
     PruefeIdevImport imp = new PruefeIdevImport(bean, sqlUtil);
     try
     {
-      imp.checkFile();
+      imp.checkFile(PruefenJob.READ_MAXIMUM_LINES_SIZE);
       showLogErrors(bean);
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
       assertEquals(100, bean.getImportdatei().anzahlDatensaetze);
@@ -265,7 +266,7 @@ class MainTest
     PruefeVorbelegungenImport imp = new PruefeVorbelegungenImport(bean, sqlUtil);
     try
     {
-      imp.checkFile();
+      imp.checkFile(PruefenJob.READ_MAXIMUM_LINES_SIZE);
       showLogErrors(bean);
       assertTrue(bean.getFormatPruefung().anzahlFehler > 7);
       assertEquals(6, bean.getImportdatei().anzahlDatensaetze);
@@ -295,7 +296,7 @@ class MainTest
     PruefeVorbelegungenImport imp = new PruefeVorbelegungenImport(bean, sqlUtil);
     try
     {
-      imp.checkFile();
+      imp.checkFile(PruefenJob.READ_MAXIMUM_LINES_SIZE);
       showLogErrors(bean);
       assertTrue(bean.getFormatPruefung().anzahlFehler >= 7);
       assertEquals(8, bean.getImportdatei().anzahlDatensaetze);
@@ -325,7 +326,7 @@ class MainTest
     PruefeXmlImport imp = new PruefeXmlImport(bean, sqlUtil);
     try
     {
-      imp.checkFile();
+      imp.checkFile(PruefenJob.READ_MAXIMUM_LINES_SIZE);
       showLogErrors(bean);
       assertTrue(bean.getFormatPruefung().anzahlFehler > 16);
       assertEquals(12, bean.getImportdatei().anzahlDatensaetze);
@@ -355,7 +356,7 @@ class MainTest
     PruefeXmlImport imp = new PruefeXmlImport(bean, sqlUtil);
     try
     {
-      imp.checkFile();
+      imp.checkFile(PruefenJob.READ_MAXIMUM_LINES_SIZE);
       showLogErrors(bean);
       assertEquals(0, bean.getFormatPruefung().anzahlFehler);
       assertEquals(31, bean.getImportdatei().anzahlDatensaetze);

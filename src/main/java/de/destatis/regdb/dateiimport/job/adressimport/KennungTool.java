@@ -24,14 +24,14 @@ public class KennungTool
   /**
    * The Constant SQL_SELECT_MELDERKENNUNG.
    */
-  private static final String SQL_SELECT_MELDERKENNUNG = "SELECT KENNUNG FROM melder WHERE KENNUNG IN({0})";
+  private static final String SQL_SELECT_MELDERKENNUNG = "SELECT KENNUNG FROM tmpchar INNER JOIN melder ON(tmpchar.ID = melder.KENNUNG)";
   /**
    * The Log.
    */
   protected final LoggerIfc log = Logger.getInstance().getLogger(this.getClass());
   private final SecureRandom secureRandom;
   private final SqlUtil sqlUtil;
-  private static final int MAX_SIZE = 500;
+  private static final int MAX_SIZE = 1000;
   private String sbLand;
 
   /**
@@ -79,9 +79,8 @@ public class KennungTool
 
   private void entferneVorhandeneKennungen(HashSet<String> pruefKennungen) throws JobException
   {
-    String kennungen = this.sqlUtil.convertStringList(pruefKennungen);
-    String sql = MessageFormat.format(SQL_SELECT_MELDERKENNUNG, kennungen);
-    List<ResultRow> rows = this.sqlUtil.fetchMany(sql);
+    this.sqlUtil.insertStringIds(pruefKennungen);
+    List<ResultRow> rows = this.sqlUtil.fetchMany(SQL_SELECT_MELDERKENNUNG);
     for (ResultRow row : rows)
     {
       pruefKennungen.remove(row.getString(1));

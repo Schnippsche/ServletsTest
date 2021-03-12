@@ -73,7 +73,7 @@ public abstract class AbstractPruefeImport<T>
    *
    * @throws JobException the job exception
    */
-  public AbstractJob checkFile() throws JobException
+  public AbstractJob checkFile(int blockSize) throws JobException
   {
 
     int offset = 0;
@@ -83,15 +83,21 @@ public abstract class AbstractPruefeImport<T>
     {
       do
       {
-        this.log.info(MessageFormat.format(MSG_PRUEFSTART, offset, offset + this.jobBean.importBlockGroesse - 1, this.jobBean.getImportdatei().getPath().getFileName()));
-        rows = this.reader.readSegment(this.jobBean.getImportdatei().getPath(), this.jobBean.getImportdatei().getCharset(), offset, this.jobBean.importBlockGroesse);
+        this.log.info(MessageFormat.format(MSG_PRUEFSTART, offset, offset + blockSize - 1, this.jobBean.getImportdatei().getPath().getFileName()));
+        long st = System.currentTimeMillis();
+        rows = this.reader.readSegment(this.jobBean.getImportdatei().getPath(), this.jobBean.getImportdatei().getCharset(), offset, blockSize);
+        this.log.info("Segmentiertes Lesen abgeschlossen in " + (System.currentTimeMillis() - st) + " ms");
         if (!rows.isEmpty())
         {
+          this.log.info("Starte Validierung...");
+          st = System.currentTimeMillis();
           this.jobBean.getImportdatei().anzahlDatensaetze += rows.size();
           validate(rows, offset);
-          offset += this.jobBean.importBlockGroesse;
+          offset += blockSize;
+          this.log.info("Validierung abgeschlossen in " + (System.currentTimeMillis() - st) + " ms");
+
         }
-      } while (!rows.isEmpty() && this.pruefUtil.isFehlerLimitNichtErreicht() && rows.size() == this.jobBean.importBlockGroesse);
+      } while (!rows.isEmpty() && this.pruefUtil.isFehlerLimitNichtErreicht() && rows.size() == blockSize);
     }
     this.pruefUtil.checkRunningImport(this.jobBean.quellReferenzId);
     this.log.info(MessageFormat.format(MSG_PRUEFENDE, this.jobBean.getFormatPruefung().anzahlFehler));

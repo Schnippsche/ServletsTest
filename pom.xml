@@ -144,7 +144,9 @@
 
     <build>
         <finalName>regdbservlets</finalName>
+
         <pluginManagement>
+
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
