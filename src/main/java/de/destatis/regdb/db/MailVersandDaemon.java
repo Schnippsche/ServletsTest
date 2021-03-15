@@ -1,9 +1,7 @@
 package de.destatis.regdb.db;
 
-import com.javaexchange.dbConnectionBroker.DbConnectionBroker;
 import de.destatis.regdb.Email;
 import de.werum.sis.idev.res.conf.db.DBConfig;
-import de.werum.sis.idev.res.db.ConnectionManager;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
 import de.werum.sis.idev.res.secure.ObfuscationAlgorithm;
@@ -62,12 +60,7 @@ public class MailVersandDaemon
    */
   private void checkSettings()
   {
-    DbConnectionBroker broker = ConnectionManager.getConnectionBroker("RegDB", ConnectionManager.TYP_DEFAULT);
-    if (broker == null)
-    {
-      throw new IllegalStateException("ConnectionBroker konnte nicht erzeugt werden!");
-    }
-    Connection connection = broker.getConnection();
+    Connection connection = ConnectionTool.getInstance().getConnection();
     if (connection == null)
     {
       throw new IllegalStateException("Connection konnte nicht erzeugt werden!");
@@ -91,7 +84,6 @@ public class MailVersandDaemon
 
       if (this.emailHost != null && !this.emailHost.isEmpty())
       {
-
         if (obfuscatedEmailUser != null && !obfuscatedEmailUser.isEmpty())
         {
           String deobfuscatedEmailUser = new String(ObfuscationAlgorithm.deobfuscate(obfuscatedEmailUser));
@@ -131,20 +123,13 @@ public class MailVersandDaemon
         this.session = Session.getInstance(javaMailProperties);
       }
     }
-    catch (Throwable e)
+    catch (Exception e)
     {
       this.log.error("Mail-Versand nicht moeglich!" + e.getMessage());
     }
     finally
     {
-      try
-      {
-        broker.freeConnection(connection);
-      }
-      catch (Throwable ignore)
-      {
-        this.log.error("Freigabe der Connection gescheitert!");
-      }
+       ConnectionTool.getInstance().freeConnection(connection);
     }
   }
 
@@ -223,7 +208,7 @@ public class MailVersandDaemon
    * @param mail the mail
    * @return the internet address
    */
-  private InternetAddress createValidAddress(String mail)
+  public InternetAddress createValidAddress(String mail)
   {
     try
     {
@@ -278,7 +263,7 @@ public class MailVersandDaemon
           transport.close();
         }
       }
-      catch (Throwable e)
+      catch (MessagingException e)
       {
         this.log.error("Fehler beim Schliessen der Mailverbindung", e);
       }

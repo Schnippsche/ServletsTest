@@ -130,7 +130,7 @@ public class MelderkontoImportJob extends AbstractImportJob
     {
       for (MelderkontoImportBean bean : vorhandeneBeans)
       {
-        ps.addValues(bean.getMeldungId());
+        ps.addValue(bean.getMeldungId());
         ResultRow row = ps.fetchOne();
         if (row != null)
         {

@@ -5,15 +5,22 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+/**
+ * The class String util.
+ */
 public class StringUtil
 {
 
   /**
    * The empty String {@code ""}.
    *
-   * @since 2.0
    */
   public static final String EMPTY = "";
+
+  private StringUtil()
+  {
+    // Nothing
+  }
 
   // Left/Right/Mid
   // -----------------------------------------------------------------------
@@ -186,8 +193,7 @@ public class StringUtil
    * </pre>
    *
    * @param str   the String to get the substring from, may be null
-   * @param start the position to start from, negative means
-   *              count back from the end of the String by this many characters
+   * @param start the position to start from, negative means              count back from the end of the String by this many characters
    * @return substring from start position, {@code null} if null String input
    */
   public static String substring(final String str, int start)
@@ -248,12 +254,9 @@ public class StringUtil
    * </pre>
    *
    * @param str   the String to get the substring from, may be null
-   * @param start the position to start from, negative means
-   *              count back from the end of the String by this many characters
-   * @param end   the position to end at (exclusive), negative means
-   *              count back from the end of the String by this many characters
-   * @return substring from start position to end position,
-   * {@code null} if null String input
+   * @param start the position to start from, negative means              count back from the end of the String by this many characters
+   * @param end   the position to end at (exclusive), negative means              count back from the end of the String by this many characters
+   * @return substring from start position to end position, {@code null} if null String input
    */
   public static String substring(final String str, int start, int end)
   {
@@ -296,11 +299,24 @@ public class StringUtil
     return str.substring(start, end);
   }
 
+  /**
+   * Gets int.
+   *
+   * @param obj the obj
+   * @return the int
+   */
   public static int getInt(Object obj)
   {
     return getInt(obj, 0);
   }
 
+  /**
+   * Gets int.
+   *
+   * @param obj          the obj
+   * @param defaultValue the default value
+   * @return the int
+   */
   public static int getInt(Object obj, int defaultValue)
   {
     if (obj == null || obj.toString().isEmpty())
@@ -310,13 +326,18 @@ public class StringUtil
     try
     {
       return Integer.parseInt(String.valueOf(obj));
-    }
-    catch (NumberFormatException e)
+    } catch (NumberFormatException e)
     {
       return defaultValue;
     }
   }
 
+  /**
+   * Convert my sql date local date time.
+   *
+   * @param date the date
+   * @return the local date time
+   */
   public static LocalDateTime convertMySqlDate(Date date)
   {
     if (date == null)
@@ -328,6 +349,12 @@ public class StringUtil
     return timestamp.toLocalDateTime();
   }
 
+  /**
+   * Convert local date time date.
+   *
+   * @param ldt the ldt
+   * @return the date
+   */
   public static Date convertLocalDateTime(LocalDateTime ldt)
   {
     if (ldt == null)
@@ -404,11 +431,35 @@ public class StringUtil
     return wert == null ? "" : String.valueOf(wert);
   }
 
+  /**
+   * Not empty boolean.
+   *
+   * @param wert the wert
+   * @return the boolean
+   */
+  public static boolean notEmpty(Object wert)
+  {
+    return (wert != null && !wert.toString().trim().isEmpty());
+  }
+
+  /**
+   * Join string.
+   *
+   * @param collection the collection
+   * @return the string
+   */
   public static String join(Collection<?> collection)
   {
     return join(collection, ",");
   }
 
+  /**
+   * Join string.
+   *
+   * @param collection the collection
+   * @param delimiter  the delimiter
+   * @return the string
+   */
   public static String join(Collection<?> collection, String delimiter)
   {
     StringBuilder buf = new StringBuilder();

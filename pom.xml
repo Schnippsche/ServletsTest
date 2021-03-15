@@ -119,6 +119,14 @@
             <artifactId>opencsv</artifactId>
             <version>2.3</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.8.0</version>
+        </dependency>
+
         <!-- junit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

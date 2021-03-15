@@ -39,13 +39,29 @@ public class Email
   }
 
   /**
-   * @param absender
-   * @param betreff
-   * @param text
+   * Instantiates a new Email.
+   *
+   * @param empfaenger the empfaenger
+   * @param absender   the absender
+   * @param betreff    the betreff
+   * @param text       the text
+   */
+  public Email(String empfaenger, String absender, String betreff, String text)
+  {
+    this(new HashSet<>(), absender, betreff, text);
+    addEmpfaenger(empfaenger);
+  }
+
+  /**
+   * Instantiates a new Email.
+   *
+   * @param absender the absender
+   * @param betreff  the betreff
+   * @param text     the text
    */
   public Email(String absender, String betreff, String text)
   {
-    this(null, absender, betreff, text);
+    this((String) null, absender, betreff, text);
 
   }
 
@@ -73,9 +89,15 @@ public class Email
     this.empfaenger = empfaenger;
   }
 
+  /**
+   * Add empfaenger.
+   *
+   * @param empfaenger the empfaenger
+   */
   public void addEmpfaenger(String empfaenger)
   {
-    this.getEmpfaenger().add(empfaenger);
+    if (empfaenger != null)
+      this.getEmpfaenger().add(empfaenger);
   }
 
   /**
