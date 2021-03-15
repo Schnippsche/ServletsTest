@@ -6,6 +6,7 @@
 package de.destatis.regdb.servlets;
 
 import de.destatis.regdb.aenderungen.AenderungenHolen;
+import de.destatis.regdb.db.FileUtil;
 import de.destatis.regdb.session.RegDBSession;
 
 import javax.servlet.http.HttpServletRequest;
@@ -111,7 +112,7 @@ public class RegDBAenderungenHolenServlet extends RegDBGeneralHttpServlet
         }
         bos.flush();
       }
-      file.delete();
+      FileUtil.delete(file);
     }
   }
 

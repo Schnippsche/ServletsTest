@@ -5,6 +5,7 @@
  */
 package de.destatis.regdb.servlets;
 
+import de.destatis.regdb.db.FileUtil;
 import de.destatis.regdb.meldungen.MeldungenHolen;
 import de.destatis.regdb.session.RegDBSession;
 
@@ -120,7 +121,7 @@ public class RegDBMeldungenHolenServlet extends RegDBGeneralHttpServlet
       }
       bos.flush();
     }
-    file.delete();
+    FileUtil.delete(file);
   }
 
 }

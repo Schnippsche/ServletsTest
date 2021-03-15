@@ -23,7 +23,6 @@ public class PruefenJob extends AbstractJob
    */
   private static final String MSG_PRUEFUNG_GESTARTET = "Prüfung der Importdatei \"{0}\" gestartet...";
 
-  public static final int READ_MAXIMUM_LINES_SIZE = 40000;
   /**
    * Instantiates a new pruefen job.
    *
@@ -70,7 +69,7 @@ public class PruefenJob extends AbstractJob
         throw new JobException("Ungueltiges Format:" + this.jobBean.getImportdatei().importFormat.toString());
     }
 
-    return pruefKlasse.checkFile(READ_MAXIMUM_LINES_SIZE);
+    return pruefKlasse.checkFile();
   }
 
 }

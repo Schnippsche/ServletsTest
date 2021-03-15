@@ -156,6 +156,27 @@ public class ResultRow
   }
 
   /**
+   * Gets column name.
+   *
+   * @param column the column
+   * @return the column name
+   */
+  public String getColumnName(int column)
+  {
+    return columnNames.get(convertColumn(column));
+  }
+
+  /**
+   * Gets column count.
+   *
+   * @return the column count
+   */
+  public int getColumnCount()
+  {
+    return this.columnNames.size();
+  }
+
+  /**
    * Convert column.
    *
    * @param column the column

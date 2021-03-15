@@ -51,15 +51,8 @@ public class EntpackenJob extends AbstractJob
     AbstractJob nextJob = this.entzippe(zipFile, destinationDir);
     this.jobBean.setStatusAndInfo(JobStatus.AKTIV, "Entpacken der Daten gestartet...");
     Path propPath = ladeProperties();
-    try
-    {
-      Files.deleteIfExists(zipFile.toPath());
-      Files.deleteIfExists(propPath);
-    }
-    catch (IOException e)
-    {
-      this.log.error("Datei konnte nicht geloescht werden:" + e.getMessage());
-    }
+    FileUtil.delete(zipFile);
+    FileUtil.delete(propPath);
     this.jobBean.setStatusAndInfo(JobStatus.AKTIV, "Entpacken der Daten abgeschlossen");
     return nextJob;
   }

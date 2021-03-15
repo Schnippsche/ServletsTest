@@ -46,23 +46,13 @@ public class AufraeumUtil
    * Entferne dateien.
    *
    * @param mainJobId the main job id
-   * @return true, if successful
    */
-  public boolean entferneDateien(Integer mainJobId)
+  public void entferneDateien(Integer mainJobId)
   {
     String importVerzeichnis = Paths.get(this.dateiImportDir, "" + mainJobId).toString();
     this.log.debug("entferneDateien aus Verzeichnis " + importVerzeichnis);
     Path importDateiPath = Paths.get(importVerzeichnis, "importdatei.txt");
-    try
-    {
-      Files.deleteIfExists(importDateiPath);
-      return true;
-    }
-    catch (IOException e)
-    {
-      this.log.error("Fehler beim Entfernen der Importdateien:" + e.getMessage());
-    }
-    return false;
+    FileUtil.delete(importDateiPath);
   }
 
   /**
@@ -70,9 +60,8 @@ public class AufraeumUtil
    *
    * @param mainJobId     the main job id
    * @param zielDateiName the ziel datei name
-   * @return true, if successful
    */
-  public boolean erzeugeProtokollArchiv(String mainJobId, String zielDateiName)
+  public void erzeugeProtokollArchiv(String mainJobId, String zielDateiName)
   {
     String importVerzeichnis = Paths.get(this.dateiImportDir, mainJobId).toString();
     this.log.debug("erzeuge Protokoll Archiv " + zielDateiName + " in Verzeichnis " + importVerzeichnis);
@@ -85,7 +74,7 @@ public class AufraeumUtil
     pfade.add(Paths.get(importVerzeichnis, AuswirkungenJob.LOESCH_PROTOKOLL_ADRESSEN_KANDIDATEN));
     pfade.add(Paths.get(importVerzeichnis, AuswirkungenJob.LOESCH_PROTOKOLL_FIRMEN_KANDIDATEN));
     pfade.add(Paths.get(importVerzeichnis, AuswirkungenJob.LOESCH_PROTOKOLL_MELDER_KANDIDATEN));
-    return zippeDateien(pfade, protokoll);
+    zippeDateien(pfade, protokoll);
   }
 
   /**

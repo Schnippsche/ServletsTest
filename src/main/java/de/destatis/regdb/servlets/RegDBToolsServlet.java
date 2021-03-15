@@ -8,6 +8,7 @@ import de.destatis.regdb.JobBean;
 import de.destatis.regdb.dateiimport.MelderDatenService;
 import de.destatis.regdb.dateiimport.job.FortsetzenJob;
 import de.destatis.regdb.db.DateiImportDaemon;
+import de.destatis.regdb.db.FileUtil;
 import de.destatis.regdb.db.LoeschUtil;
 import de.destatis.regdb.db.StringUtil;
 import de.destatis.regdb.session.RegDBSession;
@@ -107,7 +108,7 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
           returnMessage = this.abbruchMainJob(prop, conn);
           break;
         case "jobFortsetzen":
-          returnMessage = this.jobFortsetzen(prop, conn, session);
+          returnMessage = this.jobFortsetzen(prop);
           break;
         default:
           returnMessage = "Aktion " + aktion + " nicht gefunden!";
@@ -121,7 +122,7 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
     this.sendErgebnis(res, returnMessage);
   }
 
-  private Object jobFortsetzen(Properties prop, Connection conn, RegDBSession session)
+  private Object jobFortsetzen(Properties prop)
   {
     int jobId = StringUtil.getInt(prop.getProperty("jobId", "0"));
     String dateiImportDir = MelderDatenService.getInstance().getDateiImportDir();
@@ -198,7 +199,7 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
     Integer jobId = StringUtil.getInt(prop.getProperty("jobId", "0"));
     String dateiImportDir = MelderDatenService.getInstance().getDateiImportDir();
     File jobDirectory = Paths.get(dateiImportDir, "" + jobId).toFile();
-    this.deleteDirectory(jobDirectory);
+    FileUtil.deleteDirectory(jobDirectory);
     LoeschUtil util = new LoeschUtil(conn);
     util.loescheStandardWerte(jobId);
     util.loescheImport(jobId);
@@ -229,41 +230,6 @@ public class RegDBToolsServlet extends RegDBGeneralHttpServlet
       return e;
     }
     return "";
-  }
-
-  /**
-   * Loescht ein Verzeichnis samt Unterverzeichnissen und dateien.
-   *
-   * @param directory the directory
-   */
-  private void deleteDirectory(File directory)
-  {
-    File[] filesInDir = directory.listFiles();
-
-    if (filesInDir != null) // else there are no directories
-    {
-      // delete all files in the dir including subdirectories
-      for (File file : filesInDir)
-      {
-        if (file.isDirectory())
-        {
-          this.deleteDirectory(file);
-        }
-        else
-        {
-          if (!file.delete())
-          {
-            this.log.error("Datei " + file + " konnte nicht entfernt werden");
-          }
-        }
-      }
-
-      // delete the dir itself
-      if (!directory.delete())
-      {
-        this.log.error("Verzeichnis " + directory + " konnte nicht entfernt werden");
-      }
-    }
   }
 
   @Override

@@ -6,7 +6,6 @@ import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,16 +16,12 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * @author Stefan Toengi
  */
 public class LoeschUtil
 {
-
-  public static final String LOESCH_PROKOLL_DATEINAME = "protokolle.zip";
   /**
    * The Constant LOESCH_PROTOKOLL_ADRESSEN.
    */
@@ -437,40 +432,6 @@ public class LoeschUtil
       this.sqlUtil.dbRollback();
       throw new JobException(throwable.getMessage(), throwable);
     }
-  }
-
-  /**
-   * Erzeuge protokoll archiv.
-   *
-   * @return true, if successful
-   * @throws IOException Signals that an I/O exception has occurred.
-   */
-  public boolean erzeugeProtokollArchiv() throws IOException
-  {
-    this.log.debug("erzeugeProtokollArchiv");
-    // LoeschProtokolle zippen
-    Path protokoll = Paths.get(this.importVerzeichnis, LOESCH_PROKOLL_DATEINAME);
-    List<Path> pfade = new ArrayList<>();
-    pfade.add(Paths.get(this.importVerzeichnis, LoeschUtil.LOESCH_PROTOKOLL_ADRESSEN));
-    pfade.add(Paths.get(this.importVerzeichnis, LoeschUtil.LOESCH_PROTOKOLL_FIRMEN));
-    pfade.add(Paths.get(this.importVerzeichnis, LoeschUtil.LOESCH_PROTOKOLL_MELDER));
-    boolean fileExists = false;
-    try (OutputStream os = Files.newOutputStream(protokoll); ZipOutputStream zos = new ZipOutputStream(os))
-    {
-      for (Path path : pfade)
-      {
-        if (Files.exists(path))
-        {
-          ZipEntry e = new ZipEntry(path.getFileName().toString());
-          zos.putNextEntry(e);
-          Files.copy(path, zos);
-          zos.closeEntry();
-          Files.delete(path);
-          fileExists = true;
-        }
-      }
-    }
-    return fileExists;
   }
 
   /**

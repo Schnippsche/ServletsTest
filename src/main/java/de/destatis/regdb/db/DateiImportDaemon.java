@@ -22,17 +22,27 @@ import java.util.LinkedList;
 
 public class DateiImportDaemon
 {
-
-  /**
-   * The Constant KONFIGURATION_DAEMON_INTERVAL.
-   */
-  public static final String KONFIGURATION_DAEMON_INTERVAL = "int_dateiimport_interval";
+  private static DateiImportDaemon instance = null;
   private final LinkedList<AbstractJob> jobs;
   private final LoggerIfc log;
-  private static DateiImportDaemon instance = null;
-  private Thread thread;
   private final ArrayList<ServerimportStatusBean> serverimportStatusBeans;
   private final HashSet<Integer> abortedJobs;
+  private Thread thread;
+  private final AufraeumUtil aufraeumUtil;
+
+  /**
+   * Instantiates a new datei import daemon.
+   */
+  private DateiImportDaemon()
+  {
+    super();
+    this.jobs = new LinkedList<>();
+    this.serverimportStatusBeans = new ArrayList<>();
+    this.abortedJobs = new HashSet<>();
+    this.aufraeumUtil = new AufraeumUtil();
+    this.log = Logger.getInstance().getLogger(this.getClass());
+    this.log.info("initing " + this.getClass());
+  }
 
   /**
    * Gets the single instance of DateiImportDaemon.
@@ -46,19 +56,6 @@ public class DateiImportDaemon
       instance = new DateiImportDaemon();
     }
     return instance;
-  }
-
-  /**
-   * Instantiates a new datei import daemon.
-   */
-  private DateiImportDaemon()
-  {
-    super();
-    this.jobs = new LinkedList<>();
-    this.serverimportStatusBeans = new ArrayList<>();
-    this.abortedJobs = new HashSet<>();
-    this.log = Logger.getInstance().getLogger(this.getClass());
-    this.log.info("initing " + this.getClass());
   }
 
   public synchronized void checkJobs()
@@ -102,7 +99,7 @@ public class DateiImportDaemon
           this.abortedJobs.clear();
         }
         // Abgelaufene Jobs ermitteln
-        //this.aufraeumUtil.entferneErstenAbgelaufenenJob();
+        this.aufraeumUtil.entferneErstenAbgelaufenenJob();
       }
     }
 

@@ -13,7 +13,10 @@ import de.destatis.regdb.dateiimport.job.AbstractImportJob;
 import de.destatis.regdb.dateiimport.job.AbstractJob;
 import de.destatis.regdb.dateiimport.job.LoeschenJob;
 import de.destatis.regdb.dateiimport.reader.SegmentedCsvFileReader;
-import de.destatis.regdb.db.*;
+import de.destatis.regdb.db.AufraeumUtil;
+import de.destatis.regdb.db.PreparedInsert;
+import de.destatis.regdb.db.PreparedUpdate;
+import de.destatis.regdb.db.ResultRow;
 import de.werum.sis.idev.intern.actions.util.MelderDaten;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.secure.PasswordAlgorithm;
@@ -37,7 +40,7 @@ public class AdressImportJob extends AbstractImportJob
   /**
    * The Constant SQL_SELECT_BESTAND.
    */
-  public static final String SQL_SELECT_BESTAND = "SELECT adressen.QUELL_REFERENZ_OF, IF(adressen.QUELL_REFERENZ_TYP=\"MANUELL\",1,0) AS MANUELLE_ADRESSE, adressen.ADRESSEN_ID, firmen.FIRMEN_ID, firmen.ANSPRECHPARTNER_ID AS FIRMA_PARTNER_ID, melder.MELDER_ID, melder.ANSPRECHPARTNER_ID AS MELDER_PARTNER_ID, melder.KENNUNG, IF(firmen_adressen.STATUS IS NULL,1,0) AS FIRMEN_ADRESSEN_STATUS FROM tmpchar INNER JOIN adressen ON(tmpchar.ID = adressen.QUELL_REFERENZ_OF) LEFT JOIN firmen_adressen ON(firmen_adressen.ADRESSEN_ID = adressen.ADRESSEN_ID AND firmen_adressen.firmen_id > 0 AND firmen_adressen.STATUS = \"AKTIV\")  LEFT JOIN firmen ON(firmen_adressen.FIRMEN_ID = firmen.FIRMEN_ID AND firmen_adressen.STATUS = \"AKTIV\" AND firmen.STATUS != \"LOESCH\")  LEFT JOIN melder ON(melder.ADRESSEN_ID = adressen.ADRESSEN_ID AND firmen_adressen.FIRMEN_ID = melder.FIRMEN_ID AND melder.STATUS != \"LOESCH\")  WHERE adressen.STATUS != \"LOESCH\" AND adressen.QUELL_REFERENZ_ID = ?";
+  public static final String SQL_SELECT_BESTAND = "SELECT adressen.QUELL_REFERENZ_OF, IF(adressen.QUELL_REFERENZ_TYP=\"MANUELL\",1,0) AS MANUELLE_ADRESSE," + "adressen.ADRESSEN_ID, firmen.FIRMEN_ID, firmen.ANSPRECHPARTNER_ID AS FIRMA_PARTNER_ID, melder.MELDER_ID, melder.ANSPRECHPARTNER_ID AS MELDER_PARTNER_ID, melder.KENNUNG," + "IF(firmen_adressen.STATUS IS NULL,1,0) AS FIRMEN_ADRESSEN_STATUS FROM adressen" + " LEFT JOIN firmen_adressen ON(firmen_adressen.ADRESSEN_ID = adressen.ADRESSEN_ID AND firmen_adressen.firmen_id > 0 AND firmen_adressen.STATUS = \"AKTIV\")" + " LEFT JOIN firmen ON(firmen_adressen.FIRMEN_ID = firmen.FIRMEN_ID AND firmen_adressen.STATUS = \"AKTIV\" AND firmen.STATUS != \"LOESCH\")" + " LEFT JOIN melder ON(melder.ADRESSEN_ID = adressen.ADRESSEN_ID AND firmen_adressen.FIRMEN_ID = melder.FIRMEN_ID AND melder.STATUS != \"LOESCH\")" + " WHERE adressen.STATUS != \"LOESCH\" AND adressen.QUELL_REFERENZ_ID = {0} AND adressen.QUELL_REFERENZ_OF IN({1})";
 
   /**
    * The adress import beans.
@@ -172,14 +175,10 @@ public class AdressImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.anzahlBestandsadressen = 0;
     this.anzahlNeuadressen = 0;
-    List<ResultRow> rows;
-    this.sqlUtil.insertStringIds(this.sortedAdressImportBeans.stream().map(b -> b.getAdresse().getQuellReferenzOf()).collect(Collectors.toSet()));
-    try (PreparedSelect ps = this.sqlUtil.createPreparedSelect(SQL_SELECT_BESTAND))
-    {
-      ps.addValue(this.jobBean.quellReferenzId);
-      rows = ps.fetchMany();
-    }
 
+    String ofs = this.sqlUtil.convertStringList(this.sortedAdressImportBeans.stream().map(b -> b.getAdresse().getQuellReferenzOf()).collect(Collectors.toSet()));
+    String sql = MessageFormat.format(SQL_SELECT_BESTAND, "" + this.jobBean.quellReferenzId, ofs);
+    List<ResultRow> rows = this.sqlUtil.fetchMany(sql);
     for (ResultRow row : rows)
     {
       AdressImportBean bean = this.adressImportBeans.get(row.getString("QUELL_REFERENZ_OF"));
@@ -233,7 +232,8 @@ public class AdressImportJob extends AbstractImportJob
       if (ImportFormat.IMPORTMITANSPRECHPARTNER.equals(this.jobBean.getImportdatei().importFormat))
       {
         bean = this.doParseZeileW3StatFormat(cols);
-      } else
+      }
+      else
       {
         bean = this.doParseZeileIdevFormat(cols);
       }
@@ -572,7 +572,14 @@ public class AdressImportJob extends AbstractImportJob
     {
       this.beginStopWatch();
       // Ermittle zuerst die Anzahl der benoetigten Kennungen!
-      int anzahl = (int) this.sortedAdressImportBeans.stream().filter(b -> b.getAdresse().isNotManuelleAdresse()).filter(b -> b.getMelder().isNeu()).count();
+      int anzahl = 0;
+      for (AdressImportBean bean : this.sortedAdressImportBeans)
+      {
+        if (bean.getAdresse().isNotManuelleAdresse() && bean.getMelder().isNeu())
+        {
+          anzahl++;
+        }
+      }
       if (anzahl > 0)
       {
         this.log.info(MessageFormat.format("Erzeuge {0} eindeutige Melderkennungen...", anzahl));
@@ -599,7 +606,7 @@ public class AdressImportJob extends AbstractImportJob
     this.beginStopWatch();
     this.log.info("Erzeuge Neue Melder...");
     int anzahl = 0;
-    // Ermittle zuerst die neuen Melder
+    // Ermittle zuerst die Anzahl der benoetigten Kennungen!
     ArrayList<AdressImportBean> neueMelder = new ArrayList<>();
     for (AdressImportBean bean : this.sortedAdressImportBeans)
     {
@@ -763,7 +770,8 @@ public class AdressImportJob extends AbstractImportJob
             rs.updateString("STATUS", "AEND");
             rs.updateRow();
             anzahl++;
-          } else
+          }
+          else
           {
             this.log.error("Konnte keine MelderDaten erzeugen");
           }
@@ -791,7 +799,8 @@ public class AdressImportJob extends AbstractImportJob
       byte[] privaterSchluesselGeschuetzt = UserKeyEncryptionAlgorithm.encryptUserKey(privaterSchluessel, systemPasswort);
       byte[] oeffentlicherSchluesselGeschuetzt = UserKeyEncryptionAlgorithm.encryptUserKey(oeffentlicherSchluessel, systemPasswort);
       return new MelderDaten(systemPasswort, passwort, privaterSchluessel, oeffentlicherSchluessel, privaterSchluesselGeschuetzt, oeffentlicherSchluesselGeschuetzt);
-    } catch (GeneralSecurityException e)
+    }
+    catch (GeneralSecurityException e)
     {
       this.log.error("datenVerschluesseln schlug fehl:" + e.getMessage());
     }

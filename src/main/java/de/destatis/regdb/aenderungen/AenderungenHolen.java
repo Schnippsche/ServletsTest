@@ -1,8 +1,3 @@
-/*
- * @(#)AenderungenHolen.java 1.00.12.01.2020
- * Copyright 2020 Statistisches Bundesamt
- * @author Stefan Toengi (Destatis)
- */
 package de.destatis.regdb.aenderungen;
 
 import de.destatis.regdb.db.RegDBSecurity;
@@ -14,38 +9,26 @@ import de.werum.sis.idev.res.log.LoggerIfc;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * The type Aenderungen holen.
+ */
 public class AenderungenHolen
 {
+  private static final String EXTENDED = ",SACHBEARBEITER_ID={0}, STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW() WHERE {1} = {2}";
 
   // Alle Melder mit Referenz über MelderStatistik-Tabelle und Quell-Referenz
   private static final String SQL_AENDERUNGEN_DIREKTEINTRAG = "(SELECT ae.* FROM aenderung AS ae WHERE AMT = ? AND STATISTIK_ID = ? AND TYP=? AND STATUS IN('NEU', 'ERLEDIGT','BEARBEITET') AND (aenderungsart & ?) AND (ae.STATUS_DIREKTEINTRAG & ? = 0)) UNION ( SELECT ae.* FROM aenderung AS ae INNER JOIN melder AS m ON (m.melder_id = ae.melder_id) INNER JOIN adressen AS a ON (m.adressen_id = a.adressen_id) INNER JOIN quell_referenz_verwaltung AS q ON (a.quell_referenz_id = q.quell_referenz_id) INNER JOIN melder_statistiken AS ms ON (m.melder_id = ms.melder_id) WHERE (q.amt=? OR q.amt = '') AND (q.statistik_id = ? OR q.statistik_id=0) AND ae.amt='' AND ae.statistik_id=0 AND ms.amt=? AND ms.statistik_id=? AND ms.STATUS != 'LOESCH' AND ae.STATUS IN('NEU', 'ERLEDIGT','BEARBEITET') AND typ=? AND q.STATUS != 'LOESCH' AND (ae.aenderungsart & ?) AND (ae.STATUS_DIREKTEINTRAG & ? = 0) ) ORDER BY aenderung_id LIMIT 1000";
-
   private static final String SQL_AENDERUNGEN_EXPORT_AENDERUNG = "(SELECT ae.* FROM aenderung AS ae WHERE AMT = ? AND STATISTIK_ID = ? AND TYP=? AND STATUS IN('NEU', 'ERLEDIGT', 'BEARBEITET') AND (aenderungsart & ?) AND (ae.STATUS_EXPORT_AENDERUNG & ? = 0)) UNION (SELECT ae.* FROM aenderung AS ae INNER JOIN melder AS m ON (m.melder_id = ae.melder_id) INNER JOIN adressen as a ON (m.adressen_id = a.adressen_id) INNER JOIN quell_referenz_verwaltung as q ON (a.quell_referenz_id = q.quell_referenz_id) INNER JOIN melder_statistiken as ms ON (m.melder_id = ms.melder_id) WHERE (q.amt=? OR q.amt = '') AND (q.statistik_id = ? OR q.statistik_id=0) AND ae.amt='' AND ae.statistik_id=0 AND ms.amt=? AND ms.statistik_id=? AND ms.STATUS != 'LOESCH' AND ae.STATUS IN('NEU', 'ERLEDIGT', 'BEARBEITET') AND typ=? AND q.STATUS != 'LOESCH' AND (ae.aenderungsart & ?) AND (ae.STATUS_EXPORT_AENDERUNG & ? = 0)) ORDER BY aenderung_id LIMIT 1000";
-  private final Connection myConn;
-  private final LoggerIfc log;
-  private final String myKennung;
-  private final String myAmt;
-  private final String myStatistik;
-  private final String myTyp;
-  private final int mySbId;
-  private String client;
-  private final int myAenderungsart;
   private static final String DELIMITER = ";";
   private static final String NEWLINE = "\r\n";
-  private File tempDirectory = null;
-  private File fileZipAusgabe = null;
-  private StringBuilder adressenUpdate = null;
-  private StringBuilder firmenUpdate = null;
-  private StringBuilder partnerUpdate = null;
-  private String adressenId;
-  private String firmenId;
-  private String partnerId;
   private static final String[] _adressenSpalten = {"ANREDE", "NAME", "NAME_ERGAENZUNG", "KURZTEXT", "ABTEILUNG", "STRASSE", "HAUSNUMMER", "POSTLEITZAHL", "ORT", "POSTFACH", "POSTFACH_PLZ", "POSTFACH_ORT", "LAND", "TELEFON", "FAX", "EMAIL", "ZUSATZ1", "ZUSATZ2", "ZUSATZ3", "ZUSATZ4", "ZUSATZ5", "ZUSATZ6", "ZUSATZ7", "ZUSATZ8", "ZUSATZ9", "ZUSATZ10", "URS1", "URS2", "URS3", "URS4", "URS5", "URS6", "URS7"};
   private static final String[] _ansprechpartnerSpalten = {"AN_ANREDE", "AN_NAME", "AN_VORNAME", "AN_ABTEILUNG", "AN_TELEFON", "AN_MOBIL", "AN_FAX", "AN_EMAIL"};
   private static final String[] _firmenSpalten = {"FA_NAME", "FA_NAME_ERGAENZUNG", "FA_KURZTEXT"};
@@ -54,6 +37,23 @@ public class AenderungenHolen
   private static final HashSet<String> _partnerMap = new HashSet<>(Arrays.asList(_ansprechpartnerSpalten));
   private static final HashSet<String> _firmenMap = new HashSet<>(Arrays.asList(_firmenSpalten));
   private static final HashSet<String> _aenderungTabelleMap = new HashSet<>(Arrays.asList(_aenderungenSpalten));
+  private final Connection myConn;
+  private final LoggerIfc log;
+  private final String myKennung;
+  private final String myAmt;
+  private final String myStatistik;
+  private final String myTyp;
+  private final int mySbId;
+  private final int myAenderungsart;
+  private String client;
+  private File tempDirectory = null;
+  private File fileZipAusgabe = null;
+  private StringBuilder adressenUpdate = null;
+  private StringBuilder firmenUpdate = null;
+  private StringBuilder partnerUpdate = null;
+  private String adressenId;
+  private String firmenId;
+  private String partnerId;
 
   /**
    * Instantiates a new aenderungen holen.
@@ -103,26 +103,7 @@ public class AenderungenHolen
   public File starteVerarbeitung(String[] spalten, boolean mitUeberschrift) throws AenderungenHolenException
   {
     // Sind alle angegebenen Spalten korrekt ?
-    if (spalten != null)
-    {
-      StringBuilder error = new StringBuilder();
-      for (final String s : spalten)
-      {
-        String col = s.trim().toUpperCase();
-        if (!_adressenMap.contains(col) && !_firmenMap.contains(col) && !_partnerMap.contains(col) && !_aenderungTabelleMap.contains(col))
-        {
-          if (error.length() > 0)
-          {
-            error.append(',');
-          }
-          error.append(s);
-        }
-      }
-      if (error.length() > 0)
-      {
-        throw new AenderungenHolenException("Die folgenden angegebenen Spalten existieren nicht:" + error.toString() + ".Pruefen Sie das Schema oder die Angaben im Feld AENDERUNGS_EXPORT_SPALTEN der Tabelle transferziel!");
-      }
-    }
+    checkSpalten(spalten);
     if (this.holeAenderungsDaten(spalten, mitUeberschrift))
     {
       return this.fileZipAusgabe;
@@ -175,65 +156,12 @@ public class AenderungenHolen
     this.fileZipAusgabe = null;
     StringBuilder ids = new StringBuilder();
     // Sind alle angegebenen Spalten korrekt ?
-    if (spalten != null)
-    {
-      StringBuilder error = new StringBuilder();
-      for (final String s : spalten)
-      {
-        String col = s.trim().toUpperCase();
-        if (!_adressenMap.contains(col) && !_firmenMap.contains(col) && !_partnerMap.contains(col) && !_aenderungTabelleMap.contains(col))
-        {
-          if (error.length() > 0)
-          {
-            error.append(',');
-          }
-          error.append(s);
-        }
-      }
-      if (error.length() > 0)
-      {
-        throw new AenderungenHolenException("Die folgenden angegebenen Spalten existieren nicht:" + error.toString() + ".Pruefen Sie die das Schema oder die Angaben im Feld AENDERUNGS_EXPORT_SPALTEN der Tabelle transferziel!");
-      }
-    }
+    checkSpalten(spalten);
     int counter = 0;
 
-    // Alle Einträge mit AMT/Statistik Referenz
-    /*
-     * String sql = "(SELECT ae.* FROM aenderung AS ae WHERE AMT = '" + this.myAmt + "' AND STATISTIK_ID = " + this.myStatistik +
-     * " AND typ='" + this.myTyp
-     * + "' AND STATUS IN('NEU', 'ERLEDIGT','BEARBEITET') AND (aenderungsart & " + this.myAenderungsart +
-     * ") AND (ae.STATUS_DIREKTEINTRAG & "
-     * + this.myAenderungsart + " = 0))";
-     * // Alle Melder mit Referenz über MelderStatistik-Tabelle und Quell-Referenz
-     * sql +=
-     * " UNION ( SELECT ae.* FROM aenderung AS ae INNER JOIN melder AS m ON (m.melder_id = ae.melder_id) INNER JOIN adressen as a ON (m.adressen_id = a.adressen_id) INNER JOIN quell_referenz_verwaltung as q ON (a.quell_referenz_id = q.quell_referenz_id) INNER JOIN melder_statistiken as ms ON (m.melder_id = ms.melder_id) WHERE (q.amt='"
-     * + this.myAmt
-     * + "' OR q.amt = '') AND (q.statistik_id = "
-     * + this.myStatistik
-     * + " OR q.statistik_id=0) AND ae.amt='' AND ae.statistik_id=0 AND ms.amt='"
-     * + this.myAmt
-     * + "' AND ms.statistik_id="
-     * + this.myStatistik
-     * + " AND ms.STATUS <> 'LOESCH' AND ae.STATUS IN('NEU', 'ERLEDIGT','BEARBEITET') AND typ='"
-     * + this.myTyp
-     * + "' AND q.STATUS <> 'LOESCH' AND (ae.aenderungsart & " + this.myAenderungsart + ") AND (ae.STATUS_DIREKTEINTRAG & " +
-     * this.myAenderungsart + " = 0) )";
-     * sql += " ORDER BY aenderung_id LIMIT 1000";
-     */
     try (PreparedStatement ps = this.myConn.prepareStatement(SQL_AENDERUNGEN_DIREKTEINTRAG))
     {
-      ps.setString(1, this.myAmt);
-      ps.setString(2, this.myStatistik);
-      ps.setString(3, this.myTyp);
-      ps.setInt(4, this.myAenderungsart);
-      ps.setInt(5, this.myAenderungsart);
-      ps.setString(6, this.myAmt);
-      ps.setString(7, this.myStatistik);
-      ps.setString(8, this.myAmt);
-      ps.setString(9, this.myStatistik);
-      ps.setString(10, this.myTyp);
-      ps.setInt(11, this.myAenderungsart);
-      ps.setInt(12, this.myAenderungsart);
+      setStandardValues(ps);
       try (ResultSet rs = ps.executeQuery())
       {
         String[] cols = null;
@@ -246,19 +174,7 @@ public class AenderungenHolen
           // Wurden keine Spaltennamen angegeben, dann hole alle Spalten aus dem ResultSet ( nur beim ersten Mal )
           if (cols == null)
           {
-            if (spalten == null || spalten.length == 0)
-            {
-              int anzColumn = rs.getMetaData().getColumnCount();
-              cols = new String[anzColumn];
-              for (int x = 0; x < anzColumn; x++)
-              {
-                cols[x] = rs.getMetaData().getColumnName(x + 1);
-              }
-            }
-            else
-            {
-              cols = spalten;
-            }
+            cols = getColumnsFromResult(spalten, rs);
           }
           this.initDirekteintrag(rs.getString("ADRESSEN_ID"), rs.getString("FIRMEN_ID"), rs.getString("ANSPRECHPARTNER_ID"));
           for (final String col : cols)
@@ -293,6 +209,49 @@ public class AenderungenHolen
     return this.fileZipAusgabe;
   }
 
+  private String[] getColumnsFromResult(String[] spalten, ResultSet rs) throws SQLException
+  {
+    String[] cols;
+    if (spalten == null || spalten.length == 0)
+    {
+      int anzColumn = rs.getMetaData().getColumnCount();
+      cols = new String[anzColumn];
+      for (int x = 0; x < anzColumn; x++)
+      {
+        cols[x] = rs.getMetaData().getColumnName(x + 1);
+      }
+    }
+    else
+    {
+      cols = spalten;
+    }
+    return cols;
+  }
+
+  private void checkSpalten(String[] spalten) throws AenderungenHolenException
+  {
+    if (spalten != null)
+    {
+      StringBuilder error = new StringBuilder();
+      for (final String s : spalten)
+      {
+        String col = s.trim().toUpperCase();
+        if (!_adressenMap.contains(col) && !_firmenMap.contains(col) && !_partnerMap.contains(col) && !_aenderungTabelleMap.contains(col))
+        {
+          if (error.length() > 0)
+          {
+            error.append(',');
+          }
+          error.append(s);
+        }
+      }
+      if (error.length() > 0)
+      {
+        throw new AenderungenHolenException("Die folgenden angegebenen Spalten existieren nicht:" + error.toString() + ".Pruefen Sie das Schema oder die Angaben im Feld AENDERUNGS_EXPORT_SPALTEN der Tabelle transferziel!");
+      }
+    }
+  }
+
   /**
    * Validate.
    *
@@ -303,6 +262,11 @@ public class AenderungenHolen
     String logInfo = "'" + this.myKennung + "' (" + this.client + ") ruft Aenderungen ";
     logInfo += "fuer Amt '" + this.myAmt + "', Statistik-ID " + this.myStatistik + ", Typ='" + this.myTyp + "', Aenderungsart " + this.myAenderungsart + " ab";
     this.log.info(logInfo);
+    checkParams();
+  }
+
+  private void checkParams() throws AenderungenHolenException
+  {
     if (this.myAmt == null || "".equals(this.myAmt))
     {
       throw new AenderungenHolenException("Kein Amt angegeben!");
@@ -324,6 +288,7 @@ public class AenderungenHolen
     {
       throw new AenderungenHolenException("Dem Sachbearbeiter " + this.mySbId + " mit Kennung '" + this.myKennung + "' fehlen die erforderlichen Rechte an Amt " + this.myAmt + " / Statistik " + this.myStatistik);
     }
+
   }
 
   /**
@@ -336,27 +301,7 @@ public class AenderungenHolen
     String logInfo = "'" + this.myKennung + "' (" + this.client + ") ruft Direkteintrag der Aenderungen ";
     logInfo += "fuer Amt '" + this.myAmt + "', Statistik-ID " + this.myStatistik + ", Typ='" + this.myTyp + "', Aenderungsart " + this.myAenderungsart + " auf";
     this.log.info(logInfo);
-    if (this.myAmt == null || "".equals(this.myAmt))
-    {
-      throw new AenderungenHolenException("Kein Amt angegeben!");
-    }
-    if (this.myStatistik == null || "".equals(this.myStatistik))
-    {
-      throw new AenderungenHolenException("Keine Statistik_id  angegeben!");
-    }
-    if (this.myTyp == null || "".equals(this.myTyp))
-    {
-      throw new AenderungenHolenException("Kein Typ angegeben!");
-    }
-    if (this.myConn == null)
-    {
-      throw new AenderungenHolenException("Keine gueltige Connection zur Datenbank");
-    }
-    // Hat der SB Rechte an Amt / Statistik ?
-    if (!RegDBSecurity.getInstance().sbHasGrantforAmtStatistik(this.mySbId, this.myAmt, this.myStatistik, RegDBSecurity.SADMIN_RECHT_INT, this.myConn))
-    {
-      throw new AenderungenHolenException("Dem Sachbearbeiter " + this.mySbId + " mit Kennung '" + this.myKennung + "' fehlen die erforderlichen Rechte an Amt " + this.myAmt + " / Statistik " + this.myStatistik);
-    }
+    checkParams();
   }
 
   /**
@@ -374,51 +319,14 @@ public class AenderungenHolen
     String[] cols = null;
     String alterTyp = "";
     int counter = 0;
-    // Alle Einträge mit AMT/Statistik Referenz in 1000er Schritten
-    /*
-     * String sql = "(SELECT ae.* FROM aenderung AS ae WHERE AMT = '" + this.myAmt + "' AND STATISTIK_ID = " + this.myStatistik +
-     * " AND typ='" + this.myTyp
-     * + "' AND STATUS IN('NEU', 'ERLEDIGT', 'BEARBEITET') AND (aenderungsart & " + this.myAenderungsart +
-     * ") AND (ae.STATUS_EXPORT_AENDERUNG & "
-     * + this.myAenderungsart + " = 0))";
-     * // Alle Melder mit Referenz über MelderStatistik-Tabelle und Quell-Referenz
-     * sql +=
-     * " UNION (SELECT ae.* FROM aenderung AS ae INNER JOIN melder AS m ON (m.melder_id = ae.melder_id) INNER JOIN adressen as a ON (m.adressen_id = a.adressen_id) INNER JOIN quell_referenz_verwaltung as q ON (a.quell_referenz_id = q.quell_referenz_id) INNER JOIN melder_statistiken as ms ON (m.melder_id = ms.melder_id) WHERE (q.amt='"
-     * + this.myAmt
-     * + "' OR q.amt = '') AND (q.statistik_id = "
-     * + this.myStatistik
-     * + " OR q.statistik_id=0) AND ae.amt='' AND ae.statistik_id=0 AND ms.amt='"
-     * + this.myAmt
-     * + "' AND ms.statistik_id="
-     * + this.myStatistik
-     * + " AND ms.STATUS <> 'LOESCH' AND ae.STATUS IN('NEU', 'ERLEDIGT', 'BEARBEITET') AND typ='"
-     * + this.myTyp
-     * + "' AND q.STATUS <> 'LOESCH' AND (ae.aenderungsart & "
-     * + this.myAenderungsart
-     * + ") AND (ae.STATUS_EXPORT_AENDERUNG & "
-     * + this.myAenderungsart
-     * + " = 0))";
-     * sql += " ORDER BY aenderung_id LIMIT 1000";
-     */
+
     ZipOutputStream zipStream = null;
     BufferedWriter writer = null;
     try (PreparedStatement ps = this.myConn.prepareStatement(SQL_AENDERUNGEN_EXPORT_AENDERUNG))
     {
-      ps.setString(1, this.myAmt);
-      ps.setString(2, this.myStatistik);
-      ps.setString(3, this.myTyp);
-      ps.setInt(4, this.myAenderungsart);
-      ps.setInt(5, this.myAenderungsart);
-      ps.setString(6, this.myAmt);
-      ps.setString(7, this.myStatistik);
-      ps.setString(8, this.myAmt);
-      ps.setString(9, this.myStatistik);
-      ps.setString(10, this.myTyp);
-      ps.setInt(11, this.myAenderungsart);
-      ps.setInt(12, this.myAenderungsart);
+      setStandardValues(ps);
       try (ResultSet rs = ps.executeQuery())
       {
-
         StringBuilder buf = new StringBuilder();
         StringBuilder ids = new StringBuilder();
         while (rs.next())
@@ -426,19 +334,7 @@ public class AenderungenHolen
           // Wurden keine Spaltennamen angegeben, dann hole alle Spalten aus dem ResultSet ( nur beim ersten Mal )
           if (cols == null)
           {
-            if (spalten == null || spalten.length == 0)
-            {
-              int anzColumn = rs.getMetaData().getColumnCount();
-              cols = new String[anzColumn];
-              for (int x = 0; x < anzColumn; x++)
-              {
-                cols[x] = rs.getMetaData().getColumnName(x + 1);
-              }
-            }
-            else
-            {
-              cols = spalten;
-            }
+            cols = getColumnsFromResult(spalten, rs);
           }
           counter++;
           buf.setLength(0);
@@ -500,8 +396,11 @@ public class AenderungenHolen
             ids.append(',');
           }
           ids.append(rs.getString("AENDERUNG_ID"));
-          writer.append(buf.toString());
-          writer.flush();
+          if (writer != null)
+          {
+            writer.append(buf.toString());
+            writer.flush();
+          }
         }
 
         if (zipStream != null)
@@ -554,6 +453,22 @@ public class AenderungenHolen
     return result;
   }
 
+  private void setStandardValues(PreparedStatement ps) throws SQLException
+  {
+    ps.setString(1, this.myAmt);
+    ps.setString(2, this.myStatistik);
+    ps.setString(3, this.myTyp);
+    ps.setInt(4, this.myAenderungsart);
+    ps.setInt(5, this.myAenderungsart);
+    ps.setString(6, this.myAmt);
+    ps.setString(7, this.myStatistik);
+    ps.setString(8, this.myAmt);
+    ps.setString(9, this.myStatistik);
+    ps.setString(10, this.myTyp);
+    ps.setInt(11, this.myAenderungsart);
+    ps.setInt(12, this.myAenderungsart);
+  }
+
   /**
    * Initialisiert direkteintrag.
    *
@@ -590,8 +505,7 @@ public class AenderungenHolen
   {
     if (this.adressenUpdate.length() > 0)
     {
-      this.adressenUpdate.append(",SACHBEARBEITER_ID='").append(this.mySbId);
-      this.adressenUpdate.append("',STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW()  WHERE adressen_id = '").append(this.adressenId).append("'");
+      this.adressenUpdate.append(MessageFormat.format(EXTENDED, "" + this.mySbId, "adressen_id", "" + this.adressenId));
       try (Statement stmt = this.myConn.createStatement())
       {
         stmt.execute(this.adressenUpdate.toString());
@@ -603,8 +517,7 @@ public class AenderungenHolen
     }
     if (this.firmenUpdate.length() > 0)
     {
-      this.firmenUpdate.append(",SACHBEARBEITER_ID='").append(this.mySbId);
-      this.firmenUpdate.append("',STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW() WHERE firmen_id = '").append(this.firmenId).append("'");
+      this.firmenUpdate.append(MessageFormat.format(EXTENDED, "" + this.mySbId, "firmen_id", "" + this.firmenId));
       try (Statement stmt = this.myConn.createStatement())
       {
         stmt.execute(this.firmenUpdate.toString());
@@ -616,8 +529,7 @@ public class AenderungenHolen
     }
     if (this.partnerUpdate.length() > 0)
     {
-      this.partnerUpdate.append(",SACHBEARBEITER_ID='").append(this.mySbId);
-      this.partnerUpdate.append("',STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW() WHERE ansprechpartner_id = '").append(this.partnerId).append("'");
+      this.partnerUpdate.append(MessageFormat.format(EXTENDED, "" + this.mySbId, "ansprechpartner_id", "" + this.partnerId));
       try (Statement stmt = this.myConn.createStatement())
       {
         stmt.execute(this.partnerUpdate.toString());
@@ -760,9 +672,8 @@ public class AenderungenHolen
    */
   public String getFileDate()
   {
-    java.util.Date date = new java.util.Date();
     SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd.HHmmss.SSSS");
-    return fmt.format(date);
+    return fmt.format(new Date());
   }
 
   /**
@@ -837,6 +748,11 @@ public class AenderungenHolen
   private void addMailtextForErweiterung(String ids, StringBuilder info, String statistikName, String amtName, Statement stmt) throws SQLException
   {
     String sql = "SELECT aenderung_id, DATE_FORMAT(aenderung.datum, '%d.%m.%Y %T') AS datum, kennung, TRIM(CONCAT(ansprechpartner.vorname,' ',ansprechpartner.name)) as meldername, quell_referenz_of, firmen.name as firmenname from aenderung LEFT JOIN melder ON (aenderung.melder_id = melder.melder_id) LEFT JOIN ansprechpartner ON (ansprechpartner.ansprechpartner_id = melder.ansprechpartner_id) LEFT JOIN firmen ON (aenderung.firmen_id = firmen.firmen_id) WHERE aenderung_id in(" + ids + ") ORDER BY aenderung_id LIMIT 1000";
+    createMailText(info, statistikName, amtName, stmt, sql);
+  }
+
+  private void createMailText(StringBuilder info, String statistikName, String amtName, Statement stmt, String sql) throws SQLException
+  {
     try (ResultSet rs = stmt.executeQuery(sql))
     {
       while (rs.next())
@@ -894,30 +810,7 @@ public class AenderungenHolen
   private void addMailtextForAenderung(String ids, StringBuilder info, String statistikName, String amtName, Statement stmt) throws SQLException
   {
     String sql = "SELECT aenderung_id, DATE_FORMAT(aenderung.datum, '%d.%m.%Y %T') AS datum, kennung, TRIM(CONCAT(ansprechpartner.vorname,' ',ansprechpartner.name)) AS meldername, quell_referenz_of, firmen.name AS firmenname FROM aenderung LEFT JOIN melder ON (aenderung.melder_id = melder.melder_id) LEFT JOIN ansprechpartner ON (ansprechpartner.ansprechpartner_id = melder.ansprechpartner_id) LEFT JOIN firmen ON (aenderung.firmen_id = firmen.firmen_id) WHERE aenderung_id in(" + ids + ") ORDER BY aenderung_id limit 1000";
-    try (ResultSet rs = stmt.executeQuery(sql))
-    {
-      while (rs.next())
-      {
-        info.append("Aenderungs-id ");
-        info.append(rs.getString("aenderung_id"));
-        info.append(" vom ");
-        info.append(rs.getString("datum"));
-        info.append(" zur Statistik '");
-        info.append(statistikName);
-        info.append("' des Amtes '");
-        info.append(amtName);
-        info.append("' des Melders (");
-        info.append(rs.getString("kennung"));
-        info.append(") ");
-        info.append(rs.getString("meldername"));
-        info.append(" fuer das Unternehmen '");
-        info.append(rs.getString("firmenname"));
-        info.append("' (OF:");
-        info.append(rs.getString("quell_referenz_of"));
-        info.append(")");
-        info.append(NEWLINE);
-      }
-    }
+    createMailText(info, statistikName, amtName, stmt, sql);
   }
 
 }

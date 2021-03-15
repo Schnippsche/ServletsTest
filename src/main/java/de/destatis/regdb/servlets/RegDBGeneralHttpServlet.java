@@ -105,23 +105,8 @@ public abstract class RegDBGeneralHttpServlet extends HttpServlet
       this.log.error("Ungueltiger Parameter '" + DBConfig.INT_WEB_INTERN_URL + "' (" + param + ") \n" + e.getMessage());
     }
     this.checkeDateiImportTabelle(conn);
-    this.checkeIndexTabellen(conn);
   }
 
-  private void checkeIndexTabellen(Connection conn)
-  {
-    try (Statement stmt = conn.createStatement())
-    {
-      stmt.execute("DROP TABLE IF EXISTS tmpchar");
-      stmt.execute("CREATE TABLE tmpchar (ID VARCHAR(40) NOT NULL DEFAULT '') ENGINE=MEMORY");
-      stmt.execute("DROP TABLE IF EXISTS tmpint");
-      stmt.execute("CREATE TABLE tmpint (ID INT(11) NOT NULL DEFAULT 0) ENGINE=MEMORY");
-    }
-    catch (SQLException e)
-    {
-      this.log.error("Indextabellen fuer serverseitigen Import konnten nicht angelegt werden!:" + e.getMessage());
-    }
-  }
   /**
    * Checke datei import tabelle.
    *
@@ -254,13 +239,11 @@ public abstract class RegDBGeneralHttpServlet extends HttpServlet
   public synchronized void service(HttpServletRequest req, HttpServletResponse res)
   {
     Object returnMessage;
-    Connection conn = null;
     try
     {
 
       RegDBSession session = this.doAuthentication(req);
-      //Connection conn = session.getConnection();
-      conn = ConnectionTool.getInstance().getConnection();
+      Connection conn = session.getConnection();
       this.doService(req, res, conn, session);
       return;
     }
@@ -273,10 +256,6 @@ public abstract class RegDBGeneralHttpServlet extends HttpServlet
     {
       this.log.error(e.getMessage(), e);
       returnMessage = e;
-    }
-    finally
-    {
-      ConnectionTool.getInstance().freeConnection(conn);
     }
     this.sendErgebnis(res, returnMessage);
   }

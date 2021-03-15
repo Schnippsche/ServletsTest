@@ -26,11 +26,10 @@ import java.util.Vector;
 public class InhaltsverzeichnisXMLParser
 {
 
+  final boolean ok = true;
+  String fehlertext;
   private HashMap<String, List<String>> mapFormularDateien;
   private HashMap<String, List<String>> mapUploadDateien;
-  final boolean ok = true;
-
-  String fehlertext;
 
   /**
    * Instantiates a new inhaltsverzeichnis XM L parser.
@@ -120,9 +119,9 @@ public class InhaltsverzeichnisXMLParser
     }
 
     List<String> listNamen = this.mapFormularDateien.get(id);
-    for (int i = 0; i < listNamen.size(); i++)
+    for (String listNaman : listNamen)
     {
-      namen.addElement(listNamen.get(i));
+      namen.addElement(listNaman);
     }
     return namen;
   }
@@ -144,9 +143,9 @@ public class InhaltsverzeichnisXMLParser
     }
 
     List<String> listNamen = this.mapUploadDateien.get(id);
-    for (int i = 0; i < listNamen.size(); i++)
+    for (String listNaman : listNamen)
     {
-      namen.addElement(listNamen.get(i));
+      namen.addElement(listNaman);
     }
     return namen;
   }

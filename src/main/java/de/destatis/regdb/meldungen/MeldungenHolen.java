@@ -5,6 +5,7 @@
  */
 package de.destatis.regdb.meldungen;
 
+import de.destatis.regdb.db.FileUtil;
 import de.destatis.regdb.db.RegDBSecurity;
 import de.destatis.regdb.servlets.RegDBGeneralHttpServlet;
 import de.werum.sis.idev.intern.actions.util.MeldungsBereitstellung;
@@ -31,21 +32,21 @@ public class MeldungenHolen
   private final String myKennung;
   private final String myAmt;
   private final String myStatistik;
+  private final String myPasswort;
+  private final int mySbId;
+  private final InhaltsverzeichnisXMLParser xmlParser;
+  private final boolean bestaetigen;
   private String myBzr;
   private String myMeldeart;
   private String myMeldungsIds;
   private String myErstesDatum;
   private String myErsteMeldungsId;
-  private final String myPasswort;
-  private final int mySbId;
   private Vector<String> myMeldungsDaten;
   private String defaultServerHost;
   private String defaultServerPort;
   private String client;
   private MeldungsBereitstellung werumDienst;
   private File tempDirectory = null;
-  private final InhaltsverzeichnisXMLParser xmlParser;
-  private final boolean bestaetigen;
   private boolean holePerMeldungsIDs;
 
   /**
@@ -197,9 +198,9 @@ public class MeldungenHolen
       xmlout.write(" <meldungen>");
       xmlout.newLine();
       // Ausgabe der Ids
-      for (int i = 0; i < this.myMeldungsDaten.size(); i++)
+      for (String s : this.myMeldungsDaten)
       {
-        xmlout.write("  <meldung_id>" + this.myMeldungsDaten.get(i) + "</meldung_id>");
+        xmlout.write("  <meldung_id>" + s + "</meldung_id>");
         xmlout.newLine();
       }
       xmlout.write(" </meldungen>");
@@ -273,9 +274,10 @@ public class MeldungenHolen
         throw new MeldungenHolenException(meldungsStatus.getMeldung());
       }
     }
-    tmpDatei.delete();
-    tmpToWerum.delete();
-    tmpFromWerum.delete();
+
+    FileUtil.delete(tmpDatei);
+    FileUtil.delete(tmpToWerum);
+    FileUtil.delete(tmpFromWerum);
     return ergebnisDatei;
   }
 
@@ -373,9 +375,8 @@ public class MeldungenHolen
       xmlout.newLine();
       xmlout.write("<meldungen>");
       xmlout.newLine();
-      for (int i = 0; i < this.myMeldungsDaten.size(); i++)
+      for (String meldungs_id : this.myMeldungsDaten)
       {
-        String meldungs_id = this.myMeldungsDaten.get(i);
         Vector<String> formular_dateien = this.xmlParser.getDateinamenFormular(meldungs_id);
         Vector<String> upload_dateien = this.xmlParser.getDateinamenUpload(meldungs_id);
         xmlout.write("<meldung meldung_id=\"" + meldungs_id + "\">");

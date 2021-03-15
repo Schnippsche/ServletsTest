@@ -15,42 +15,12 @@ public class DBLockException extends Exception
 
   /**
    * Instantiates a new DB lock exception.
-   */
-  public DBLockException()
-  {
-    super();
-  }
-
-  /**
-   * Instantiates a new DB lock exception.
-   *
-   * @param message the message
-   * @param cause   the cause
-   */
-  public DBLockException(String message, Throwable cause)
-  {
-    super(message, cause);
-
-  }
-
-  /**
-   * Instantiates a new DB lock exception.
    *
    * @param message the message
    */
   public DBLockException(String message)
   {
     super(message);
-  }
-
-  /**
-   * Instantiates a new DB lock exception.
-   *
-   * @param cause the cause
-   */
-  public DBLockException(Throwable cause)
-  {
-    super(cause);
   }
 
 }

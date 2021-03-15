@@ -12,6 +12,7 @@ import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.MessageFormat;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -109,4 +110,74 @@ public class FileUtil
     }
   }
 
+  /**
+   * Delete.
+   *
+   * @param path the path
+   */
+  public static void delete(Path path)
+  {
+    if (path == null)
+    {
+      return;
+    }
+    try
+    {
+      log.debug("Entferne Datei " + path.toString());
+      Files.deleteIfExists(path);
+    }
+    catch (Exception e)
+    {
+      log.error(MessageFormat.format("Datei {0} konnte nicht gelöscht werden: {1}", path.toString(), e.getMessage()));
+    }
+  }
+
+  /**
+   * Delete.
+   *
+   * @param file the file
+   */
+  public static void delete(File file)
+  {
+    if (file != null)
+    {
+      delete(file.toPath());
+    }
+  }
+
+  /**
+   * Loescht ein Verzeichnis samt Unterverzeichnissen und dateien.
+   *
+   * @param directory the directory
+   */
+  public static void deleteDirectory(File directory)
+  {
+    if (directory == null)
+    {
+      return;
+    }
+    File[] filesInDir = directory.listFiles();
+
+    if (filesInDir != null) // else there are no directories
+    {
+      // delete all files in the dir including subdirectories
+      for (File file : filesInDir)
+      {
+        if (file.isDirectory())
+        {
+          deleteDirectory(file);
+        }
+        else
+        {
+          delete(file);
+        }
+      }
+
+      // delete the dir itself
+      if (!directory.delete())
+      {
+        log.error("Verzeichnis " + directory + " konnte nicht entfernt werden");
+      }
+    }
+  }
 }
