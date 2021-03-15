@@ -295,7 +295,7 @@ public class XmlImportJob extends AbstractImportJob
         this.ordnungsfelder.put(of, new OrdnungsfeldInfo(of));
       }
     }
-    String ids = this.sqlUtil.convertStringList(this.ordnungsfelder.entrySet().stream().map(b -> b.getValue().getOrdnungsfeld()).collect(Collectors.toSet()));
+    String ids = this.sqlUtil.convertStringList(this.ordnungsfelder.values().stream().map(OrdnungsfeldInfo::getOrdnungsfeld).collect(Collectors.toSet()));
     String sql = MessageFormat.format(AdressImportJob.SQL_SELECT_BESTAND, "" + this.jobBean.quellReferenzId, ids);
     // Ermittle vorhandene Daten
     List<ResultRow> rows = this.sqlUtil.fetchMany(sql);

@@ -43,8 +43,8 @@ public class RegDBExecuteServlet extends RegDBGeneralHttpServlet
    * @param req     the req
    * @param res     the res
    * @param session the session
+   * @param conn the conn
    * @throws SQLException the SQL exception
-   * @par am conn the conn
    */
   /*
    * (non-Javadoc)

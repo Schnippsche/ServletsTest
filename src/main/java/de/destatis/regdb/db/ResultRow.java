@@ -163,7 +163,7 @@ public class ResultRow
    */
   public String getColumnName(int column)
   {
-    return columnNames.get(convertColumn(column));
+    return this.columnNames.get(convertColumn(column));
   }
 
   /**

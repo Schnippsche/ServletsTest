@@ -48,7 +48,7 @@ public class PruefeIdevImport extends AbstractPruefeImport<String[]>
   }
 
   @Override
-  protected void validate(ArrayList<String[]> rows, int offset) throws JobException
+  protected void validate(ArrayList<String[]> rows, int offset)
   {
     int rowNumber = offset;
     for (String[] cols : rows)

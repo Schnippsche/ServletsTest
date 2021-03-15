@@ -90,7 +90,7 @@ public abstract class PreparedSql implements AutoCloseable
   }
 
   @Override
-  public void close() throws JobException
+  public void close()
   {
     closePreparedStatement();
   }

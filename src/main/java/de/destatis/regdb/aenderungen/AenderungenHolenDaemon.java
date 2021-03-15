@@ -12,8 +12,8 @@ public class AenderungenHolenDaemon
 
   private static AenderungenHolenDaemon instance;
   private final LoggerIfc log;
-  private String amt;
-  private String kennung;
+  private final String amt;
+  private final String kennung;
 
   private AenderungenHolenDaemon()
   {
@@ -37,7 +37,7 @@ public class AenderungenHolenDaemon
     Connection conn = ConnectionTool.getInstance().getConnection();
     try
     {
-      AenderungenVerteilen verteilen = new AenderungenVerteilen(conn, amt, kennung);
+      AenderungenVerteilen verteilen = new AenderungenVerteilen(conn, this.amt, this.kennung);
       if (verteilen.ermittleTransferziele())
       {
         verteilen.verteileAenderungen();
@@ -47,7 +47,7 @@ public class AenderungenHolenDaemon
       }
       else
       {
-        log.info("keine neue Änderungen mit Transferziel vorhanden");
+        this.log.info("keine neue Änderungen mit Transferziel vorhanden");
       }
     } catch (JobException e)
     {

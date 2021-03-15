@@ -63,9 +63,9 @@ public class InhaltsverzeichnisXMLParser
       this.mapUploadDateien = new HashMap<>();
       /* Schleife ueber alle Elemente <meldung> */
 
-      for (int i = 0; i < listMeldung.size(); i++)
+      for (Object o : listMeldung)
       {
-        Element meldung = (Element) listMeldung.get(i);
+        Element meldung = (Element) o;
         /* Id im Element <meldung> */
         key = meldung.getAttributeValue("meldung_id");
 
