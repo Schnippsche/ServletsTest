@@ -31,7 +31,7 @@ import java.util.zip.ZipFile;
 public class AenderungenVerteilen
 {
   private static final String SQL_UPDATE_STATUS_DIREKTEINTRAG = "UPDATE aenderung SET STATUS=\"BEARBEITET\", ZEITPUNKT_EXPORT = NOW(), STATUS_DIREKTEINTRAG = (STATUS_DIREKTEINTRAG | {0}) WHERE AENDERUNG_ID IN({1})";
-  private static final String SQL_UPDATE_STATUS_EXPORT = "\"UPDATE aenderung SET STATUS='BEARBEITET', ZEITPUNKT_EXPORT = NOW(), STATUS_EXPORT_AENDERUNG = (STATUS_EXPORT_AENDERUNG | {0} WHERE AENDERUNG_ID IN({1})";
+  private static final String SQL_UPDATE_STATUS_EXPORT = "UPDATE aenderung SET STATUS=\"BEARBEITET\", ZEITPUNKT_EXPORT = NOW(), STATUS_EXPORT_AENDERUNG = (STATUS_EXPORT_AENDERUNG | {0}) WHERE AENDERUNG_ID IN({1})";
   private static final String TRENNLINIE = "------------------------------------------------------------";
   private static final String SQL_SELECT_STATISTIKEN_MIT_TRANSFERZIEL = "SELECT statistiken_amt.AMT,statistiken_amt.STATISTIK_ID FROM statistiken_amt INNER JOIN transfer USING(AMT,STATISTIK_ID) WHERE statistiken_amt.AMT = \"{0}\" AND transfer.AKTION != \"MELDUNGS_TRANSFER\" AND transfer.STATUS != \"LOESCH\" AND statistiken_amt.STATUS != \"LOESCH\"";
   private static final String SQL_SELECT_TRANSFERZIEL = "SELECT transfer.AKTION, CAST(transfer.AENDERUNGSART AS UNSIGNED) AS AENDERUNGSARTVALUE, transferziel.* FROM transfer INNER JOIN transferziel USING(TRANSFERZIEL_ID) WHERE AMT=? AND STATISTIK_ID=? AND AKTION != \"MELDUNGS_TRANSFER\" AND transfer.STATUS != \"LOESCH\" AND transferziel.STATUS != \"LOESCH\"";
@@ -50,6 +50,7 @@ public class AenderungenVerteilen
   private String knownHostDatei;
   private boolean disableHostKeyCheck;
   private boolean exportMitUeberschrift;
+
   /**
    * Instantiates a new Aenderungen verteilen.
    *
@@ -98,6 +99,7 @@ public class AenderungenVerteilen
   {
     this.zielZeichensatz = charsetName;
   }
+
   public void setExportMitUeberschrift(boolean status)
   {
     this.exportMitUeberschrift = status;
@@ -138,12 +140,13 @@ public class AenderungenVerteilen
       {
         String tmpAmt = row.getString("AMT");
         int statistikId = row.getInt("STATISTIK_ID");
+        String errorMail = checkStandardErrorMail(tmpAmt, statistikId);
         ps.addValue(tmpAmt);
         ps.addValue(statistikId);
         List<ResultRow> ziele = ps.fetchMany();
         for (ResultRow rr : ziele)
         {
-          ermittleTransferdaten(rr, tmpAmt, statistikId);
+          ermittleTransferdaten(rr, tmpAmt, statistikId, errorMail);
         }
       }
     }
@@ -164,7 +167,8 @@ public class AenderungenVerteilen
         {
           verteileDatei(atd);
         }
-      } else
+      }
+      else
       {
         atd.setHolenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_OK));
       }
@@ -185,22 +189,25 @@ public class AenderungenVerteilen
         atd.setZipContainerFile(zipContainerFile);
         atd.setHolenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_OK));
       }
-    } catch (AenderungenHolenException e)
+    }
+    catch (AenderungenHolenException e)
     {
       log.error(e.getMessage());
     }
   }
 
-  private void ermittleTransferdaten(ResultRow row, String amt, int statistikId) throws JobException
+  private void ermittleTransferdaten(ResultRow row, String amt, int statistikId, String errorMail) throws JobException
   {
     String typ = row.getString("AKTION");
     if (typ.endsWith("_DATEIEXPORT"))
     {
       typ = typ.substring(0, typ.length() - 12);
-    } else if (typ.endsWith("_DIREKTEINTRAG"))
+    }
+    else if (typ.endsWith("_DIREKTEINTRAG"))
     {
       typ = typ.substring(0, typ.length() - 14);
-    } else if (typ.endsWith("_BEIDES"))
+    }
+    else if (typ.endsWith("_BEIDES"))
     {
       typ = typ.substring(0, typ.length() - 7);
     }
@@ -218,18 +225,15 @@ public class AenderungenVerteilen
     atd.setTransferdatenFromResult(row);
     atd.setAenderungsart(aenderungsart);
     atd.setExportSpalten(spalten);
-    checkStandardErrorMail(atd, amt, statistikId);
+    atd.setErrorMail(errorMail);
     this.aenderungsTransferDatenList.add(atd);
   }
 
-  private void checkStandardErrorMail(AenderungsTransferDaten atd, String amt, int statistikId) throws JobException
+  private String checkStandardErrorMail(String amt, int statistikId) throws JobException
   {
     // Prüfe ob eine Error-Mailadresse in Standardwerte eingetragen ist und setze sie evtl.
     ResultRow row = this.sqlUtil.fetchOne(MessageFormat.format(SQL_SELECT_STADNDARD_ERRORMAIL, amt, "" + statistikId));
-    if (row != null)
-    {
-      atd.setErrorMail(row.getString(1).trim());
-    }
+    return (row != null) ? row.getString(1).trim() : "";
   }
 
   private void verteileDatei(AenderungsTransferDaten atd)
@@ -275,7 +279,8 @@ public class AenderungenVerteilen
       verarbeitePlattform(atd, datenFile);
       erg = new ErgebnisStatus(ErgebnisStatus.STATUS_OK);
       atd.setVerteilenStatus(erg);
-    } catch (Exception e)
+    }
+    catch (Exception e)
     {
       String logTxt = "Verteilung ";
       if (datenFile != null)
@@ -325,17 +330,22 @@ public class AenderungenVerteilen
   {
     String emailBetreff = atd.getMailbetreff();
     if (StringUtil.isEmpty(emailBetreff))
+    {
       emailBetreff = "IDEV-Automatische Aenderungsverteilung - Meldungen via Internet";
+    }
     String mailText = StringUtil.isEmpty(atd.getMailtext()) ? "Hallo, fuer Sie ist eine Aenderung eingegangen !" : atd.getMailtext();
     mailText += "\n\nInhalt der Zieldatei " + atd.getZielDateiName() + ":\n" + TRENNLINIE + "\n" + atd.getMailFileText() + TRENNLINIE;
     if (StringUtil.notEmpty(atd.getWarnung()))
+    {
       mailText += "\n" + atd.getWarnung();
+    }
     Email email = new Email(atd.getMailempfaenger(), atd.getMailabsender(), emailBetreff, mailText);
     if (MailVersandDaemon.getInstance().sendMail(email))
     {
       atd.setMailStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_OK));
       log.info("Mail von Aenderung wurde an " + atd.getMailempfaenger() + " versendet");
-    } else
+    }
+    else
     {
       atd.setMailStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_FEHLER));
       log.info("Mail von Aenderung konnte nicht an " + atd.getMailempfaenger() + " versendet werden!");
@@ -390,7 +400,8 @@ public class AenderungenVerteilen
     {
       FileUtil.delete(datenFile);
       throw new JobException(copyStatus.getMeldung());
-    } else
+    }
+    else
     {
       atd.setCsvFile(datenFile);
       if (copyStatus.isWarnung())
@@ -440,7 +451,8 @@ public class AenderungenVerteilen
     if (isUnix)
     {
       ok = ftp.connect(server, port, user, passwort);
-    } else
+    }
+    else
     {
       ok = ftp.connect(server, port, user, passwort, account);
     }
@@ -490,7 +502,9 @@ public class AenderungenVerteilen
     for (AenderungsTransferDaten atd : this.aenderungsTransferDatenList)
     {
       if (atd.isDirekteintrag())
+      {
         doDirekteintrag(atd);
+      }
     }
   }
 
@@ -509,7 +523,8 @@ public class AenderungenVerteilen
         atd.setVerteilenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_OK));
         FileUtil.delete(file);
       }
-    } catch (Exception e)
+    }
+    catch (Exception e)
     {
       log.error("Direkteintrag von Amt '" + atd.getAmt() + "' , StatistikId '" + atd.getStatistikId() + "', Typ '" + atd.getTyp() + "' fehlgeschlagen:" + e.getMessage());
       atd.setVerteilenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_FEHLER));
@@ -534,13 +549,17 @@ public class AenderungenVerteilen
       {
         korrekteAenderungen = atd.getExportIds();
         if (korrekteAenderungen.length() > 0)
+        {
           setzeStatusExportAenderung(korrekteAenderungen, atd.getAenderungsart());
+        }
       }
       if (atd.isDirekteintrag() && geholt != null && geholt.isOK())
       {
         korrekteAenderungen = atd.getDirekteintragIds();
         if (korrekteAenderungen.length() > 0)
+        {
           setzeStatusErledigt(korrekteAenderungen, atd.getAenderungsart());
+        }
       }
     }
   }
@@ -554,7 +573,8 @@ public class AenderungenVerteilen
       {
         this.sqlUtil.execute(sql);
         log.info("Aenderungs-ids von Direkteintrag aktualisiert:" + aenderungsIds);
-      } catch (JobException e)
+      }
+      catch (JobException e)
       {
         log.error("Fehler beim Umsetzen des Erledigt-Status der Aenderungen " + aenderungsIds + ":" + e.getMessage());
       }
@@ -570,7 +590,8 @@ public class AenderungenVerteilen
       {
         this.sqlUtil.execute(sql);
         log.info("Aenderungs-ids von Export aktualisiert:" + aenderungsIds);
-      } catch (JobException e)
+      }
+      catch (JobException e)
       {
         log.error("Fehler beim Umsetzen des ExportAenderung-Status der Aenderungen " + aenderungsIds + ":" + e.getMessage());
       }

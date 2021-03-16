@@ -22,7 +22,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class AenderungenHolen
 {
-  private static final String EXTENDED = ",SACHBEARBEITER_ID={0}, STATUS='AEND', ZEITPUNKT_AENDERUNG = NOW() WHERE {1} = {2}";
+  private static final String EXTENDED = ",SACHBEARBEITER_ID={0}, STATUS=\"AEND\", ZEITPUNKT_AENDERUNG = NOW() WHERE {1} = {2}";
 
   // Alle Melder mit Referenz über MelderStatistik-Tabelle und Quell-Referenz
   private static final String SQL_AENDERUNGEN_DIREKTEINTRAG = "(SELECT ae.* FROM aenderung AS ae WHERE AMT = ? AND STATISTIK_ID = ? AND TYP=? AND STATUS IN('NEU', 'ERLEDIGT','BEARBEITET') AND (aenderungsart & ?) AND (ae.STATUS_DIREKTEINTRAG & ? = 0)) UNION ( SELECT ae.* FROM aenderung AS ae INNER JOIN melder AS m ON (m.melder_id = ae.melder_id) INNER JOIN adressen AS a ON (m.adressen_id = a.adressen_id) INNER JOIN quell_referenz_verwaltung AS q ON (a.quell_referenz_id = q.quell_referenz_id) INNER JOIN melder_statistiken AS ms ON (m.melder_id = ms.melder_id) WHERE (q.amt=? OR q.amt = '') AND (q.statistik_id = ? OR q.statistik_id=0) AND ae.amt='' AND ae.statistik_id=0 AND ms.amt=? AND ms.statistik_id=? AND ms.STATUS != 'LOESCH' AND ae.STATUS IN('NEU', 'ERLEDIGT','BEARBEITET') AND typ=? AND q.STATUS != 'LOESCH' AND (ae.aenderungsart & ?) AND (ae.STATUS_DIREKTEINTRAG & ? = 0) ) ORDER BY aenderung_id LIMIT 1000";
@@ -518,6 +518,7 @@ public class AenderungenHolen
     if (this.firmenUpdate.length() > 0)
     {
       this.firmenUpdate.append(MessageFormat.format(EXTENDED, "" + this.mySbId, "firmen_id", "" + this.firmenId));
+
       try (Statement stmt = this.myConn.createStatement())
       {
         stmt.execute(this.firmenUpdate.toString());
@@ -560,8 +561,9 @@ public class AenderungenHolen
         this.adressenUpdate.append(",");
       }
       this.adressenUpdate.append(col);
-      this.adressenUpdate.append("=");
+      this.adressenUpdate.append("=\"");
       this.adressenUpdate.append(StringUtil.escapeSqlString(value));
+      this.adressenUpdate.append("\"");
     }
     else if (_firmenMap.contains(col))
     {
@@ -581,8 +583,9 @@ public class AenderungenHolen
       {
         this.firmenUpdate.append(col);
       }
-      this.firmenUpdate.append("=");
+      this.firmenUpdate.append("=\"");
       this.firmenUpdate.append(StringUtil.escapeSqlString(value));
+      this.firmenUpdate.append("\"");
     }
     else if (_partnerMap.contains(col))
     {
@@ -602,8 +605,9 @@ public class AenderungenHolen
       {
         this.partnerUpdate.append(col);
       }
-      this.partnerUpdate.append("=");
+      this.partnerUpdate.append("=\"");
       this.partnerUpdate.append(StringUtil.escapeSqlString(value));
+      this.partnerUpdate.append("\"");
     }
   }
 
