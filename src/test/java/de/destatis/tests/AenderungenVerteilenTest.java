@@ -27,7 +27,7 @@ public class AenderungenVerteilenTest
     Logger.getInstance().setLogLevel(LogLevel.DEBUG);
   }
 
-  @Test
+  //@Test
   public void starteAenderungenVerteilen()
   {
     Connection conn = Tool.getConnection();

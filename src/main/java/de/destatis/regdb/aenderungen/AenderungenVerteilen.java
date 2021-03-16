@@ -273,9 +273,6 @@ public class AenderungenVerteilen
         }
       }
       verarbeitePlattform(atd, datenFile);
-      // Lösche erfogreich übertragene Datei
-      FileUtil.delete(datenFile);
-      FileUtil.delete(zipContainerFile);
       erg = new ErgebnisStatus(ErgebnisStatus.STATUS_OK);
       atd.setVerteilenStatus(erg);
     } catch (Exception e)
@@ -288,10 +285,12 @@ public class AenderungenVerteilen
       logTxt += " fehlgeschlagen: " + e.getMessage();
       erg = new ErgebnisStatus(ErgebnisStatus.STATUS_FEHLER, logTxt);
       atd.setVerteilenStatus(erg);
-      FileUtil.delete(datenFile);
       log.error(logTxt);
       sendErrorMail(atd, logTxt);
     }
+    // Lösche übertragene Datei
+    FileUtil.delete(datenFile);
+    FileUtil.delete(zipContainerFile);
   }
 
   private void sendErrorMail(AenderungsTransferDaten atd, String mailText)

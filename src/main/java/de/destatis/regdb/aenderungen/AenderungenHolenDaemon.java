@@ -54,7 +54,7 @@ public class AenderungenHolenDaemon
         this.log.info("keine neue Änderungen mit Transferziel vorhanden");
       }
     }
-    catch (JobException e)
+    catch (Exception e)
     {
       this.log.error("Aenderungen konnten nicht serverseitig verarbeitet werden");
     }
