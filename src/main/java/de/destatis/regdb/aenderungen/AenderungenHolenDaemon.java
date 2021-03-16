@@ -5,6 +5,7 @@ import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 
 public class AenderungenHolenDaemon
@@ -19,8 +20,8 @@ public class AenderungenHolenDaemon
   {
     this.log = Logger.getInstance().getLogger(this.getClass());
     this.log.info("initing " + this.getClass());
-    this.amt = "00";
-    this.kennung="batch-adm";
+    this.amt = "00"; // Aus Konfig?
+    this.kennung = "batch-adm"; // Aus Konfig?
   }
 
   public static synchronized AenderungenHolenDaemon getInstance()
@@ -38,25 +39,29 @@ public class AenderungenHolenDaemon
     try
     {
       AenderungenVerteilen verteilen = new AenderungenVerteilen(conn, this.amt, this.kennung);
+      verteilen.setKnownHostDatei(null); // Aus Konfig?
+      verteilen.disableHostKeyCheck(true); // Aus Konfig?
+      verteilen.setZielZeichensatz(StandardCharsets.ISO_8859_1.name()); // Aus Konfig?
       if (verteilen.ermittleTransferziele())
       {
         verteilen.verteileAenderungen();
-       // verteilen.versendeMails();
-       // verteilen.macheDirekteintraege();
-       // verteilen.setzeExportStatusAenderungen();
+        // verteilen.versendeMails();
+        // verteilen.macheDirekteintraege();
+        // verteilen.setzeExportStatusAenderungen();
       }
       else
       {
         this.log.info("keine neue Änderungen mit Transferziel vorhanden");
       }
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       this.log.error("Aenderungen konnten nicht serverseitig verarbeitet werden");
-    } finally
+    }
+    finally
     {
       ConnectionTool.getInstance().freeConnection(conn);
     }
-
   }
 
 }

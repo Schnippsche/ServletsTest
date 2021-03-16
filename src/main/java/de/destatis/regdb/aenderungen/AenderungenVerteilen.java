@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * The type Aenderungen verteilen.
+ */
 public class AenderungenVerteilen
 {
   private static final String SQL_SELECT_STATISTIKEN_MIT_TRANSFERZIEL = "SELECT statistiken_amt.AMT,statistiken_amt.STATISTIK_ID FROM statistiken_amt INNER JOIN transfer USING(AMT,STATISTIK_ID) WHERE statistiken_amt.AMT = \"{0}\" AND transfer.AKTION != \"MELDUNGS_TRANSFER\" AND transfer.STATUS != \"LOESCH\" AND statistiken_amt.STATUS != \"LOESCH\"";
@@ -37,22 +40,59 @@ public class AenderungenVerteilen
   private final SqlUtil sqlUtil;
   private final String amt;
   private final ArrayList<AenderungsTransferDaten> aenderungsTransferDatenList;
-  private final String zielZeichensatz;
   private final String sbKennung;
+  private String zielZeichensatz;
   private HashMap<String, String> defaultKonfigurationMap;
   private int sbId;
-  private final String knownHostDatei;
-  private final boolean disableHostKeyCheck;
+  private String knownHostDatei;
+  private boolean disableHostKeyCheck;
 
+  /**
+   * Instantiates a new Aenderungen verteilen.
+   *
+   * @param connection the connection
+   * @param amt        the amt
+   * @param kennung    the kennung
+   */
   public AenderungenVerteilen(Connection connection, String amt, String kennung)
   {
     this.sqlUtil = new SqlUtil(connection);
     this.aenderungsTransferDatenList = new ArrayList<>();
     this.amt = amt;
-    this.sbKennung = kennung; // Pruefen
-    this.zielZeichensatz = StandardCharsets.ISO_8859_1.name(); // Pruefen
-    this.disableHostKeyCheck = true; // Pruefen
-    this.knownHostDatei = null; // Pruefen
+    this.sbKennung = kennung;
+    this.zielZeichensatz = StandardCharsets.ISO_8859_1.name();
+    this.disableHostKeyCheck = true;
+    this.knownHostDatei = null;
+  }
+
+  /**
+   * Sets known host datei.
+   *
+   * @param knownHostDatei the known host datei
+   */
+  public void setKnownHostDatei(String knownHostDatei)
+  {
+    this.knownHostDatei = knownHostDatei;
+  }
+
+  /**
+   * Disable host key check.
+   *
+   * @param status the status
+   */
+  public void disableHostKeyCheck(boolean status)
+  {
+    this.disableHostKeyCheck = status;
+  }
+
+  /**
+   * Sets ziel zeichensatz.
+   *
+   * @param charsetName the charset name
+   */
+  public void setZielZeichensatz(String charsetName)
+  {
+    this.zielZeichensatz = charsetName;
   }
 
   private HashMap<String, String> ermittleStandardKonfiguration() throws JobException
@@ -72,6 +112,12 @@ public class AenderungenVerteilen
     this.sbId = (row != null) ? row.getInt(1) : 0;
   }
 
+  /**
+   * Ermittle transferziele boolean.
+   *
+   * @return the boolean
+   * @throws JobException the job exception
+   */
   public boolean ermittleTransferziele() throws JobException
   {
     this.aenderungsTransferDatenList.clear();
@@ -96,6 +142,9 @@ public class AenderungenVerteilen
     return !this.aenderungsTransferDatenList.isEmpty();
   }
 
+  /**
+   * Verteile aenderungen.
+   */
   public void verteileAenderungen()
   {
     for (AenderungsTransferDaten atd : this.aenderungsTransferDatenList)
@@ -104,9 +153,14 @@ public class AenderungenVerteilen
       {
         holeAenderungsDatei(atd);
         if (atd.getZipContainerFile() != null)
+        {
           verteileDatei(atd);
-      } else
+        }
+      }
+      else
+      {
         atd.setHolenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_OK));
+      }
     }
   }
 
@@ -123,7 +177,8 @@ public class AenderungenVerteilen
         atd.setZipContainerFile(zipContainerFile);
         atd.setHolenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_OK));
       }
-    } catch (AenderungenHolenException e)
+    }
+    catch (AenderungenHolenException e)
     {
       log.error(e.getMessage());
     }
@@ -135,10 +190,12 @@ public class AenderungenVerteilen
     if (typ.endsWith("_DATEIEXPORT"))
     {
       typ = typ.substring(0, typ.length() - 12);
-    } else if (typ.endsWith("_DIREKTEINTRAG"))
+    }
+    else if (typ.endsWith("_DIREKTEINTRAG"))
     {
       typ = typ.substring(0, typ.length() - 14);
-    } else if (typ.endsWith("_BEIDES"))
+    }
+    else if (typ.endsWith("_BEIDES"))
     {
       typ = typ.substring(0, typ.length() - 7);
     }
@@ -148,7 +205,9 @@ public class AenderungenVerteilen
     String spalten = row.getString("AENDERUNGS_EXPORT_SPALTEN");
     int aenderungsart = row.getInt("AENDERUNGSARTVALUE");
     if (aenderungsart == 0)
+    {
       aenderungsart = 15;
+    }
     AenderungsTransferDaten atd = new AenderungsTransferDaten(amt, statistikId, typ);
     atd.setStandardValues(this.defaultKonfigurationMap);
     atd.setTransferdatenFromResult(row);
@@ -163,7 +222,9 @@ public class AenderungenVerteilen
     // Prüfe ob eine Error-Mailadresse in Standardwerte eingetragen ist und setze sie evtl.
     ResultRow row = this.sqlUtil.fetchOne(MessageFormat.format(SQL_SELECT_STADNDARD_ERRORMAIL, amt, "" + statistikId));
     if (row != null)
+    {
       atd.setErrorMail(row.getString(1).trim());
+    }
   }
 
   private void verteileDatei(AenderungsTransferDaten atd)
@@ -175,12 +236,18 @@ public class AenderungenVerteilen
     {
       // Validierungen
       if (atd.getForm() == null)
+      {
         throw new JobException("fuer die Aenderung ist kein Transferziel hinterlegt!");
+      }
       if (atd.getHost() == null)
+      {
         throw new JobException("fuer die Aenderung ist kein Host hinterlegt!");
+      }
       erg = atd.getHolenStatus();
       if (erg.getStatus() != ErgebnisStatus.STATUS_OK)
+      {
         throw new JobException("keine Aenderungen zum Verteilen da");
+      }
       // Entzippe Datei temporär
       Enumeration<? extends ZipEntry> en = sourceFile.entries();
       while (en.hasMoreElements())
@@ -206,11 +273,14 @@ public class AenderungenVerteilen
       FileUtil.delete(zipContainerFile);
       erg = new ErgebnisStatus(ErgebnisStatus.STATUS_OK);
       atd.setVerteilenStatus(erg);
-    } catch (Exception e)
+    }
+    catch (Exception e)
     {
       String logTxt = "Verteilung ";
       if (datenFile != null)
+      {
         logTxt += "von " + datenFile;
+      }
       logTxt += " fehlgeschlagen: " + e.getMessage();
       erg = new ErgebnisStatus(ErgebnisStatus.STATUS_FEHLER, logTxt);
       atd.setVerteilenStatus(erg);
@@ -239,7 +309,9 @@ public class AenderungenVerteilen
     {
       zielVerzeichnis = zielVerzeichnis.replace("\\", "/");
       if (zielVerzeichnis.endsWith("/"))
+      {
         zielVerzeichnis = zielVerzeichnis.substring(0, zielVerzeichnis.length() - 1);
+      }
     }
     String zielDatei = zielVerzeichnis + File.separator + atd.getZielDateiName();
     int plattForm = atd.getPlattformInt();
@@ -278,7 +350,8 @@ public class AenderungenVerteilen
     {
       FileUtil.delete(datenFile);
       throw new JobException(copyStatus.getMeldung());
-    } else
+    }
+    else
     {
       atd.setCsvFile(datenFile);
       if (copyStatus.isWarnung())
@@ -326,11 +399,17 @@ public class AenderungenVerteilen
     boolean isUnix = (atd.getPlattformInt() == AenderungsTransferDaten.PLATTFORM_UNIX_FTP);
     boolean ok;
     if (isUnix)
+    {
       ok = ftp.connect(server, port, user, passwort);
+    }
     else
+    {
       ok = ftp.connect(server, port, user, passwort, account);
+    }
     if (!ok)
+    {
       throw new JobException("Anmeldung an Server " + server + " mit Kennung und Passwort nicht erfolgreich!");
+    }
     ok = ftp.storeFileSimple(atd.getCsvFile(), atd.getZielDateiName(), ftpZielverzeichnis, atd.getModus());
     if (ok)
     {
@@ -347,12 +426,18 @@ public class AenderungenVerteilen
     String passwort = mtd.getPasswort();
     boolean isUnix = (mtd.getPlattformInt() == AenderungsTransferDaten.PLATTFORM_UNIX_FTP || mtd.getPlattformInt() == AenderungsTransferDaten.PLATTFORM_UNIX_SFTP);
     if (!isUnix)
+    {
       throw new JobException("Uebertragung auf einen Host mittels SFTP nicht moeglich");
+    }
     sftp = new SFTP();
     if (StringUtil.notEmpty(this.knownHostDatei))
+    {
       sftp.setKnownHostFile(this.knownHostDatei);
+    }
     if (this.disableHostKeyCheck)
+    {
       sftp.disableHostKeyChecking();
+    }
     sftp.connect(server, user, passwort);
     sftp.storeFileSimple(mtd.getCsvFile().getAbsolutePath(), sftpZielverzeichnis, mtd.getZielDateiName());
     log.info("Datei: -" + mtd.getZielDateiName() + "- wurde korrekt mittels FTP in das Verzeichnis -" + sftpZielverzeichnis + "- des Servers -" + server + "- uebertragen.");

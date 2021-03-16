@@ -14,7 +14,6 @@ import java.util.HashMap;
 
 public class AenderungsTransferDaten
 {
-  public static final int PLATTFORM_UNKNOWN = 0;
   public static final int PLATTFORM_LOKAL = 1;
   public static final int PLATTFORM_UNIX_FTP = 2;
   public static final int PLATTFORM_UNIX_SFTP = 3;
@@ -23,6 +22,22 @@ public class AenderungsTransferDaten
   public static final int FORM_UNKNOWN = 0;
   public static final int FORM_EINZEL = 1;
   public static final int FORM_SAMMEL = 2;
+  private static final String AKTION = "AKTION";
+  private static final String TRANSFER_HOST = "TRANSFER_HOST";
+  private static final String TRANSFER_FORM = "TRANSFER_FORM";
+  private static final String TRANSFER_PLATTFORM = "TRANSFER_PLATTFORM";
+  private static final String TRANSFER_USER = "TRANSFER_USER";
+  private static final String TRANSFER_PASSWORT = "TRANSFER_PASSWORT";
+  private static final String TRANSFER_ACCOUNT = "TRANSFER_ACCOUNT";
+  private static final String TRANSFER_ZIEL_VERZEICHNIS = "TRANSFER_ZIEL_VERZEICHNIS";
+  private static final String TRANSFER_MODUS = "TRANSFER_MODUS";
+  private static final String TRANSFER_MAIL_EMPFAENGER = "TRANSFER_MAIL_EMPFAENGER";
+  private static final String TRANSFER_MAIL_ABSENDER = "TRANSFER_MAIL_ABSENDER";
+  private static final String TRANSFER_MAIL_BETREFF = "TRANSFER_MAIL_BETREFF";
+  private static final String TRANSFER_MAIL_TEXT = "TRANSFER_MAIL_TEXT";
+  private static final String KONVERTER = "KONVERTER";
+  private static final String KONVERTER_OPTIONEN = "KONVERTER_OPTIONEN";
+  private static final int PLATTFORM_UNKNOWN = 0;
   public static LoggerIfc log;
   // Daten aus Tabelle Aenderung
   private final String amt;
@@ -37,7 +52,6 @@ public class AenderungsTransferDaten
   private String errormail;
   private File zipContainerFile;
   private File csvFile;
-  private File mailFile;
   private int aenderungsart;
   private String warnung;
   private ErgebnisStatus statusHolen;
@@ -87,21 +101,21 @@ public class AenderungsTransferDaten
     if (rs != null)
     {
       // Transferdaten
-      this.aktion = rs.getString("AKTION");
-      this.host = rs.getString("TRANSFER_HOST");
-      this.form = rs.getString("TRANSFER_FORM");
-      this.plattform = rs.getString("TRANSFER_PLATTFORM");
-      this.user = rs.getString("TRANSFER_USER");
-      this.passwort = rs.getString("TRANSFER_PASSWORT");
-      this.account = rs.getString("TRANSFER_ACCOUNT");
-      this.zielverzeichnis = rs.getString("TRANSFER_ZIEL_VERZEICHNIS");
-      this.modus = rs.getString("TRANSFER_MODUS");
-      this.mailempfaenger = rs.getString("TRANSFER_MAIL_EMPFAENGER");
-      this.mailabsender = rs.getString("TRANSFER_MAIL_ABSENDER");
-      this.mailbetreff = rs.getString("TRANSFER_MAIL_BETREFF");
-      this.mailtext = rs.getString("TRANSFER_MAIL_TEXT");
-      this.konverter = rs.getString("KONVERTER");
-      this.konverteroptionen = rs.getString("KONVERTER_OPTIONEN");
+      this.aktion = rs.getString(AKTION);
+      this.host = rs.getString(TRANSFER_HOST);
+      this.form = rs.getString(TRANSFER_FORM);
+      this.plattform = rs.getString(TRANSFER_PLATTFORM);
+      this.user = rs.getString(TRANSFER_USER);
+      this.passwort = rs.getString(TRANSFER_PASSWORT);
+      this.account = rs.getString(TRANSFER_ACCOUNT);
+      this.zielverzeichnis = rs.getString(TRANSFER_ZIEL_VERZEICHNIS);
+      this.modus = rs.getString(TRANSFER_MODUS);
+      this.mailempfaenger = rs.getString(TRANSFER_MAIL_EMPFAENGER);
+      this.mailabsender = rs.getString(TRANSFER_MAIL_ABSENDER);
+      this.mailbetreff = rs.getString(TRANSFER_MAIL_BETREFF);
+      this.mailtext = rs.getString(TRANSFER_MAIL_TEXT);
+      this.konverter = rs.getString(KONVERTER);
+      this.konverteroptionen = rs.getString(KONVERTER_OPTIONEN);
     }
   }
 
@@ -117,13 +131,15 @@ public class AenderungsTransferDaten
     {
       String tmp = f.getName();
       if (tmp.length() > 19)
+      {
         this.filedatum = tmp.substring(tmp.length() - 24, tmp.length() - 9);
+      }
     }
   }
 
   public String getAccount()
   {
-    return getValue(this.account, "TRANSFER_ACCOUNT");
+    return getValue(this.account, TRANSFER_ACCOUNT);
   }
 
   public void setAccount(String account)
@@ -133,7 +149,7 @@ public class AenderungsTransferDaten
 
   public String getForm()
   {
-    return getValue(this.form, "TRANSFER_FORM");
+    return getValue(this.form, TRANSFER_FORM);
   }
 
   public void setForm(String form)
@@ -143,7 +159,7 @@ public class AenderungsTransferDaten
 
   public String getHost()
   {
-    return getValue(this.host, "TRANSFER_HOST");
+    return getValue(this.host, TRANSFER_HOST);
   }
 
   public void setHost(String host)
@@ -153,7 +169,7 @@ public class AenderungsTransferDaten
 
   public String getKonverter()
   {
-    return getValue(this.konverter, "KONVERTER");
+    return getValue(this.konverter, KONVERTER);
   }
 
   public void setKonverter(String konverter)
@@ -163,7 +179,7 @@ public class AenderungsTransferDaten
 
   public String getKonverteroptionen()
   {
-    return getValue(this.konverteroptionen, "KONVERTER_OPTIONEN");
+    return getValue(this.konverteroptionen, KONVERTER_OPTIONEN);
   }
 
   public void setKonverteroptionen(String konverteroptionen)
@@ -173,7 +189,7 @@ public class AenderungsTransferDaten
 
   public String getMailabsender()
   {
-    return getValue(this.mailabsender, "TRANSFER_MAIL_ABSENDER");
+    return getValue(this.mailabsender, TRANSFER_MAIL_ABSENDER);
   }
 
   public void setMailabsender(String mailabsender)
@@ -183,7 +199,7 @@ public class AenderungsTransferDaten
 
   public String getMailbetreff()
   {
-    return getValue(this.mailbetreff, "TRANSFER_MAIL_BETREFF");
+    return getValue(this.mailbetreff, TRANSFER_MAIL_BETREFF);
   }
 
   public void setMailbetreff(String mailbetreff)
@@ -193,7 +209,7 @@ public class AenderungsTransferDaten
 
   public String getMailempfaenger()
   {
-    return getValue(this.mailempfaenger, "TRANSFER_MAIL_EMPFAENGER");
+    return getValue(this.mailempfaenger, TRANSFER_MAIL_EMPFAENGER);
   }
 
   public void setMailempfaenger(String mailempfaenger)
@@ -203,7 +219,7 @@ public class AenderungsTransferDaten
 
   public String getMailtext()
   {
-    return getValue(this.mailtext, "TRANSFER_MAIL_TEXT");
+    return getValue(this.mailtext, TRANSFER_MAIL_TEXT);
   }
 
   public void setMailtext(String mailtext)
@@ -213,7 +229,7 @@ public class AenderungsTransferDaten
 
   public String getModus()
   {
-    return getValue(this.modus, "TRANSFER_MODUS");
+    return getValue(this.modus, TRANSFER_MODUS);
   }
 
   public void setModus(String modus)
@@ -223,7 +239,7 @@ public class AenderungsTransferDaten
 
   public String getPasswort()
   {
-    return getValue(this.passwort, "TRANSFER_PASSWORT");
+    return getValue(this.passwort, TRANSFER_PASSWORT);
   }
 
   public void setPasswort(String passwort)
@@ -233,7 +249,7 @@ public class AenderungsTransferDaten
 
   public String getPlattform()
   {
-    return getValue(this.plattform, "TRANSFER_PLATTFORM");
+    return getValue(this.plattform, TRANSFER_PLATTFORM);
   }
 
   public void setPlattform(String plattform)
@@ -245,15 +261,25 @@ public class AenderungsTransferDaten
   {
     String pf = getPlattform();
     if ("LOKAL".equals(pf))
+    {
       return PLATTFORM_LOKAL;
+    }
     if ("UNIXFTP".equals(pf))
+    {
       return PLATTFORM_UNIX_FTP;
+    }
     if ("UNIXSFTP".equals(pf))
+    {
       return PLATTFORM_UNIX_SFTP;
+    }
     if ("HOSTFTP".equals(pf))
+    {
       return PLATTFORM_HOST_FTP;
+    }
     if ("HOSTSFTP".equals(pf))
+    {
       return PLATTFORM_HOST_SFTP;
+    }
     return PLATTFORM_UNKNOWN;
   }
 
@@ -261,9 +287,13 @@ public class AenderungsTransferDaten
   {
     String f = getForm();
     if ("EINZEL".equals(f))
+    {
       return FORM_EINZEL;
+    }
     if ("SAMMEL".equals(f))
+    {
       return FORM_SAMMEL;
+    }
     return FORM_UNKNOWN;
   }
 
@@ -274,7 +304,7 @@ public class AenderungsTransferDaten
 
   public String getUser()
   {
-    return getValue(this.user, "TRANSFER_USER");
+    return getValue(this.user, TRANSFER_USER);
   }
 
   public void setUser(String user)
@@ -294,7 +324,7 @@ public class AenderungsTransferDaten
 
   public String getZielverzeichnis()
   {
-    return getValue(this.zielverzeichnis, "TRANSFER_ZIEL_VERZEICHNIS");
+    return getValue(this.zielverzeichnis, TRANSFER_ZIEL_VERZEICHNIS);
   }
 
   public void setZielverzeichnis(String zielverzeichnis)
@@ -332,7 +362,9 @@ public class AenderungsTransferDaten
   private String getValue(String value, String standard)
   {
     if (value == null || "".equals(value))
+    {
       return this.defaultValues.get(standard);
+    }
     return value;
   }
 
@@ -348,29 +380,7 @@ public class AenderungsTransferDaten
 
   public String toString()
   {
-    StringBuilder res = new StringBuilder();
-    res.append(" Amt:").append(this.amt);
-    res.append(" Statistik-ID:").append(this.statistikId);
-    res.append(" Aktion:").append(this.aktion);
-    res.append(" Aenderungsart:").append(this.aenderungsart);
-    res.append(" Typ:").append(this.typ);
-    res.append(" ZipContainer:").append(this.zipContainerFile);
-    res.append(" Host:").append(getHost());
-    res.append(" Form:").append(getForm());
-    res.append(" Plattform:").append(getPlattform());
-    res.append(" User:").append(getUser());
-    res.append(" Passwort:").append(getPasswort());
-    res.append(" Account:").append(getAccount());
-    res.append(" Ziel:").append(getZielverzeichnis());
-    res.append(" Modus:").append(getModus());
-    res.append(" MailEmpfaenger:").append(getMailempfaenger());
-    res.append(" MailAbsender:").append(getMailabsender());
-    res.append(" Betreff:").append(getMailbetreff());
-    res.append(" Mailtext:").append(getMailtext());
-    res.append(" Konverter:").append(getKonverter());
-    res.append(" direktIDs:").append(this.direkteintragids);
-    res.append(" exportIDs:").append(this.exportids);
-    return res.toString();
+    return " Amt:" + this.amt + " Statistik-ID:" + this.statistikId + " Aktion:" + this.aktion + " Aenderungsart:" + this.aenderungsart + " Typ:" + this.typ + " ZipContainer:" + this.zipContainerFile + " Host:" + getHost() + " Form:" + getForm() + " Plattform:" + getPlattform() + " User:" + getUser() + " Passwort:" + getPasswort() + " Account:" + getAccount() + " Ziel:" + getZielverzeichnis() + " Modus:" + getModus() + " MailEmpfaenger:" + getMailempfaenger() + " MailAbsender:" + getMailabsender() + " Betreff:" + getMailbetreff() + " Mailtext:" + getMailtext() + " Konverter:" + getKonverter() + " direktIDs:" + this.direkteintragids + " exportIDs:" + this.exportids;
   }
 
   public String getZielDateiName()
@@ -448,9 +458,12 @@ public class AenderungsTransferDaten
       {
         this.exportids = reader.readLine();
         if (this.exportids != null)
+        {
           this.exportids = this.exportids.trim();
+        }
 
-      } catch (Exception e)
+      }
+      catch (Exception e)
       {
         log.error("Fehler beim Lesen der ExportIds:" + e.getMessage());
       }
@@ -466,8 +479,11 @@ public class AenderungsTransferDaten
       {
         this.direkteintragids = reader.readLine();
         if (this.direkteintragids != null)
+        {
           this.direkteintragids = this.direkteintragids.trim();
-      } catch (Exception e)
+        }
+      }
+      catch (Exception e)
       {
         log.error("Fehler beim Lesen der ExportIds:" + e.getMessage());
       }
