@@ -45,9 +45,9 @@ public class AenderungenHolenDaemon
       if (verteilen.ermittleTransferziele())
       {
         verteilen.verteileAenderungen();
-        // verteilen.versendeMails();
-        // verteilen.macheDirekteintraege();
-        // verteilen.setzeExportStatusAenderungen();
+        verteilen.versendeMails();
+        verteilen.macheDirekteintraege();
+        verteilen.setzeExportStatusAenderungen();
       }
       else
       {
@@ -63,5 +63,7 @@ public class AenderungenHolenDaemon
       ConnectionTool.getInstance().freeConnection(conn);
     }
   }
+
+
 
 }

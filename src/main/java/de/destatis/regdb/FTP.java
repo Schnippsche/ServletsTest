@@ -64,7 +64,7 @@ public class FTP
       this.ftp.enterLocalPassiveMode();
     } catch (Exception ex)
     {
-      throw new JobException(" Es konnte keine Verbindung zum Ftp-Server: -" + server + "- hergestellt werden.\nPort: -" + port + "-\nUser: -" + usr + "-\nPasswort: -" + pwd + "-");
+      throw new JobException(" Es konnte keine Verbindung zum Ftp-Server: -" + server + "- hergestellt werden.\nPort: -" + port + "-\nUser: -" + usr + "-\nPasswort: -" + pwd + "- :" + ex.getMessage());
     }
     return result;
   }

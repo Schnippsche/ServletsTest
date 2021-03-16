@@ -164,6 +164,7 @@ class IdevRegisterImportTest
     bean.sachbearbeiterLand = "00";
     bean.sachbearbeiterKennung = "test";
     bean.sachbearbeiterPasswort = "test";
+    bean.amt = "00";
     bean.sachbearbeiterId = 2;
     bean.jobId = 1;
     return bean;

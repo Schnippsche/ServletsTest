@@ -1,6 +1,7 @@
 package de.destatis.regdb.aenderungen;
 
 import de.destatis.regdb.db.ResultRow;
+import de.destatis.regdb.db.StringUtil;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
 
@@ -101,21 +102,21 @@ public class AenderungsTransferDaten
     if (rs != null)
     {
       // Transferdaten
-      this.aktion = rs.getString(AKTION);
-      this.host = rs.getString(TRANSFER_HOST);
-      this.form = rs.getString(TRANSFER_FORM);
-      this.plattform = rs.getString(TRANSFER_PLATTFORM);
-      this.user = rs.getString(TRANSFER_USER);
+      this.aktion = StringUtil.trim(rs.getString(AKTION));
+      this.host = StringUtil.trim(rs.getString(TRANSFER_HOST));
+      this.form = StringUtil.trim(rs.getString(TRANSFER_FORM));
+      this.plattform = StringUtil.trim(rs.getString(TRANSFER_PLATTFORM));
+      this.user = StringUtil.trim(rs.getString(TRANSFER_USER));
       this.passwort = rs.getString(TRANSFER_PASSWORT);
       this.account = rs.getString(TRANSFER_ACCOUNT);
-      this.zielverzeichnis = rs.getString(TRANSFER_ZIEL_VERZEICHNIS);
-      this.modus = rs.getString(TRANSFER_MODUS);
-      this.mailempfaenger = rs.getString(TRANSFER_MAIL_EMPFAENGER);
-      this.mailabsender = rs.getString(TRANSFER_MAIL_ABSENDER);
-      this.mailbetreff = rs.getString(TRANSFER_MAIL_BETREFF);
-      this.mailtext = rs.getString(TRANSFER_MAIL_TEXT);
-      this.konverter = rs.getString(KONVERTER);
-      this.konverteroptionen = rs.getString(KONVERTER_OPTIONEN);
+      this.zielverzeichnis = StringUtil.trim(rs.getString(TRANSFER_ZIEL_VERZEICHNIS));
+      this.modus = StringUtil.trim(rs.getString(TRANSFER_MODUS));
+      this.mailempfaenger = StringUtil.trim(rs.getString(TRANSFER_MAIL_EMPFAENGER));
+      this.mailabsender = StringUtil.trim(rs.getString(TRANSFER_MAIL_ABSENDER));
+      this.mailbetreff = StringUtil.trim(rs.getString(TRANSFER_MAIL_BETREFF));
+      this.mailtext = StringUtil.trim(rs.getString(TRANSFER_MAIL_TEXT));
+      this.konverter = StringUtil.trim(rs.getString(KONVERTER));
+      this.konverteroptionen = StringUtil.trim(rs.getString(KONVERTER_OPTIONEN));
     }
   }
 

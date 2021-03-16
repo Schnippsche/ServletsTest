@@ -137,15 +137,16 @@ public class MailVersandDaemon
    * Send mail.
    *
    * @param email the email
+   * @return boolean true wenn erfolgreich
    */
-  public void sendMail(Email email)
+  public boolean sendMail(Email email)
   {
     // Absender
     InternetAddress absender = createValidAddress(email.getAbsender());
     if (absender == null)
     {
       this.log.error("Mail-Versand abgebrochen, da fehlerhafte Absender-Email!");
-      return;
+      return false;
     }
     try
     {
@@ -174,11 +175,13 @@ public class MailVersandDaemon
         message.setSentDate(now);
         send(message);
       }
+      return true;
     }
     catch (MessagingException exc)
     {
       this.log.error("Mailversand fehlgeschlagen: " + exc.getMessage());
     }
+    return false;
   }
 
   /**

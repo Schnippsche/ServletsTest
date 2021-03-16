@@ -156,6 +156,7 @@ class IdevImportMitZusatzfelderTest
     bean.importBlockGroesse = 1000;
     bean.quellReferenzNumerisch = true;
     bean.sachbearbeiterLand = "00";
+    bean.amt = "00";
     bean.sachbearbeiterKennung = "test";
     bean.sachbearbeiterPasswort = "test";
     bean.sachbearbeiterId = 2;

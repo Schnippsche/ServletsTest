@@ -13,7 +13,6 @@ public class StringUtil
 
   /**
    * The empty String {@code ""}.
-   *
    */
   public static final String EMPTY = "";
 
@@ -75,6 +74,11 @@ public class StringUtil
   public static String leftTrim(final String str, final int len)
   {
     return (str == null) ? null : left(str.trim(), len);
+  }
+
+  public static String trim(final String str)
+  {
+    return (str == null) ? EMPTY : str.trim();
   }
 
   /**
@@ -421,25 +425,25 @@ public class StringUtil
   }
 
   /**
-   * Not null.
+   * Not empty boolean.
    *
-   * @param wert the wert
-   * @return the string
+   * @param str the String
+   * @return the boolean
    */
-  public static String notNull(Object wert)
+  public static boolean notEmpty(String str)
   {
-    return wert == null ? "" : String.valueOf(wert);
+    return (str != null && !str.trim().isEmpty());
   }
 
   /**
-   * Not empty boolean.
+   * Is empty boolean.
    *
-   * @param wert the wert
+   * @param str the str
    * @return the boolean
    */
-  public static boolean notEmpty(Object wert)
+  public static boolean isEmpty(String str)
   {
-    return (wert != null && !wert.toString().trim().isEmpty());
+    return str == null || "".equals(str.trim());
   }
 
   /**
