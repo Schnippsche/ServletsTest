@@ -95,20 +95,17 @@ public class MailVersandDaemon
             if (obfuscatedEmailPassword != null && !obfuscatedEmailPassword.isEmpty())
             {
               this.emailPassword = new String(ObfuscationAlgorithm.deobfuscate(obfuscatedEmailPassword));
-            }
-            else
+            } else
             {
               this.emailPassword = obfuscatedEmailPassword;
             }
-          }
-          else
+          } else
           {
             useAuth = false;
             this.emailUser = null;
             this.emailPassword = null;
           }
-        }
-        else
+        } else
         {
           useAuth = false;
           this.emailUser = null;
@@ -123,12 +120,10 @@ public class MailVersandDaemon
         }
         this.session = Session.getInstance(javaMailProperties);
       }
-    }
-    catch (Exception e)
+    } catch (Exception e)
     {
       this.log.error("Mail-Versand nicht moeglich!" + e.getMessage());
-    }
-    finally
+    } finally
     {
       ConnectionTool.getInstance().freeConnection(connection);
     }
@@ -177,8 +172,7 @@ public class MailVersandDaemon
         }
       }
       return result;
-    }
-    catch (MessagingException exc)
+    } catch (MessagingException exc)
     {
       this.log.error("Mailversand fehlgeschlagen: " + exc.getMessage());
     }
@@ -217,8 +211,7 @@ public class MailVersandDaemon
     try
     {
       return new InternetAddress(mail);
-    }
-    catch (AddressException exc)
+    } catch (AddressException exc)
     {
       this.log.error("Fehlerhafte Mail-Adresse " + mail);
     }
@@ -246,25 +239,18 @@ public class MailVersandDaemon
     Transport transport = null;
     try
     {
-      log.debug("send Zeile 1");
       transport = this.session.getTransport(this.emailProtocol);
-      log.debug("send Zeile 2");
       transport.connect(this.emailHost, this.emailPort, this.emailUser, this.emailPassword);
-      log.debug("send Zeile 3");
       transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
-      log.debug("send Zeile 4");
       this.log.info("Mail verschickt an " + getAllEmpfaenger(mimeMessage));
       return true;
-    }
-    catch (AuthenticationFailedException ex)
+    } catch (AuthenticationFailedException ex)
     {
       this.log.error("Mail-Server-Authentifizierung fehlgeschlagen:" + ex.getMessage());
-    }
-    catch (MessagingException ex)
+    } catch (MessagingException ex)
     {
       this.log.error("Mail-Server-Verbindung fehlgeschlagen:" + ex.getMessage());
-    }
-    finally
+    } finally
     {
       try
       {
@@ -272,8 +258,7 @@ public class MailVersandDaemon
         {
           transport.close();
         }
-      }
-      catch (MessagingException e)
+      } catch (MessagingException e)
       {
         this.log.error("Fehler beim Schliessen der Mailverbindung", e);
       }
