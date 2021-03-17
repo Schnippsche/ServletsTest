@@ -129,7 +129,7 @@ public class MailVersandDaemon
     }
     finally
     {
-       ConnectionTool.getInstance().freeConnection(connection);
+      ConnectionTool.getInstance().freeConnection(connection);
     }
   }
 
@@ -152,6 +152,7 @@ public class MailVersandDaemon
     {
       LinkedList<InternetAddress> emailListe = sammleValideMailAddressen(email.getEmpfaenger());
       Date now = new Date();
+      boolean result = true;
       for (int i = 0; i < emailListe.size(); i += this.emailBlockSize)
       {
         MimeMessage message = createMimeMessage();
@@ -173,9 +174,12 @@ public class MailVersandDaemon
         message.setSubject(email.getBetreff(), "UTF-8");
         message.setContent(multipart);
         message.setSentDate(now);
-        send(message);
+        if (!send(message))
+        {
+          result = false;
+        }
       }
-      return true;
+      return result;
     }
     catch (MessagingException exc)
     {
@@ -238,8 +242,9 @@ public class MailVersandDaemon
    * Send.
    *
    * @param mimeMessage the mime message
+   * @return the boolean
    */
-  public void send(MimeMessage mimeMessage)
+  private boolean send(MimeMessage mimeMessage)
   {
     Transport transport = null;
     try
@@ -248,6 +253,7 @@ public class MailVersandDaemon
       transport.connect(this.emailHost, this.emailPort, this.emailUser, this.emailPassword);
       transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
       this.log.info("Mail verschickt an " + getAllEmpfaenger(mimeMessage));
+      return true;
     }
     catch (AuthenticationFailedException ex)
     {
@@ -271,6 +277,7 @@ public class MailVersandDaemon
         this.log.error("Fehler beim Schliessen der Mailverbindung", e);
       }
     }
+    return false;
   }
 
   private String getAllEmpfaenger(MimeMessage mimeMessage) throws MessagingException
