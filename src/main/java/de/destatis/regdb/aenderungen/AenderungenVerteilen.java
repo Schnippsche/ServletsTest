@@ -177,7 +177,7 @@ public class AenderungenVerteilen
 
   private void holeAenderungsDatei(AenderungsTransferDaten atd)
   {
-    AenderungenHolen aenderungenHolen = new AenderungenHolen("" + this.sbId, this.sbKennung, atd.getAmt(), "" + atd.getStatistikId(), atd.getAenderungsart(), atd.getTyp(), this.sqlUtil.getConnection());
+    AenderungenHolenNeu aenderungenHolen = new AenderungenHolenNeu("" + this.sbId, this.sbKennung, atd.getAmt(), "" + atd.getStatistikId(), atd.getAenderungsart(), atd.getTyp(), this.sqlUtil.getConnection());
     aenderungenHolen.setClient("localhost");
     try
     {
@@ -512,7 +512,7 @@ public class AenderungenVerteilen
   {
     try
     {
-      AenderungenHolen aenderungenHolen = new AenderungenHolen("" + this.sbId, this.sbKennung, atd.getAmt(), "" + atd.getStatistikId(), atd.getAenderungsart(), atd.getTyp(), this.sqlUtil.getConnection());
+      AenderungenHolenNeu aenderungenHolen = new AenderungenHolenNeu("" + this.sbId, this.sbKennung, atd.getAmt(), "" + atd.getStatistikId(), atd.getAenderungsart(), atd.getTyp(), this.sqlUtil.getConnection());
       aenderungenHolen.setClient("localhost");
       aenderungenHolen.validateDirekteintrag();
       File file = aenderungenHolen.starteDirektEintrag(atd.getExportSpalten());
