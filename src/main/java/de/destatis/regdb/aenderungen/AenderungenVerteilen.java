@@ -65,7 +65,7 @@ public class AenderungenVerteilen
     this.amt = amt;
     this.sbKennung = kennung;
     this.zielZeichensatz = StandardCharsets.ISO_8859_1.name();
-    this.disableHostKeyCheck = true;
+    this.disableHostKeyCheck = false;
     this.knownHostDatei = null;
     this.exportMitUeberschrift = false;
   }
@@ -183,7 +183,7 @@ public class AenderungenVerteilen
     {
       atd.setHolenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_FEHLER));
       aenderungenHolen.validate();
-      File zipContainerFile = aenderungenHolen.starteVerarbeitung(atd.getExportSpalten(), exportMitUeberschrift);
+      File zipContainerFile = aenderungenHolen.starteVerarbeitung(atd.getExportSpalten(), this.exportMitUeberschrift);
       if (zipContainerFile != null)
       {
         atd.setZipContainerFile(zipContainerFile);
@@ -196,7 +196,7 @@ public class AenderungenVerteilen
     }
   }
 
-  private void ermittleTransferdaten(ResultRow row, String amt, int statistikId, String errorMail) throws JobException
+  private void ermittleTransferdaten(ResultRow row, String amt, int statistikId, String errorMail)
   {
     String typ = row.getString("AKTION");
     if (typ.endsWith("_DATEIEXPORT"))

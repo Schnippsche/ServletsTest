@@ -8,6 +8,7 @@ import de.werum.sis.idev.res.secure.ObfuscationAlgorithm;
 
 import javax.mail.*;
 import javax.mail.internet.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -160,18 +161,14 @@ public class MailVersandDaemon
         // Textteil
         MimeBodyPart textPart = new MimeBodyPart();
         textPart.setText(email.getText(), "UTF-8");
-        // oder als Html:        
-        //MimeBodyPart htmlPart = new MimeBodyPart();
-        // htmlPart.setContent(email.getText(), "text/html; charset=utf-8");
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(textPart);
-        //multipart.addBodyPart(htmlPart);
         for (int j = 0; j < this.emailBlockSize && !emailListe.isEmpty(); j++)
         {
           InternetAddress em = emailListe.poll();
           message.addRecipient(Message.RecipientType.BCC, em);
         }
-        message.setSubject(email.getBetreff(), "UTF-8");
+        message.setSubject(email.getBetreff(), StandardCharsets.UTF_8.name());
         message.setContent(multipart);
         message.setSentDate(now);
         if (!send(message))
@@ -249,9 +246,13 @@ public class MailVersandDaemon
     Transport transport = null;
     try
     {
+      log.debug("send Zeile 1");
       transport = this.session.getTransport(this.emailProtocol);
+      log.debug("send Zeile 2");
       transport.connect(this.emailHost, this.emailPort, this.emailUser, this.emailPassword);
+      log.debug("send Zeile 3");
       transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
+      log.debug("send Zeile 4");
       this.log.info("Mail verschickt an " + getAllEmpfaenger(mimeMessage));
       return true;
     }

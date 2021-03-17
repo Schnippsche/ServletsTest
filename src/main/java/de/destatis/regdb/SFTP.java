@@ -14,8 +14,8 @@ package de.destatis.regdb;
 
 import com.jcraft.jsch.*;
 import de.werum.sis.idev.res.job.JobException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import de.werum.sis.idev.res.log.Logger;
+import de.werum.sis.idev.res.log.LoggerIfc;
 
 import java.io.File;
 
@@ -26,7 +26,7 @@ import java.io.File;
  */
 public class SFTP
 {
-  private static final Log logger = LogFactory.getLog(SFTP.class);
+  private static final LoggerIfc logger = Logger.getInstance().getLogger(SFTP.class);
   private final JSch jsch;
   private ChannelSftp sftpChannel;
   private Session session;
@@ -42,7 +42,7 @@ public class SFTP
       setKnownHostFile(defaultKnownHosts.getAbsolutePath());
     } else
     {
-      logger.warn("Keine known_hosts unter " + System.getProperty("user.home") + "/.ssh/ gefunden... Setzen Sie explizit den Pfad zur known_hosts-Datei mit der Angabe -knownhostfile <arg> oder deaktivieren Sie die Pruefung gegen die knownHost mittels -disableHostKeyCheck, was einen Sicherheitsverlust bedeutet!");
+      logger.info("Keine known_hosts unter " + System.getProperty("user.home") + "/.ssh/ gefunden... Setzen Sie explizit den Pfad zur known_hosts-Datei mit der Angabe -knownhostfile <arg> oder deaktivieren Sie die Pruefung gegen die knownHost mittels -disableHostKeyCheck, was einen Sicherheitsverlust bedeutet!");
     }
   }
 
@@ -60,7 +60,7 @@ public class SFTP
 
   public void disableHostKeyChecking()
   {
-    logger.warn("Host Key Checking ist deaktiviert! Dies bedeutet einen Sicherheitsverlust!");
+    logger.info("Host Key Checking ist deaktiviert! Dies bedeutet einen Sicherheitsverlust!");
     JSch.setConfig("StrictHostKeyChecking", "no");
   }
 

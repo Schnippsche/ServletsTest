@@ -128,14 +128,6 @@ public class AenderungsTransferDaten
   public void setZipContainerFile(File f)
   {
     this.zipContainerFile = f;
-    if (f != null && f.exists())
-    {
-      String tmp = f.getName();
-      if (tmp.length() > 19)
-      {
-        this.filedatum = tmp.substring(tmp.length() - 24, tmp.length() - 9);
-      }
-    }
   }
 
   public String getAccount()
@@ -389,7 +381,7 @@ public class AenderungsTransferDaten
     if (this.filedatum == null)
     {
       Date date = new Date();
-      SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd.HHmmss");
+      SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd.HHmmssSSS");
       this.filedatum = fmt.format(date);
     }
     return "IDEV." + this.aktion + "." + this.amt + "." + this.statistikId + "." + this.filedatum + ".csv";

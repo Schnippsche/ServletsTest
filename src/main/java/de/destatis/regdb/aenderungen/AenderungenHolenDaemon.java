@@ -40,7 +40,7 @@ public class AenderungenHolenDaemon
     {
       AenderungenVerteilen verteilen = new AenderungenVerteilen(conn, this.amt, this.kennung);
       verteilen.setKnownHostDatei(null); // Aus Konfig?
-      verteilen.disableHostKeyCheck(true); // Aus Konfig?
+      verteilen.disableHostKeyCheck(false); // Aus Konfig?
       verteilen.setZielZeichensatz(StandardCharsets.ISO_8859_1.name()); // Aus Konfig?
       if (verteilen.ermittleTransferziele())
       {
