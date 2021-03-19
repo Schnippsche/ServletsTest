@@ -38,16 +38,14 @@ public class AenderungenHolenDaemon
     Connection conn = ConnectionTool.getInstance().getConnection();
     try
     {
-      AenderungenVerteilen verteilen = new AenderungenVerteilen(conn, this.amt, this.kennung);
+      AenderungenVerteilenNeu verteilen = new AenderungenVerteilenNeu(conn, this.amt, this.kennung);
       verteilen.setKnownHostDatei(null); // Aus Konfig?
       verteilen.disableHostKeyCheck(false); // Aus Konfig?
       verteilen.setZielZeichensatz(StandardCharsets.ISO_8859_1.name()); // Aus Konfig?
       if (verteilen.ermittleTransferziele())
       {
-        verteilen.verteileAenderungen();
-        verteilen.versendeMails();
-        verteilen.macheDirekteintraege();
-        verteilen.setzeExportStatusAenderungen();
+        verteilen.verarbeiteDateiexporte();
+        verteilen.verarbeiteDirektEintraege();
       }
       else
       {
@@ -56,7 +54,7 @@ public class AenderungenHolenDaemon
     }
     catch (Exception e)
     {
-      this.log.error("Aenderungen konnten nicht serverseitig verarbeitet werden");
+      this.log.error("Aenderungen konnten nicht serverseitig verarbeitet werden:" + e.getMessage());
     }
     finally
     {

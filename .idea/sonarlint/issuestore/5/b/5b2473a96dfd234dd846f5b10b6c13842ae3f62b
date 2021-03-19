@@ -1,0 +1,13 @@
+
+‹
+java:S1845J"iRename field "konverter" to prevent any misunderstanding/clash with field "KONVERTER" defined on line 39.(µÛŒ”ûÿÿÿÿ8£¦Ñƒ/
+l
+java:S1104*"OMake log a static final constant or non-public and provide accessors if needed.(ƒµ¿8¾¦Õ¢„/
+
+java:S1845/"cRename field "aktion" to prevent any misunderstanding/clash with field "AKTION" defined on line 26.(»íå8£¦Ñƒ/
+=
+java:S3010Q" Remove this assignment of "log".(ı´¢²8¾¦Õ¢„/
+‹
+java:S1319_"nThe type of the "config" object should be an interface such as "Map" rather than the implementation "HashMap".(’³£ğ8ÁŠë¦ƒ/
+F
+java:S1444*")Make this "public static log" field final(ƒµ¿8¾¦Õ¢„/

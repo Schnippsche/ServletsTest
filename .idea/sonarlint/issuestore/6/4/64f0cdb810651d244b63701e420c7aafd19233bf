@@ -1,0 +1,29 @@
+
+i
+java:S1989Q"NHandle the following exception that could be thrown by "length": SQLException.(¼ö†Íıÿÿÿÿ
+o
+java:S1989:"THandle the following exception that could be thrown by "executeQuery": SQLException.(€Ò½·ûÿÿÿÿ
+n
+java:S1989<"SHandle the following exception that could be thrown by "getMetaData": SQLException.(ï†ïÚúÿÿÿÿ
+g
+java:S1989V"QHandle the following exception that could be thrown by "getObject": SQLException.(ˆß÷÷
+{
+java:S1149>"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(ü„¾‡
+g
+java:S1989I"LHandle the following exception that could be thrown by "next": SQLException.(è’Î¤ıÿÿÿÿ
+l
+java:S1989D"VHandle the following exception that could be thrown by "getColumnLabel": SQLException.(³˜«å
+€
+java:S1149="eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(ö¥¶ıÿÿÿÿ
+r
+java:S1989:"WHandle the following exception that could be thrown by "createStatement": SQLException.(€Ò½·ûÿÿÿÿ
+k
+java:S1989Q"PHandle the following exception that could be thrown by "getBytes": SQLException.(¼ö†Íıÿÿÿÿ
+k
+java:S1989E"UHandle the following exception that could be thrown by "getColumnType": SQLException.(æÿÇş
+l
+java:S1989?"VHandle the following exception that could be thrown by "getColumnCount": SQLException.(¶öÊÄ
+{
+java:S1149K"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(„Ë†š
+e
+java:S1989P"OHandle the following exception that could be thrown by "getBlob": SQLException.(ÕüĞ

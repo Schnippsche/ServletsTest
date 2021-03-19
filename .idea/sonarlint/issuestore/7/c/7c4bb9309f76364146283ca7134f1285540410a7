@@ -1,0 +1,6 @@
+
+Q	java:S125#"<This block of commented-out lines of code should be removed.(â†¡Ê
+X
+java:S1854"BRemove this useless assignment to local variable "loeschInterval".(Ù¨´
+I
+java:S1481"3Remove this unused "loeschInterval" local variable.(Ù¨´

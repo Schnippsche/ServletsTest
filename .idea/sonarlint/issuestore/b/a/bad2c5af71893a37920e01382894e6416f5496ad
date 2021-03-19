@@ -1,0 +1,23 @@
+
+l
+java:S1989]"VHandle the following exception that could be thrown by "getOutputStream": IOException.(˜²Õ
+`	java:S112L"FDefine and throw a dedicated exception instead of using a generic one.(÷¸…ıÿÿÿÿ
+o
+java:S1989B"YHandle the following exception that could be thrown by "parseInt": NumberFormatException.(™ºİ
+`	java:S112H"FDefine and throw a dedicated exception instead of using a generic one.(¹ã­€ùÿÿÿÿ
+g
+java:S1989a"LHandle the following exception that could be thrown by "write": IOException.( †¨äşÿÿÿÿ
+a
+java:S1989_"KHandle the following exception that could be thrown by "read": IOException.(ÁµËÆ
+k	java:S1179"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(úÎşşÿÿÿÿ
+U
+java:S1989H":Handle the "Exception" thrown here in a "try/catch" block.(¹ã­€ùÿÿÿÿ
+f	java:S1177"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¤–
+U
+java:S1989L":Handle the "Exception" thrown here in a "try/catch" block.(÷¸…ıÿÿÿÿ
+b
+java:S1989c"LHandle the following exception that could be thrown by "flush": IOException.(§óÎ×
+ƒ
+java:S1989Q"hHandle the following exception that could be thrown by "starteDirektEintrag": AenderungenHolenException.( ´Ø²şÿÿÿÿ
+€
+java:S1989P"jHandle the following exception that could be thrown by "validateDirekteintrag": AenderungenHolenException.(ªáÊç

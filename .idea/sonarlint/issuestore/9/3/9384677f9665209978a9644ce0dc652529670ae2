@@ -1,0 +1,24 @@
+
+U
+java:S1989R":Handle the "Exception" thrown here in a "try/catch" block.(¹ã­€ùÿÿÿÿ
+U
+java:S1989W":Handle the "Exception" thrown here in a "try/catch" block.(÷¸…ıÿÿÿÿ
+g
+java:S1989n"LHandle the following exception that could be thrown by "write": IOException.( †¨äşÿÿÿÿ
+o
+java:S1989L"YHandle the following exception that could be thrown by "parseInt": NumberFormatException.(™ºİ
+a
+java:S1989l"KHandle the following exception that could be thrown by "read": IOException.(ÁµËÆ
+`	java:S112W"FDefine and throw a dedicated exception instead of using a generic one.(÷¸…ıÿÿÿÿ
+b
+java:S1989p"LHandle the following exception that could be thrown by "flush": IOException.(§óÎ×
+s
+java:S1989]"]Handle the following exception that could be thrown by "validate": AenderungenHolenException.(®ÏŞò
+U	java:S899r";Do something with the "boolean" value returned by "delete".(²Œ­ûÿÿÿÿ
+‚
+java:S1989^"gHandle the following exception that could be thrown by "starteVerarbeitung": AenderungenHolenException.(¨ùŒŸøÿÿÿÿ
+l
+java:S1989j"VHandle the following exception that could be thrown by "getOutputStream": IOException.(˜²Õ
+i
+java:S4042r"NUse "java.nio.file.Files#delete" here for better messages on error conditions.(²Œ­ûÿÿÿÿ
+`	java:S112R"FDefine and throw a dedicated exception instead of using a generic one.(¹ã­€ùÿÿÿÿ

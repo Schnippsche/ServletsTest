@@ -1,0 +1,25 @@
+
+o
+java:S1192>"MDefine a constant instead of duplicating this literal "AENDERUNG_ID" 3 times.(ÑÛ½¨üÿÿÿÿ8–ùÉ„/
+k
+java:S1192î"MDefine a constant instead of duplicating this literal "aenderung_id" 3 times.(¶–£ã8–ùÉ„/
+i
+java:S1192ï"FDefine a constant instead of duplicating this literal " vom " 3 times.(šæŒÿÿÿÿÿ8–ùÉ„/
+o
+java:S3776‡"RRefactor this method to reduce its Cognitive Complexity from 48 to the 15 allowed.(ã® 8–ùÉ„/
+^	java:S125”"<This block of commented-out lines of code should be removed.(³åÕ¤üÿÿÿÿ8–ùÉ„/
+d
+java:S1192ğ"FDefine a constant instead of duplicating this literal "datum" 3 times.(ë¹Óé8–ùÉ„/
+Ÿ
+java:S1845º"€Rename method "starteDirekteintrag" to prevent any misunderstanding/clash with method "starteDirektEintrag" defined on line 170.(¸ƒÔÎ8–ùÉ„/
+p
+java:S3776"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(…ıçÆ8–ùÉ„/
+o
+java:S2095Ü"LUse try-with-resources or close this "BufferedWriter" in a "finally" clause.(ÄŸÿ¨øÿÿÿÿ8–ùÉ„/
+x
+java:S1192è"UDefine a constant instead of duplicating this literal ",SACHBEARBEITER_ID='" 3 times.(¾ªõÅûÿÿÿÿ8–ùÉ„/
+^	java:S125İ"<This block of commented-out lines of code should be removed.(³åÕ¤üÿÿÿÿ8–ùÉ„/
+r
+java:S1192í"ODefine a constant instead of duplicating this literal "Aenderungs-id " 3 times.(èõİóûÿÿÿÿ8–ùÉ„/
+p
+java:S3776º"RRefactor this method to reduce its Cognitive Complexity from 33 to the 15 allowed.(¸ƒÔÎ8–ùÉ„/
