@@ -1,19 +1,26 @@
 package de.destatis.regdb.aenderungen;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import de.destatis.regdb.db.StringUtil;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,13 +41,16 @@ public class AenderungenVerteilenNeu
   private final ArrayList<TransferDaten> transferDatenList;
   private final String amt;
   private final String sbKennung;
-  private final SimpleDateFormat sdf;
+  private final DateTimeFormatter sdf;
   private String zielZeichensatz;
   private boolean disableHostKeyCheck;
   private String knownHostDatei;
   private boolean exportMitUeberschrift;
   private int sbId;
   private HashMap<String, String> defaultKonfigurationMap;
+  private String tempVerzeichnis;
+  private int anzahlAenderungenTotal;
+  private int anzahlAenderungenErlaubt;
 
   public AenderungenVerteilenNeu(Connection connection, String amt, String kennung)
   {
@@ -48,11 +58,14 @@ public class AenderungenVerteilenNeu
     this.transferDatenList = new ArrayList<>();
     this.amt = amt;
     this.sbKennung = kennung;
-    this.zielZeichensatz = StandardCharsets.ISO_8859_1.name();
-    this.disableHostKeyCheck = false;
-    this.knownHostDatei = null;
-    this.exportMitUeberschrift = false;
-    this.sdf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSSS");
+    setZielZeichensatz(StandardCharsets.ISO_8859_1.name());
+    disableHostKeyCheck(false);
+    setKnownHostDatei(null);
+    setExportMitUeberschrift(false);
+    this.sdf = DateTimeFormatter.ofPattern("yyyyMMdd.HHmmss.SSSS");
+    this.tempVerzeichnis = ".";
+    this.anzahlAenderungenTotal = 0;
+    setAnzahlAenderungenErlaubt(1000);
   }
 
   private HashMap<String, String> ermittleStandardKonfiguration() throws JobException
@@ -64,7 +77,8 @@ public class AenderungenVerteilenNeu
       {
         result.put(rs.getString(1), rs.getString(2));
       }
-    } catch (SQLException e)
+    }
+    catch (SQLException e)
     {
       throw new JobException(e.getMessage(), e);
     }
@@ -77,8 +91,11 @@ public class AenderungenVerteilenNeu
     try (ResultSet rs = this.connection.createStatement().executeQuery(sql))
     {
       if (rs.next())
+      {
         this.sbId = rs.getInt(1);
-    } catch (SQLException e)
+      }
+    }
+    catch (SQLException e)
     {
       throw new JobException(e.getMessage(), e);
     }
@@ -102,6 +119,16 @@ public class AenderungenVerteilenNeu
   public void disableHostKeyCheck(boolean status)
   {
     this.disableHostKeyCheck = status;
+  }
+
+  public void setAnzahlAenderungenErlaubt(int anzahlAenderungenErlaubt)
+  {
+    this.anzahlAenderungenErlaubt = anzahlAenderungenErlaubt;
+  }
+
+  public int getAnzahlAenderungenTotal()
+  {
+    return this.anzahlAenderungenTotal;
   }
 
   /**
@@ -130,6 +157,7 @@ public class AenderungenVerteilenNeu
     this.transferDatenList.clear();
     this.defaultKonfigurationMap = ermittleStandardKonfiguration();
     ermittleSachbearbeiter();
+    ermittleTempDirectory();
     String sql = MessageFormat.format(SQL_SELECT_TRANSFERZIEL, this.amt);
     log.debug(sql);
     try (ResultSet rs = this.connection.createStatement().executeQuery(sql))
@@ -138,11 +166,21 @@ public class AenderungenVerteilenNeu
       {
         this.transferDatenList.add(new TransferDaten(rs));
       }
-    } catch (SQLException e)
+    }
+    catch (SQLException e)
     {
       throw new JobException(e.getMessage(), e);
     }
     return !this.transferDatenList.isEmpty();
+  }
+
+  private void ermittleTempDirectory()
+  {
+    this.tempVerzeichnis = this.defaultKonfigurationMap.get("INT_TEMP_DIRECTORY");
+    if (this.tempVerzeichnis == null)
+    {
+      this.tempVerzeichnis = System.getProperty("java.io.tmpdir");
+    }
   }
 
   public void verarbeiteDirektEintraege() throws JobException
@@ -182,7 +220,9 @@ public class AenderungenVerteilenNeu
       sql = MessageFormat.format(SQL_DIREKTEINTRAG, "firmen", set, "" + this.sbId, "firmen_id", "" + aenderungen.getFirmenId());
       fehlertext = MessageFormat.format(DIREKTEINTRAG_FEHLERTEXT, "Firma", "" + aenderungen.getFirmenId());
       if (!doSqlDirekteintrag(sql, fehlertext))
+      {
         result = false;
+      }
     }
     // Ansprechpartner ?
     set = aenderungen.getSqlUpdateWithColumns(ansprechpartnerSpalten, "AN_");
@@ -191,7 +231,9 @@ public class AenderungenVerteilenNeu
       sql = MessageFormat.format(SQL_DIREKTEINTRAG, "ansprechpartner", set, "" + this.sbId, "ansprechpartner_id", "" + aenderungen.getAnsprechpartnerId());
       fehlertext = MessageFormat.format(DIREKTEINTRAG_FEHLERTEXT, "Ansprechpartner", "" + aenderungen.getAnsprechpartnerId());
       if (!doSqlDirekteintrag(sql, fehlertext))
+      {
         result = false;
+      }
     }
     aenderungen.setDirektEintragErfolgreich(result);
 
@@ -203,7 +245,8 @@ public class AenderungenVerteilenNeu
     {
       stmt.executeUpdate(sql);
       return true;
-    } catch (SQLException e)
+    }
+    catch (SQLException e)
     {
       log.error(fehlertext + ":" + e.getMessage());
     }
@@ -224,14 +267,28 @@ public class AenderungenVerteilenNeu
     }
   }
 
-  private void erzeugeExportDatei(List<Aenderung> aenderungen, TransferDaten transferDaten)
+  private void erzeugeExportDatei(List<Aenderung> aenderungen, TransferDaten transferDaten) throws JobException
   {
-    String dateiname = "IDEV." + transferDaten.getAktion() + "." + this.amt + "." + transferDaten.getStatistikId() + "." + sdf.format(new Date()) + ".zip";
+    String dateiname = "IDEV." + transferDaten.getAktion() + "." + this.amt + "." + transferDaten.getStatistikId() + "." + LocalDateTime.now().format(this.sdf) + ".csv";
     // Erzeuge Datei und speichere die Eintraege als CSV
     log.debug("Erzeuge datei " + dateiname + " mit " + aenderungen.size() + " Eintraegen");
-    for (Aenderung ae : aenderungen)
+    Path path = Paths.get(this.tempVerzeichnis, dateiname);
+    try (BufferedWriter bw = Files.newBufferedWriter(path, Charset.forName(this.zielZeichensatz)); CSVWriter writer = new CSVWriter(bw, ';', '"'))
     {
-
+      if (this.exportMitUeberschrift)
+      {
+        writer.writeNext(transferDaten.getExportSpaltenAsArray());
+      }
+      for (Aenderung ae : aenderungen)
+      {
+        writer.writeNext(ae.getValuesAsArray());
+      }
+      writer.flush();
+      transferDaten.setExportDatei(path);
+    }
+    catch (IOException e)
+    {
+      throw new JobException("Fehler beim Erstellen der Exportdatei:" + e.getMessage(), e);
     }
   }
 
@@ -243,14 +300,16 @@ public class AenderungenVerteilenNeu
     List<Aenderung> aenderungsList = new ArrayList<>();
     try (ResultSet rs = this.connection.createStatement().executeQuery(sql))
     {
-      while (rs.next())
+      while (rs.next() && this.anzahlAenderungenTotal < this.anzahlAenderungenErlaubt)
       {
         Aenderung aenderung = new Aenderung(spalten);
         aenderung.convertResultset(rs);
         aenderungsList.add(aenderung);
+        this.anzahlAenderungenTotal++;
       }
       return aenderungsList;
-    } catch (SQLException e)
+    }
+    catch (SQLException e)
     {
       log.error(e.getMessage());
       throw new JobException(e.getMessage(), e);

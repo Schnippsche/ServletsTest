@@ -2,6 +2,7 @@ package de.destatis.regdb.aenderungen;
 
 import de.destatis.regdb.db.StringUtil;
 
+import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -31,7 +32,7 @@ public class TransferDaten
   private static final String TRANSFER_KONVERTER = "KONVERTER";
   private static final String TRANSFER_KONVERTER_OPTIONEN = "KONVERTER_OPTIONEN";
   private static final String AENDERUNGS_EXPORT_SPALTEN = "AENDERUNGS_EXPORT_SPALTEN";
-  private  int aenderungsart;
+  private int aenderungsart;
   // Daten aus Tabelle Aenderung
   private String amt;
   private int statistikId;
@@ -52,6 +53,7 @@ public class TransferDaten
   private String konverter;
   private String konverteroptionen;
   private String exportSpalten;
+  private Path exportDatei;
 
   public TransferDaten()
   {
@@ -206,4 +208,23 @@ public class TransferDaten
     return this.exportSpalten;
   }
 
+  public String[] getExportSpaltenAsArray()
+  {
+    String[] spalten = this.exportSpalten.split("[,;]");
+    for (int i = 0; i < spalten.length; i++)
+    {
+      spalten[i] = spalten[i].trim();
+    }
+    return spalten;
+  }
+
+  public Path getExportDatei()
+  {
+    return this.exportDatei;
+  }
+
+  public void setExportDatei(Path exportDatei)
+  {
+    this.exportDatei = exportDatei;
+  }
 }
