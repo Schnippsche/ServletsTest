@@ -1,7 +1,6 @@
 package de.destatis.regdb.aenderungen;
 
 import de.destatis.regdb.db.ConnectionTool;
-import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
 
@@ -38,14 +37,16 @@ public class AenderungenHolenDaemon
     Connection conn = ConnectionTool.getInstance().getConnection();
     try
     {
-      AenderungenVerteilenNeu verteilen = new AenderungenVerteilenNeu(conn, this.amt, this.kennung);
+      AenderungenVerteilen verteilen = new AenderungenVerteilen(conn, this.amt, this.kennung);
       verteilen.setKnownHostDatei(null); // Aus Konfig?
-      verteilen.disableHostKeyCheck(false); // Aus Konfig?
+      verteilen.disableHostKeyCheck(true); // Aus Konfig?
       verteilen.setZielZeichensatz(StandardCharsets.ISO_8859_1.name()); // Aus Konfig?
       if (verteilen.ermittleTransferziele())
       {
-        verteilen.verarbeiteDateiexporte();
-        verteilen.verarbeiteDirektEintraege();
+        verteilen.verteileAenderungen();
+        verteilen.versendeMails();
+        verteilen.macheDirekteintraege();
+        verteilen.setzeExportStatusAenderungen();
       }
       else
       {

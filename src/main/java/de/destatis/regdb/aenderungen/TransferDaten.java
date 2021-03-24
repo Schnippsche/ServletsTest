@@ -1,10 +1,12 @@
 package de.destatis.regdb.aenderungen;
 
+import de.destatis.regdb.db.ResultRow;
 import de.destatis.regdb.db.StringUtil;
 
-import java.nio.file.Path;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class TransferDaten
 {
@@ -14,8 +16,6 @@ public class TransferDaten
   public static final int PLATTFORM_UNIX_SFTP = 3;
   public static final int PLATTFORM_HOST_FTP = 4;
   public static final int PLATTFORM_HOST_SFTP = 5;
-  public static final int FORM_EINZEL = 1;
-  public static final int FORM_SAMMEL = 2;
   private static final String TRANSFER_AKTION = "AKTION";
   private static final String TRANSFER_HOST = "TRANSFER_HOST";
   private static final String TRANSFER_FORM = "TRANSFER_FORM";
@@ -32,6 +32,7 @@ public class TransferDaten
   private static final String TRANSFER_KONVERTER = "KONVERTER";
   private static final String TRANSFER_KONVERTER_OPTIONEN = "KONVERTER_OPTIONEN";
   private static final String AENDERUNGS_EXPORT_SPALTEN = "AENDERUNGS_EXPORT_SPALTEN";
+  private final List<DateiTransfer> dateiTransferList;
   private int aenderungsart;
   // Daten aus Tabelle Aenderung
   private String amt;
@@ -53,15 +54,18 @@ public class TransferDaten
   private String konverter;
   private String konverteroptionen;
   private String exportSpalten;
-  private Path exportDatei;
+  private boolean direktEintragErfolgreich;
+  private Set<Aenderung> aenderungen;
 
   public TransferDaten()
   {
-
+    this.aenderungen = new HashSet<>();
+    this.dateiTransferList = new ArrayList<>();
   }
 
-  public TransferDaten(ResultSet rs) throws SQLException
+  public TransferDaten(ResultRow rs)
   {
+    this();
     this.amt = StringUtil.trim(rs.getString("AMT"));
     this.statistikId = rs.getInt("STATISTIK_ID");
     this.aktion = StringUtil.trim(rs.getString(TRANSFER_AKTION));
@@ -81,6 +85,14 @@ public class TransferDaten
     this.konverteroptionen = StringUtil.trim(rs.getString(TRANSFER_KONVERTER_OPTIONEN));
     this.exportSpalten = StringUtil.trim(rs.getString(AENDERUNGS_EXPORT_SPALTEN));
     this.aenderungsart = rs.getInt("AENDERUNGSARTVALUE");
+    if (!"".equals(this.zielverzeichnis))
+    {
+      this.zielverzeichnis = this.zielverzeichnis.replace("\\", "/");
+      if (this.zielverzeichnis.endsWith("/"))
+      {
+        this.zielverzeichnis = this.zielverzeichnis.substring(0, this.zielverzeichnis.length() - 1);
+      }
+    }
   }
 
   public String getAmt()
@@ -96,11 +108,6 @@ public class TransferDaten
   public boolean isMelderAenderung()
   {
     return (this.aktion.startsWith("AEND_MELDER"));
-  }
-
-  public boolean isAuskunftpflAenderung()
-  {
-    return (this.aktion.startsWith("AEND_AUSKUNFTPFL"));
   }
 
   public String getAktion()
@@ -141,6 +148,32 @@ public class TransferDaten
   public boolean isDateiexport()
   {
     return (this.aktion.endsWith("DATEIEXPORT") || this.aktion.endsWith("BEIDES"));
+  }
+
+  public int getPlattformInt()
+  {
+    String pf = getPlattform();
+    if ("LOKAL".equals(pf))
+    {
+      return PLATTFORM_LOKAL;
+    }
+    if ("UNIXFTP".equals(pf))
+    {
+      return PLATTFORM_UNIX_FTP;
+    }
+    if ("UNIXSFTP".equals(pf))
+    {
+      return PLATTFORM_UNIX_SFTP;
+    }
+    if ("HOSTFTP".equals(pf))
+    {
+      return PLATTFORM_HOST_FTP;
+    }
+    if ("HOSTSFTP".equals(pf))
+    {
+      return PLATTFORM_HOST_SFTP;
+    }
+    return PLATTFORM_UNKNOWN;
   }
 
   public String getPlattform()
@@ -218,13 +251,28 @@ public class TransferDaten
     return spalten;
   }
 
-  public Path getExportDatei()
+  public List<DateiTransfer> getDateiTransferList()
   {
-    return this.exportDatei;
+    return this.dateiTransferList;
   }
 
-  public void setExportDatei(Path exportDatei)
+  public boolean isDirektEintragErfolgreich()
   {
-    this.exportDatei = exportDatei;
+    return this.direktEintragErfolgreich;
+  }
+
+  public void setDirektEintragErfolgreich(boolean direktEintragErfolgreich)
+  {
+    this.direktEintragErfolgreich = direktEintragErfolgreich;
+  }
+
+  public Set<Aenderung> getAenderungen()
+  {
+    return this.aenderungen;
+  }
+
+  public void setAenderungen(Set<Aenderung> aenderungen)
+  {
+    this.aenderungen = aenderungen;
   }
 }

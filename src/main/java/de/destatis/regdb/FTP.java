@@ -8,7 +8,6 @@
  */
 package de.destatis.regdb;
 
-import de.werum.sis.idev.res.job.JobException;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -52,9 +51,9 @@ public class FTP
    * @param usr    - Benutzername auf dem FTP Server
    * @param pwd    - Passwort auf dem FTP Server
    * @return the boolean
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public boolean connect(String server, int port, String usr, String pwd) throws JobException
+  public boolean connect(String server, int port, String usr, String pwd) throws TransferException
   {
     boolean result;
     try
@@ -64,7 +63,7 @@ public class FTP
       this.ftp.enterLocalPassiveMode();
     } catch (Exception ex)
     {
-      throw new JobException(" Es konnte keine Verbindung zum Ftp-Server: -" + server + "- hergestellt werden.\nPort: -" + port + "-\nUser: -" + usr + "-\nPasswort: -" + pwd + "- :" + ex.getMessage());
+      throw new TransferException(" Es konnte keine Verbindung zum Ftp-Server: -" + server + "- hergestellt werden.\nPort: -" + port + "-\nUser: -" + usr + "-\nPasswort: -" + pwd + "- :" + ex.getMessage());
     }
     return result;
   }
@@ -79,9 +78,9 @@ public class FTP
    * @param pwd     - Passwort auf dem FTP Server
    * @param account - Account auf dem FTP Server
    * @return the boolean
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public boolean connect(String server, int port, String usr, String pwd, String account) throws JobException
+  public boolean connect(String server, int port, String usr, String pwd, String account) throws TransferException
   {
     boolean result;
     try
@@ -90,7 +89,7 @@ public class FTP
       result = this.ftp.login(usr, pwd, account);
     } catch (Exception ex)
     {
-      throw new JobException(" Es konnte keine Verbindung zum Ftp-Server: -" + server + "- hergestellt werden.\nPort: -" + port + "-\nUser: -" + usr + "-\nPasswort: -" + pwd + "-");
+      throw new TransferException(" Es konnte keine Verbindung zum Ftp-Server: -" + server + "- hergestellt werden.\nPort: -" + port + "-\nUser: -" + usr + "-\nPasswort: -" + pwd + "-");
     }
     return result;
   }
@@ -102,9 +101,9 @@ public class FTP
    * @param remoteFile - Name der zu empfangenden Datei.
    * @param localDir - Pfad für speichern der zu empfangenden Datei.
    * @return boolean true = Empfangen OK, false Empfangen fehlerhaft.
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public boolean receiveFile(String remoteFile, String localDir) throws JobException
+  public boolean receiveFile(String remoteFile, String localDir) throws TransferException
   {
     boolean result = false;
     try
@@ -125,7 +124,7 @@ public class FTP
       }
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
     return result;
   }
@@ -140,15 +139,15 @@ public class FTP
    * @param verz       the verz
    * @param modus      the modus
    * @return the boolean
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public boolean storeFileSimple(File sourceFile, String remotefile, String verz, String modus) throws JobException
+  public boolean storeFileSimple(File sourceFile, String remotefile, String verz, String modus) throws TransferException
   {
     try
     {
       // Falls Verzeichnis angegeben dann versuche dahin zu wechseln
       if (verz != null && verz.length() > 0 && !this.ftp.changeWorkingDirectory(verz))
-        throw new JobException("Es konnte nicht aus Verzeichnisebene " + getDirectory() + " zum Zielverzeichnis -" + verz + "- gewechselt werden.");
+        throw new TransferException("Es konnte nicht aus Verzeichnisebene " + getDirectory() + " zum Zielverzeichnis -" + verz + "- gewechselt werden.");
 
       if ("BINARY".equals(modus))
         this.ftp.setFileType(org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE);
@@ -159,12 +158,12 @@ public class FTP
       boolean result = this.ftp.storeFile("tmp" + remotefile, fileinputstream);
       fileinputstream.close();
       if (!result)
-        throw new JobException("Datei -" + sourceFile + "- konnte nicht kopiert werden!");
+        throw new TransferException("Datei -" + sourceFile + "- konnte nicht kopiert werden!");
       // Umbenennen
       return this.ftp.rename("tmp" + remotefile, remotefile);
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
   }
 
@@ -172,9 +171,9 @@ public class FTP
    * Gets files list.
    *
    * @return the files list
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public List<String> getFilesList() throws JobException
+  public List<String> getFilesList() throws TransferException
   {
     try
     {
@@ -190,7 +189,7 @@ public class FTP
       }
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
     return Collections.emptyList();
   }
@@ -201,16 +200,16 @@ public class FTP
    * @param filevon  the filevon
    * @param filenach the filenach
    * @return the boolean
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public boolean rename(String filevon, String filenach) throws JobException
+  public boolean rename(String filevon, String filenach) throws TransferException
   {
     try
     {
       return this.ftp.rename(filevon, filenach);
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
   }
 
@@ -218,16 +217,16 @@ public class FTP
    * Gets directory.
    *
    * @return the directory
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public String getDirectory() throws JobException
+  public String getDirectory() throws TransferException
   {
     try
     {
       return this.ftp.printWorkingDirectory();
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
   }
 
@@ -236,9 +235,9 @@ public class FTP
    *
    * @param remoteFile the remote file
    * @return the boolean
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public boolean checkFile(String remoteFile) throws JobException
+  public boolean checkFile(String remoteFile) throws TransferException
   {
     try
     {
@@ -255,7 +254,7 @@ public class FTP
       }
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
     return false;
   }
@@ -265,9 +264,9 @@ public class FTP
    *
    * @param remoteFile the remote file
    * @return the long
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public long checkFileSize(String remoteFile) throws JobException
+  public long checkFileSize(String remoteFile) throws TransferException
   {
     try
     {
@@ -284,7 +283,7 @@ public class FTP
       }
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
     return 0;
   }
@@ -294,9 +293,9 @@ public class FTP
    *
    * @param remoteFile the remote file
    * @return the boolean
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public boolean deleteFile(String remoteFile) throws JobException
+  public boolean deleteFile(String remoteFile) throws TransferException
   {
     boolean result = false;
     try
@@ -307,7 +306,7 @@ public class FTP
       }
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
     return result;
   }
@@ -317,16 +316,17 @@ public class FTP
    *
    * @param directory the directory
    * @return the boolean
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public boolean makeDir(String directory) throws JobException
+  public boolean makeDir(String directory) throws TransferException
   {
     try
     {
       return this.ftp.makeDirectory(directory);
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      disconnect();
+      throw new TransferException(ex.getMessage());
     }
   }
 
@@ -354,16 +354,16 @@ public class FTP
    *
    * @param cwd the cwd
    * @return the boolean
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public boolean cwd(String cwd) throws JobException
+  public boolean cwd(String cwd) throws TransferException
   {
     try
     {
       return this.ftp.changeWorkingDirectory(cwd);
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
   }
 
@@ -373,16 +373,16 @@ public class FTP
    * @param usr the usr
    * @param pwd the pwd
    * @return the boolean
-   * @throws JobException the job exception
+   * @throws TransferException the job exception
    */
-  public boolean login(String usr, String pwd) throws JobException
+  public boolean login(String usr, String pwd) throws TransferException
   {
     try
     {
       return this.ftp.login(usr, pwd);
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
   }
 }

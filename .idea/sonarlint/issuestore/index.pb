@@ -155,3 +155,11 @@ n
 >src/main/java/de/destatis/regdb/aenderungen/TransferDaten.java,2\a\2a81875ab0a63022467dbbc03a9dd983b947bf06
 x
 Hsrc/main/java/de/destatis/regdb/aenderungen/AenderungenVerteilenNeu.java,2\6\2650db3ee91e3c8f57614947fffecafd4a9ca568
+j
+:src/main/java/de/destatis/regdb/aenderungen/Aenderung.java,4\8\48a9c37bf70e32a13d680b9541a2d755c91d5bd3
+^
+.src/main/java/de/destatis/regdb/db/Result.java,e\4\e41d3fd45d71bd4b6462e498e54b5ad475beb335
+f
+6src/main/java/de/destatis/regdb/TransferException.java,1\3\13be0c6849c86abdc4c22a2a2423e5e0c2a0d1e6
+n
+>src/main/java/de/destatis/regdb/aenderungen/DateiTransfer.java,5\e\5e461842f7411b4080932fc157b94a7b72c7e30b

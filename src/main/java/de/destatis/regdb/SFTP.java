@@ -13,7 +13,6 @@
 package de.destatis.regdb;
 
 import com.jcraft.jsch.*;
-import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.log.Logger;
 import de.werum.sis.idev.res.log.LoggerIfc;
 
@@ -26,7 +25,7 @@ import java.io.File;
  */
 public class SFTP
 {
-  private static final LoggerIfc logger = Logger.getInstance().getLogger(SFTP.class);
+  private static final LoggerIfc log = Logger.getInstance().getLogger(SFTP.class);
   private final JSch jsch;
   private ChannelSftp sftpChannel;
   private Session session;
@@ -42,7 +41,7 @@ public class SFTP
       setKnownHostFile(defaultKnownHosts.getAbsolutePath());
     } else
     {
-      logger.info("Keine known_hosts unter " + System.getProperty("user.home") + "/.ssh/ gefunden... Setzen Sie explizit den Pfad zur known_hosts-Datei mit der Angabe -knownhostfile <arg> oder deaktivieren Sie die Pruefung gegen die knownHost mittels -disableHostKeyCheck, was einen Sicherheitsverlust bedeutet!");
+      log.info("Keine known_hosts unter " + System.getProperty("user.home") + "/.ssh/ gefunden... Setzen Sie explizit den Pfad zur known_hosts-Datei mit der Angabe -knownhostfile <arg> oder deaktivieren Sie die Pruefung gegen die knownHost mittels -disableHostKeyCheck, was einen Sicherheitsverlust bedeutet!");
     }
   }
 
@@ -51,16 +50,16 @@ public class SFTP
     try
     {
       this.jsch.setKnownHosts(host);
-      logger.info("Verwende Known-Host Datei " + host);
+      log.info("Verwende Known-Host Datei " + host);
     } catch (JSchException e)
     {
-      logger.error("Fehler beim Setzen des Known-Hosts:" + e.getMessage());
+      log.error("Fehler beim Setzen des Known-Hosts:" + e.getMessage());
     }
   }
 
   public void disableHostKeyChecking()
   {
-    logger.info("Host Key Checking ist deaktiviert! Dies bedeutet einen Sicherheitsverlust!");
+    log.info("Host Key Checking ist deaktiviert! Dies bedeutet einen Sicherheitsverlust!");
     JSch.setConfig("StrictHostKeyChecking", "no");
   }
 
@@ -71,9 +70,9 @@ public class SFTP
    * @param server   DNS oder IP Name des Servers
    * @param usr      Benutzername auf dem SFTP Server
    * @param passwort Passwort auf dem SFTP Server
-   * @throws JobException exception
+   * @throws TransferException exception
    */
-  public void connect(String server, String usr, String passwort) throws JobException
+  public void connect(String server, String usr, String passwort) throws TransferException
   {
     try
     {
@@ -85,10 +84,10 @@ public class SFTP
         else
           pause(5000);
       }
-      throw new JobException("Konnte keine Verbindung zu Server -" + server + "- aufbauen.\n" + "User: -" + usr + "-\n" + "Passwort: -" + passwort + "-\n");
+      throw new TransferException("Konnte keine Verbindung zu Server -" + server + "- aufbauen.\n" + "User: -" + usr + "-\n" + "Passwort: -" + passwort + "-\n");
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      throw new TransferException(ex.getMessage());
     }
   }
 
@@ -129,7 +128,7 @@ public class SFTP
         {
           String type = hk.getType();
           this.session.setConfig("server_host_key", type);
-          logger.info("Verwende Known-Host '" + host + "' mittels " + type);
+          log.info("Verwende Known-Host '" + host + "' mittels " + type);
         }
       }
       this.session.connect();
@@ -140,12 +139,12 @@ public class SFTP
     {
       if (e.getCause() instanceof java.net.UnknownHostException)
       {
-        logger.error("Der angegebene Server " + server + " ist nicht bekannt!");
+        log.error("Der angegebene Server " + server + " ist nicht bekannt!");
       } else
       {
-        logger.error("Der Fingerprint des Servers " + server + " ist nicht bekannt! Bitte loggen Sie sich zuerst manuell ein und bestaetigen den Schluessel");
+        log.error("Der Fingerprint des Servers " + server + " ist nicht bekannt! Bitte loggen Sie sich zuerst manuell ein und bestaetigen den Schluessel");
       }
-      logger.error(e.getMessage());
+      log.error(e.getMessage());
       return false;
     }
   }
@@ -156,9 +155,9 @@ public class SFTP
    * @param filenamekomplett der Komplette Name der zu kopierenden Datei
    * @param verz             das Verzeichnis, in dem die Datei geschrieben werden soll
    * @param filename         der Ziel Verzeichnisname ohne Pfadangabe
-   * @throws JobException im Fehlerfall
+   * @throws TransferException im Fehlerfall
    */
-  public void storeFileSimple(String filenamekomplett, String verz, String filename) throws JobException
+  public void storeFileSimple(String filenamekomplett, String verz, String filename) throws TransferException
   {
     cwd(verz);
     //Zunaechst als temp.-File uebertragen
@@ -168,8 +167,8 @@ public class SFTP
       this.sftpChannel.put(filenamekomplett, tempfile);
     } catch (Exception ex)
     {
-      logger.error(ex.getMessage());
-      throw new JobException("Datei " + tempfile + " konnte nicht kopiert werden:" + ex.getMessage());
+      log.error(ex.getMessage());
+      throw new TransferException("Datei " + tempfile + " konnte nicht kopiert werden:" + ex.getMessage());
     }
     //wieder in Originalname umbenennen
     rename(tempfile, filename);
@@ -180,26 +179,24 @@ public class SFTP
    *
    * @param filevon  alter Name
    * @param filenach neuer Name
-   * @throws JobException im Fehlerfall
+   * @throws TransferException im Fehlerfall
    */
-  public void rename(String filevon, String filenach) throws JobException
+  public void rename(String filevon, String filenach) throws TransferException
   {
     try
     {
       this.sftpChannel.rename(filevon, filenach);
     } catch (Exception ex)
     {
-      logger.error(ex.getMessage());
-      throw new JobException("Datei konnte nicht von " + filevon + " nach " + filenach + " umbenannt werden:" + ex.getMessage());
+      log.error(ex.getMessage());
+      throw new TransferException("Datei konnte nicht von " + filevon + " nach " + filenach + " umbenannt werden:" + ex.getMessage());
     }
   }
 
   /**
    * Trennt die Verbindung zum Server
-   *
-   * @throws JobException im Fehlerfall
    */
-  public void disconnect() throws JobException
+  public void disconnect()
   {
     try
     {
@@ -207,7 +204,7 @@ public class SFTP
       this.session.disconnect();
     } catch (Exception ex)
     {
-      throw new JobException(ex.getMessage());
+      log.debug("SFTP::disconnect lieferte Fehler:" + ex.getMessage());
     }
   }
 
@@ -215,17 +212,17 @@ public class SFTP
    * Wechseln des Verzeichnisses auf dem Server
    *
    * @param cwd das zu wechselnde Verzeichnis
-   * @throws JobException im Fehlerfall
+   * @throws TransferException im Fehlerfall
    */
-  public void cwd(String cwd) throws JobException
+  public void cwd(String cwd) throws TransferException
   {
     try
     {
       this.sftpChannel.cd(cwd);
     } catch (Exception ex)
     {
-      logger.error(ex.getMessage());
-      throw new JobException("Konnte nicht in Verzeichnis " + cwd + " wechseln:" + ex.getMessage());
+      log.error(ex.getMessage());
+      throw new TransferException("Konnte nicht in Verzeichnis " + cwd + " wechseln:" + ex.getMessage());
     }
   }
 }

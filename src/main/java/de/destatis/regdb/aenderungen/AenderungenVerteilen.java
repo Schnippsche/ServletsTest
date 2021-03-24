@@ -3,6 +3,7 @@ package de.destatis.regdb.aenderungen;
 import de.destatis.regdb.Email;
 import de.destatis.regdb.FTP;
 import de.destatis.regdb.SFTP;
+import de.destatis.regdb.TransferException;
 import de.destatis.regdb.db.*;
 import de.werum.sis.idev.res.job.JobException;
 import de.werum.sis.idev.res.log.Logger;
@@ -167,8 +168,7 @@ public class AenderungenVerteilen
         {
           verteileDatei(atd);
         }
-      }
-      else
+      } else
       {
         atd.setHolenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_OK));
       }
@@ -189,8 +189,7 @@ public class AenderungenVerteilen
         atd.setZipContainerFile(zipContainerFile);
         atd.setHolenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_OK));
       }
-    }
-    catch (AenderungenHolenException e)
+    } catch (AenderungenHolenException e)
     {
       log.error(e.getMessage());
     }
@@ -202,12 +201,10 @@ public class AenderungenVerteilen
     if (typ.endsWith("_DATEIEXPORT"))
     {
       typ = typ.substring(0, typ.length() - 12);
-    }
-    else if (typ.endsWith("_DIREKTEINTRAG"))
+    } else if (typ.endsWith("_DIREKTEINTRAG"))
     {
       typ = typ.substring(0, typ.length() - 14);
-    }
-    else if (typ.endsWith("_BEIDES"))
+    } else if (typ.endsWith("_BEIDES"))
     {
       typ = typ.substring(0, typ.length() - 7);
     }
@@ -279,8 +276,7 @@ public class AenderungenVerteilen
       verarbeitePlattform(atd, datenFile);
       erg = new ErgebnisStatus(ErgebnisStatus.STATUS_OK);
       atd.setVerteilenStatus(erg);
-    }
-    catch (Exception e)
+    } catch (Exception e)
     {
       String logTxt = "Verteilung ";
       if (datenFile != null)
@@ -344,8 +340,7 @@ public class AenderungenVerteilen
     {
       atd.setMailStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_OK));
       log.info("Mail von Aenderung wurde an " + atd.getMailempfaenger() + " versendet");
-    }
-    else
+    } else
     {
       atd.setMailStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_FEHLER));
       log.info("Mail von Aenderung konnte nicht an " + atd.getMailempfaenger() + " versendet werden!");
@@ -400,8 +395,7 @@ public class AenderungenVerteilen
     {
       FileUtil.delete(datenFile);
       throw new JobException(copyStatus.getMeldung());
-    }
-    else
+    } else
     {
       atd.setCsvFile(datenFile);
       if (copyStatus.isWarnung())
@@ -448,24 +442,31 @@ public class AenderungenVerteilen
     int port = 21;
     boolean isUnix = (atd.getPlattformInt() == AenderungsTransferDaten.PLATTFORM_UNIX_FTP);
     boolean ok;
-    if (isUnix)
+    try
     {
-      ok = ftp.connect(server, port, user, passwort);
-    }
-    else
+      if (isUnix)
+      {
+        ok = ftp.connect(server, port, user, passwort);
+      } else
+      {
+        ok = ftp.connect(server, port, user, passwort, account);
+      }
+      if (!ok)
+      {
+        throw new JobException("Anmeldung an Server " + server + " mit Kennung und Passwort nicht erfolgreich!");
+      }
+      ok = ftp.storeFileSimple(atd.getCsvFile(), atd.getZielDateiName(), ftpZielverzeichnis, atd.getModus());
+      if (ok)
+      {
+        log.info("Datei: -" + atd.getZielDateiName() + "- wurde korrekt mittels FTP in das Verzeichnis -" + ftpZielverzeichnis + "- des Servers -" + server + "- uebertragen.");
+      }
+    } catch (TransferException e)
     {
-      ok = ftp.connect(server, port, user, passwort, account);
-    }
-    if (!ok)
+      log.error("Datei: -" + atd.getZielDateiName() + "- konnte nicht mittels FTP in das Verzeichnis -" + ftpZielverzeichnis + "- des Servers -" + server + "- uebertragen werden:" + e.getMessage());
+    } finally
     {
-      throw new JobException("Anmeldung an Server " + server + " mit Kennung und Passwort nicht erfolgreich!");
+      ftp.disconnect();
     }
-    ok = ftp.storeFileSimple(atd.getCsvFile(), atd.getZielDateiName(), ftpZielverzeichnis, atd.getModus());
-    if (ok)
-    {
-      log.info("Datei: -" + atd.getZielDateiName() + "- wurde korrekt mittels FTP in das Verzeichnis -" + ftpZielverzeichnis + "- des Servers -" + server + "- uebertragen.");
-    }
-    ftp.disconnect();
   }
 
   private void sendSFTP(AenderungsTransferDaten mtd, String sftpZielverzeichnis) throws JobException
@@ -480,18 +481,27 @@ public class AenderungenVerteilen
       throw new JobException("Uebertragung auf einen Host mittels SFTP nicht moeglich");
     }
     sftp = new SFTP();
-    if (StringUtil.notEmpty(this.knownHostDatei))
+    try
     {
-      sftp.setKnownHostFile(this.knownHostDatei);
-    }
-    if (this.disableHostKeyCheck)
+      if (StringUtil.notEmpty(this.knownHostDatei))
+      {
+        sftp.setKnownHostFile(this.knownHostDatei);
+      }
+      if (this.disableHostKeyCheck)
+      {
+        sftp.disableHostKeyChecking();
+      }
+      sftp.connect(server, user, passwort);
+      sftp.storeFileSimple(mtd.getCsvFile().getAbsolutePath(), sftpZielverzeichnis, mtd.getZielDateiName());
+      log.info("Datei: -" + mtd.getZielDateiName() + "- wurde korrekt mittels SFTP in das Verzeichnis -" + sftpZielverzeichnis + "- des Servers -" + server + "- uebertragen.");
+    } catch (TransferException e)
     {
-      sftp.disableHostKeyChecking();
+      log.error("Datei: -" + mtd.getZielDateiName() + "- konnte nicht mittels SFTP in das Verzeichnis -" + sftpZielverzeichnis + "- des Servers -" + server + "- uebertragen werden:" + e.getMessage());
+    } finally
+    {
+      sftp.disconnect();
     }
-    sftp.connect(server, user, passwort);
-    sftp.storeFileSimple(mtd.getCsvFile().getAbsolutePath(), sftpZielverzeichnis, mtd.getZielDateiName());
-    log.info("Datei: -" + mtd.getZielDateiName() + "- wurde korrekt mittels FTP in das Verzeichnis -" + sftpZielverzeichnis + "- des Servers -" + server + "- uebertragen.");
-    sftp.disconnect();
+
   }
 
   /**
@@ -523,8 +533,7 @@ public class AenderungenVerteilen
         atd.setVerteilenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_OK));
         FileUtil.delete(file);
       }
-    }
-    catch (Exception e)
+    } catch (Exception e)
     {
       log.error("Direkteintrag von Amt '" + atd.getAmt() + "' , StatistikId '" + atd.getStatistikId() + "', Typ '" + atd.getTyp() + "' fehlgeschlagen:" + e.getMessage());
       atd.setVerteilenStatus(new ErgebnisStatus(ErgebnisStatus.STATUS_FEHLER));
@@ -573,8 +582,7 @@ public class AenderungenVerteilen
       {
         this.sqlUtil.execute(sql);
         log.info("Aenderungs-ids von Direkteintrag aktualisiert:" + aenderungsIds);
-      }
-      catch (JobException e)
+      } catch (JobException e)
       {
         log.error("Fehler beim Umsetzen des Erledigt-Status der Aenderungen " + aenderungsIds + ":" + e.getMessage());
       }
@@ -590,8 +598,7 @@ public class AenderungenVerteilen
       {
         this.sqlUtil.execute(sql);
         log.info("Aenderungs-ids von Export aktualisiert:" + aenderungsIds);
-      }
-      catch (JobException e)
+      } catch (JobException e)
       {
         log.error("Fehler beim Umsetzen des ExportAenderung-Status der Aenderungen " + aenderungsIds + ":" + e.getMessage());
       }

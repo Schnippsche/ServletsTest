@@ -67,16 +67,24 @@ public class ResultRow
   public int getInt(int columnIndex)
   {
     Object o = this.values.get(convertColumn(columnIndex));
-    if (o == null)
+    int result = 0;
+    if (o != null)
     {
-      return 0;
+      if (o instanceof java.lang.Integer)
+      {
+        result = (int) o;
+      } else
+      {
+        try
+        {
+          result = Integer.parseInt(o.toString());
+        } catch (NumberFormatException e)
+        {
+          //
+        }
+      }
     }
-    if (o instanceof java.lang.Integer)
-    {
-      return (Integer) o;
-    }
-
-    return Integer.parseInt(o.toString());
+    return result;
   }
 
   /**
@@ -99,16 +107,24 @@ public class ResultRow
   public long getLong(int columnIndex)
   {
     Object o = this.values.get(convertColumn(columnIndex));
-    if (o == null)
+    long result = 0;
+    if (o != null)
     {
-      return 0;
+      if (o instanceof java.lang.Long)
+      {
+        result = (long) o;
+      } else
+      {
+        try
+        {
+          result = Long.parseLong(o.toString());
+        } catch (NumberFormatException e)
+        {
+          //
+        }
+      }
     }
-    if (o instanceof java.lang.Long)
-    {
-      return (Long) o;
-    }
-
-    return Long.parseLong(o.toString());
+    return result;
   }
 
   /**

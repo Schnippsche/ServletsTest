@@ -1,11 +1,11 @@
 
 p
 java:S3776§"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(…ýçÆ8’ƒã€„/
-o
-java:S1192#"MDefine a constant instead of duplicating this literal "AENDERUNG_ID" 3 times.(ÑÛ½¨üÿÿÿÿ8’ƒã€„/
 Ÿ
 java:S1845š"€Rename method "starteDirekteintrag" to prevent any misunderstanding/clash with method "starteDirektEintrag" defined on line 138.(¸ƒÔÎ8’ƒã€„/
 o
 java:S2095Ý"LUse try-with-resources or close this "BufferedWriter" in a "finally" clause.(ÄŸÿ¨øÿÿÿÿ8’ƒã€„/
+o
+java:S1192#"MDefine a constant instead of duplicating this literal "AENDERUNG_ID" 3 times.(ÑÛ½¨üÿÿÿÿ8’ƒã€„/
 o
 java:S3776»"RRefactor this method to reduce its Cognitive Complexity from 41 to the 15 allowed.(ã® 8’ƒã€„/

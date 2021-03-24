@@ -1,5 +1,6 @@
 
-]
-java:S1068";Remove this unused "SQL_SELECT_TRANSFERZIEL" private field.(š’…€úÿÿÿÿ8±¨º¢„/
-W
-java:S1118":Add a private constructor to hide the implicit public one.(Ñºž™8±¨º¢„/
+^
+java:S1068""ARemove this unused "SQL_UPDATE_STATUS_DATEIEXPORT" private field.(Ú–ôÏ8«Æù•†/
+^	java:S125ž"<This block of commented-out lines of code should be removed.(§öÂüÿÿÿÿ8«Æù•†/
+k
+java:S3973É"HUse indentation to denote the code conditionally executed by this "for".(×­íùÿÿÿÿ8ï“Éù…/

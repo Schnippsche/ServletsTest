@@ -1,17 +1,13 @@
 package de.destatis.regdb.aenderungen;
 
+import de.destatis.regdb.db.ResultRow;
 import de.destatis.regdb.db.StringUtil;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Path;
+import java.util.*;
 
 public class Aenderung
 {
-  public static final String[] _aenderungenSpalten = {"AENDERUNG_ID", "TYP", "AENDERUNGSART", "AMT", "STATISTIK_ID", "FIRMEN_ID", "ADRESSEN_ID", "ANSPRECHPARTNER_ID", "MELDER_ID", "QUELL_REFERENZ_OF", "DATUM", "FA_NAME", "FA_NAME_ERGAENZUNG", "FA_KURZTEXT", "ANREDE", "NAME", "NAME_ERGAENZUNG", "KURZTEXT", "ABTEILUNG", "STRASSE", "HAUSNUMMER", "POSTLEITZAHL", "ORT", "POSTFACH", "POSTFACH_PLZ", "POSTFACH_ORT", "LAND", "TELEFON", "FAX", "EMAIL", "ZUSATZ1", "ZUSATZ2", "ZUSATZ3", "ZUSATZ4", "ZUSATZ5", "ZUSATZ6", "ZUSATZ7", "ZUSATZ8", "ZUSATZ9", "ZUSATZ10", "URS1", "URS2", "URS3", "URS4", "URS5", "URS6", "URS7", "AN_ANREDE", "AN_NAME", "AN_VORNAME", "AN_ABTEILUNG", "AN_TELEFON", "AN_MOBIL", "AN_FAX", "AN_EMAIL", "BEMERKUNGEN", "SACHBEARBEITER_ID", "STATUS", "STATUS_EXPORT_AENDERUNG", "STATUS_DIREKTEINTRAG", "ZEITPUNKT_EINTRAG", "ZEITPUNKT_EXPORT", "ZEITPUNKT_AENDERUNG", "ZEITPUNKT_WWW"};
   private final List<String> spalten;
   private final Map<String, String> values;
   private int aenderungsId;
@@ -25,6 +21,8 @@ public class Aenderung
   private String typ;
   private int ansprechpartnerId;
   private boolean direktEintragErfolgreich;
+  private Path exportDatei;
+  private String exportZieldateiName;
 
   public Aenderung(String[] spalten)
   {
@@ -34,7 +32,7 @@ public class Aenderung
     this.values = new HashMap<>(spalten.length);
   }
 
-  public void convertResultset(ResultSet rs) throws SQLException
+  public void convertResultset(ResultRow rs)
   {
     for (String spalte : this.spalten)
     {
@@ -65,7 +63,7 @@ public class Aenderung
     {
       if (this.values.containsKey(key))
       {
-        String keyNeu = key.replace(ignoredPrefix,"");
+        String keyNeu = key.replace(ignoredPrefix, "");
         builder.append(builder.length() > 0 ? ',' : "").append(keyNeu).append("=\"").append(StringUtil.escapeSqlString(this.values.get(key))).append("\"");
       }
     }
@@ -81,16 +79,6 @@ public class Aenderung
       result[i] = this.values.get(this.spalten.get(i));
     }
     return result;
-  }
-
-  public boolean isDirektEintragErfolgreich()
-  {
-    return this.direktEintragErfolgreich;
-  }
-
-  public void setDirektEintragErfolgreich(boolean direktEintragErfolgreich)
-  {
-    this.direktEintragErfolgreich = direktEintragErfolgreich;
   }
 
   public List<String> getSpalten()
@@ -148,9 +136,56 @@ public class Aenderung
     return this.typ;
   }
 
+  public boolean isDirektEintragErfolgreich()
+  {
+    return this.direktEintragErfolgreich;
+  }
+
+  public void setDirektEintragErfolgreich(boolean direktEintragErfolgreich)
+  {
+    this.direktEintragErfolgreich = direktEintragErfolgreich;
+  }
+
+  public Path getExportDatei()
+  {
+    return this.exportDatei;
+  }
+
+  public void setExportDatei(Path exportDatei)
+  {
+    this.exportDatei = exportDatei;
+  }
+
+  public String getExportZieldateiName()
+  {
+    return this.exportZieldateiName;
+  }
+
+  public void setExportZieldateiName(String exportZieldateiName)
+  {
+    this.exportZieldateiName = exportZieldateiName;
+  }
+
   @Override
   public String toString()
   {
     return "Aenderung{" + "spalten=" + this.spalten + ", values=" + this.values + ", aenderungsId=" + this.aenderungsId + ", statistikId=" + this.statistikId + ", firmenId=" + this.firmenId + ", melderId=" + this.melderId + ", adressenId=" + this.adressenId + ", aenderungsArt=" + this.aenderungsArt + ", statusExport=" + this.statusExport + ", statusDirekteintrag=" + this.statusDirekteintrag + ", typ='" + this.typ + '\'' + '}';
+  }
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    Aenderung aenderung = (Aenderung) o;
+    return this.aenderungsId == aenderung.aenderungsId;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return Objects.hash(this.aenderungsId);
   }
 }
