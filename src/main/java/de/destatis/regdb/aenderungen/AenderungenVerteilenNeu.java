@@ -85,7 +85,8 @@ public class AenderungenVerteilenNeu
     {
       verarbeiteDirektEintraege();
       verarbeiteDateiexporte();
-    } else
+    }
+    else
     {
       log.info("keine neue Änderungen mit Transferziel vorhanden");
     }
@@ -107,7 +108,9 @@ public class AenderungenVerteilenNeu
     String sql = MessageFormat.format(SQL_SELECT_SACHBEARBEITER, this.sbKennung);
     ResultRow row = this.sqlUtil.fetchOne(sql);
     if (row != null)
+    {
       this.sbId = row.getInt(1);
+    }
   }
 
   /**
@@ -169,9 +172,13 @@ public class AenderungenVerteilenNeu
       TransferDaten td = new TransferDaten(row);
       this.transferDatenList.add(td);
       if (td.isDirekteintrag())
+      {
         this.direktEintraege.add(td);
+      }
       if (td.isDateiexport())
+      {
         this.dateiExporte.add(td);
+      }
     }
     return !this.transferDatenList.isEmpty();
   }
@@ -252,7 +259,8 @@ public class AenderungenVerteilenNeu
     {
       return this.sqlUtil.update(sql);
 
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(fehlertext + ":" + e.getMessage());
     }
@@ -271,7 +279,8 @@ public class AenderungenVerteilenNeu
         if (td.isSammel())
         {
           erzeugeExportDatei(aenderungen, td);
-        } else
+        }
+        else
         {
           Set<Aenderung> einzel = new HashSet<>(1);
           for (Aenderung aenderung : aenderungen)
@@ -300,20 +309,13 @@ public class AenderungenVerteilenNeu
     switch (plattForm)
     {
       case AenderungsTransferDaten.PLATTFORM_LOKAL:
-
         copyFile(td, td.getDateiTransferList());
         break;
       case AenderungsTransferDaten.PLATTFORM_HOST_FTP:
-
-        sendFTP(td, td.getDateiTransferList());
-        break;
-      case AenderungsTransferDaten.PLATTFORM_HOST_SFTP:
-
-        sendSFTP(td, td.getDateiTransferList());
-        break;
       case AenderungsTransferDaten.PLATTFORM_UNIX_FTP:
         sendFTP(td, td.getDateiTransferList());
         break;
+      case AenderungsTransferDaten.PLATTFORM_HOST_SFTP:
       case AenderungsTransferDaten.PLATTFORM_UNIX_SFTP:
         sendSFTP(td, td.getDateiTransferList());
         break;
@@ -332,7 +334,8 @@ public class AenderungenVerteilenNeu
       {
         Files.copy(datei.getQuellPfad(), Paths.get(zielDatei), StandardCopyOption.REPLACE_EXISTING);
         datei.setTransferErolgreich(true);
-      } catch (IOException e)
+      }
+      catch (IOException e)
       {
         datei.setTransferErolgreich(false);
         throw new JobException(e.getMessage(), e);
@@ -354,16 +357,17 @@ public class AenderungenVerteilenNeu
       if (isUnix)
       {
         ftp.connect(server, port, user, passwort);
-      } else
+      }
+      else
       {
         ftp.connect(server, port, user, passwort, account);
       }
-    } catch (TransferException e)
+    }
+    catch (TransferException e)
     {
       log.error(e.getMessage());
       return;
     }
-
     for (DateiTransfer datei : dateien)
     {
       String zielDatei = datei.getZielVerzeichnis() + "/" + datei.getZielDateiname();
@@ -376,14 +380,14 @@ public class AenderungenVerteilenNeu
           log.info(MessageFormat.format(MSG_UEBERTRAGUNG_KORREKT, datei.getZielDateiname(), "FTP", datei.getZielVerzeichnis(), server));
           datei.setTransferErolgreich(true);
         }
-      } catch (TransferException e)
+      }
+      catch (TransferException e)
       {
         log.error(MessageFormat.format(MSG_UEBERTRAGUNG_FEHLER, datei.getZielDateiname(), "FTP", datei.getZielVerzeichnis(), server, e.getMessage()));
         datei.setTransferErolgreich(false);
       }
     }
     ftp.disconnect();
-
   }
 
   private void sendSFTP(TransferDaten td, List<DateiTransfer> dateien)
@@ -410,7 +414,8 @@ public class AenderungenVerteilenNeu
         sftp.disableHostKeyChecking();
       }
       sftp.connect(server, user, passwort);
-    } catch (TransferException e)
+    }
+    catch (TransferException e)
     {
       log.error("Konnte nicht an Server " + server + " anmelden:" + e.getMessage());
       return;
@@ -424,23 +429,27 @@ public class AenderungenVerteilenNeu
         sftp.storeFileSimple(datei.getQuellPfad().toString(), datei.getZielVerzeichnis(), datei.getZielDateiname());
         datei.setTransferErolgreich(true);
         log.info(MessageFormat.format(MSG_UEBERTRAGUNG_KORREKT, datei.getZielDateiname(), "SFTP", datei.getZielVerzeichnis(), server));
-      } catch (TransferException e)
+      }
+      catch (TransferException e)
       {
         log.error(MessageFormat.format(MSG_UEBERTRAGUNG_FEHLER, datei.getZielDateiname(), "SFTP", datei.getZielVerzeichnis(), server, e.getMessage()));
         datei.setTransferErolgreich(false);
       }
-      sftp.disconnect();
     }
+    sftp.disconnect();
   }
 
   private void doStatusOk(String sql, int aenderungsArt, Set<Integer> ids)
   {
     if (ids == null || ids.isEmpty())
+    {
       return;
+    }
     try
     {
       this.sqlUtil.update(MessageFormat.format(sql, "" + aenderungsArt, this.sqlUtil.convertNumberList(ids)));
-    } catch (JobException e)
+    }
+    catch (JobException e)
     {
       log.error(e.getMessage(), e);
     }
@@ -461,7 +470,8 @@ public class AenderungenVerteilenNeu
       dateiTransfer.setQuellPfad(path);
       transferDaten.getDateiTransferList().add(dateiTransfer);
       log.debug("Erzeuge datei " + path + " mit " + aenderungen.size() + " Eintraegen");
-    } catch (Exception e)
+    }
+    catch (Exception e)
     {
       throw new JobException(e.getMessage(), e);
     }
@@ -476,7 +486,8 @@ public class AenderungenVerteilenNeu
         writer.writeNext(ae.getValuesAsArray());
       }
       writer.flush();
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       throw new JobException("Fehler beim Erstellen der Exportdatei:" + e.getMessage(), e);
     }
@@ -516,7 +527,9 @@ public class AenderungenVerteilenNeu
     for (ResultRow row : rows)
     {
       if (aenderungsSet.size() >= this.anzahlAenderungenErlaubt)
+      {
         break;
+      }
       Aenderung aenderung = new Aenderung(spalten);
       aenderung.convertResultset(row);
       aenderungsSet.add(aenderung);

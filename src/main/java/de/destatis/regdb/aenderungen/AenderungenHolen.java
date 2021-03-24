@@ -680,8 +680,8 @@ public class AenderungenHolen
         this.adressenUpdate.append(",");
       }
       this.adressenUpdate.append(col);
-      this.adressenUpdate.append("=");
-      this.adressenUpdate.append(StringUtil.escapeSqlString(value));
+      this.adressenUpdate.append("='");
+      this.adressenUpdate.append(StringUtil.escapeSqlString(value)).append("'");
     }
     else if (_firmenMap.contains(col))
     {
@@ -701,8 +701,8 @@ public class AenderungenHolen
       {
         this.firmenUpdate.append(col);
       }
-      this.firmenUpdate.append("=");
-      this.firmenUpdate.append(StringUtil.escapeSqlString(value));
+      this.firmenUpdate.append("='");
+      this.firmenUpdate.append(StringUtil.escapeSqlString(value)).append("'");
     }
     else if (_partnerMap.contains(col))
     {
@@ -722,8 +722,8 @@ public class AenderungenHolen
       {
         this.partnerUpdate.append(col);
       }
-      this.partnerUpdate.append("=");
-      this.partnerUpdate.append(StringUtil.escapeSqlString(value));
+      this.partnerUpdate.append("='");
+      this.partnerUpdate.append(StringUtil.escapeSqlString(value)).append("'");
     }
   }
 
